@@ -1,0 +1,32 @@
+import { Diagram } from "./dsl";
+
+export default function paymentSystem() {
+  return new Diagram("Payment System", "Idempotent API → state machine → PSP; every money movement lands in a double-entry ledger")
+    .zone("Post-payment (async)", 2, 2.3, 3, 2.2, "#e8590c")
+    .node("client", "Checkout client", 0, 1, "client")
+    .node("api", "Payment API", 1, 1, "service")
+    .node("idem", "Idempotency store", 1, -0.3, "cache")
+    .node("orch", "Payment service (orchestrator)", 2, 1, "service")
+    .node("paydb", "Payment DB (state machine)", 2, -0.3, "db")
+    .node("risk", "Risk / fraud", 3, -0.3, "service")
+    .node("exec", "Payment executor", 3, 1, "service")
+    .node("psp", "PSP (Stripe / Adyen)", 4.2, 1, "external")
+    .node("hook", "Webhook handler", 4.2, 2.3, "service")
+    .node("events", "Payment events (Kafka)", 3, 2.3, "queue")
+    .node("wallet", "Wallet / balances", 2, 3.5, "db")
+    .node("ledger", "Ledger (append-only, double-entry)", 3, 3.5, "db")
+    .node("recon", "Reconciliation (vs. PSP settlement file)", 4.2, 3.5, "worker")
+    .edge("client", "api", "POST /payments")
+    .edge("api", "idem", "Idempotency-Key seen?")
+    .edge("api", "orch")
+    .edge("orch", "paydb", "CREATED → PENDING")
+    .edge("orch", "risk", "score")
+    .edge("orch", "exec", "authorize")
+    .edge("exec", "psp", "charge (token)")
+    .edge("psp", "hook", "webhook", { async: true })
+    .edge("hook", "events", "SUCCEEDED / FAILED", { async: true })
+    .edge("events", "ledger", undefined, { async: true })
+    .edge("events", "wallet", undefined, { async: true })
+    .edge("recon", "ledger", "compare nightly")
+    .build();
+}

@@ -1,0 +1,30 @@
+import { Diagram } from "./dsl";
+
+export default function videoStreaming() {
+  return new Diagram("Video Streaming Platform", "Upload → transcode into a bitrate ladder → stream segments from the CDN")
+    .zone("Upload & processing", 0, -1, 5, 2.6, "#e8590c")
+    .zone("Playback", 0, 2, 4, 2, "#1971c2")
+    .node("creator", "Creator app", 0, 0, "client")
+    .node("upload", "Upload service", 1, -1, "service")
+    .node("meta", "Video metadata DB", 2, -1, "db")
+    .node("raw", "Raw uploads (S3)", 1, 0.6, "storage")
+    .node("jobs", "Transcode jobs", 2, 0.6, "queue")
+    .node("dag", "Transcoding DAG split → encode → merge", 3, 0.6, "worker", { w: 1.1 })
+    .node("enc", "Encoded segments + manifests", 4.2, 0.6, "storage")
+    .node("viewer", "Viewer (ABR player)", 0, 3, "client")
+    .node("play", "Playback API (manifest, auth)", 1, 2, "service")
+    .node("mcache", "Metadata cache", 2, 2, "cache")
+    .node("cdn", "CDN edge PoPs", 3, 3, "edge")
+    .edge("creator", "upload", "1. init upload")
+    .edge("upload", "meta", "create row")
+    .edge("creator", "raw", "2. PUT chunks (pre-signed)")
+    .edge("raw", "jobs", "3. ObjectCreated", { async: true })
+    .edge("jobs", "dag", undefined, { async: true })
+    .edge("dag", "enc", "4. 240p…4K")
+    .edge("dag", "meta", "5. status = ready", { async: true })
+    .edge("viewer", "play", "manifest")
+    .edge("play", "mcache")
+    .edge("viewer", "cdn", "segments (2–6 s)")
+    .edge("cdn", "enc", "origin pull")
+    .build();
+}

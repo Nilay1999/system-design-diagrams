@@ -1,0 +1,32 @@
+import { Diagram } from "./dsl";
+
+export default function rideSharing() {
+  return new Diagram("Ride Sharing", "Drivers stream locations into a geo index; matching queries nearby cells and ranks by ETA")
+    .node("rider", "Rider app", 0, 0, "client")
+    .node("driver", "Driver app", 0, 2.5, "client")
+    .node("gw", "API gateway + WebSocket edge", 1, 1.25, "edge", { h: 1.1 })
+    .node("trip", "Trip service (state machine)", 2, 0, "service")
+    .node("tripdb", "Trip DB (sharded by city)", 2, -1.2, "db")
+    .node("pricing", "Pricing & surge", 3, 0, "service")
+    .node("match", "Matching / dispatch", 3, 1.25, "service")
+    .node("eta", "ETA / routing (maps)", 4, 1.25, "service")
+    .node("loc", "Location service", 2, 2.5, "service")
+    .node("geo", "Geo index (Redis, H3 cell → drivers)", 3, 2.5, "cache", { w: 1.1 })
+    .node("stream", "Location stream (Kafka)", 2, 3.7, "queue")
+    .node("analytics", "Surge signals / analytics", 3, 3.7, "worker")
+    .edge("rider", "gw", "request ride")
+    .edge("driver", "gw", "GPS every 4 s", { both: true })
+    .edge("gw", "trip", "create trip")
+    .edge("gw", "loc", "location")
+    .edge("trip", "tripdb")
+    .edge("trip", "pricing", "quote")
+    .edge("trip", "match", "find driver")
+    .edge("match", "geo", "k-ring search")
+    .edge("match", "eta", "rank")
+    .edge("match", "gw", "offer → driver")
+    .edge("loc", "geo", "update cell")
+    .edge("loc", "stream", undefined, { async: true })
+    .edge("stream", "analytics", undefined, { async: true })
+    .note("Surge signals (demand vs. supply per cell)\nare published back to Pricing every ~1 min.", 4.2, 3.75)
+    .build();
+}
