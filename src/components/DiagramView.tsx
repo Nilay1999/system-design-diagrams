@@ -14,7 +14,7 @@ import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 
 import type { Topic } from "../topics";
-import { LEGEND, kindColor } from "../diagrams/dsl";
+import { DIAGRAM_FONT, LEGEND, kindColor } from "../diagrams/dsl";
 
 interface SavedScene {
   /** Hash of the diagram source when the edit was saved; edits to stale sources are discarded. */
@@ -88,15 +88,15 @@ export function DiagramView({ topic, theme }: Props) {
 
   useEffect(() => () => window.clearTimeout(saveTimer.current), []);
 
-  // Once the canvas is ready: re-measure text with the real hand-drawn font (the first
-  // conversion may run before Excalifont has loaded, which clips free-standing text),
+  // Once the canvas is ready: re-measure text with the real diagram font (the first
+  // conversion may run before the font has loaded, which clips free-standing text),
   // then fit the whole diagram into view.
   useEffect(() => {
     if (!api) return;
     let cancelled = false;
     (async () => {
       try {
-        await document.fonts.load("16px Excalifont");
+        await document.fonts.load(`16px ${DIAGRAM_FONT.name}`);
         await document.fonts.ready;
       } catch {
         // Measure with whatever font is available.
@@ -178,7 +178,8 @@ export function DiagramView({ topic, theme }: Props) {
           excalidrawAPI={setApi}
           initialData={{
             elements: initialElements,
-            appState: { viewBackgroundColor: "#ffffff" },
+            // New text typed by the user uses the same font as the diagram.
+            appState: { viewBackgroundColor: "#ffffff", currentItemFontFamily: DIAGRAM_FONT.id },
           }}
           theme={theme}
           onChange={onChange}

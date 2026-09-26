@@ -55,6 +55,13 @@ export function kindColor(kind: NodeKind): { bg: string; stroke: string } {
   return { bg: STYLES[kind].backgroundColor, stroke: STYLES[kind].strokeColor };
 }
 
+/**
+ * Font used for all diagram text. Ids match Excalidraw's FONT_FAMILY
+ * (1 Virgil, 2 Helvetica, 3 Cascadia, 5 Excalifont, 6 Nunito, 8 Comic Shanns, 9 Liberation Sans).
+ * Hard-coded rather than imported so this module doesn't pull Excalidraw into the main bundle.
+ */
+export const DIAGRAM_FONT = { id: 6, name: "Nunito" } as const;
+
 const GRID_X = 290;
 const GRID_Y = 150;
 const NODE_W = 180;
@@ -157,7 +164,7 @@ export class Diagram {
       strokeWidth: 2,
       roughness: 1,
       roundness: style.shape === "rectangle" ? { type: 3 } : null,
-      label: { text: label, fontSize: 16, strokeColor: "#1e1e1e" },
+      label: { text: label, fontFamily: DIAGRAM_FONT.id, fontSize: 16, strokeColor: "#1e1e1e" },
     });
     return this;
   }
@@ -187,7 +194,7 @@ export class Diagram {
       strokeWidth: 2,
       startArrowhead: opts.both ? "arrow" : null,
       endArrowhead: "arrow",
-      label: label ? { text: label, fontSize: 14, strokeColor: "#343a40" } : undefined,
+      label: label ? { text: label, fontFamily: DIAGRAM_FONT.id, fontSize: 14, strokeColor: "#343a40" } : undefined,
     });
     return this;
   }
@@ -215,13 +222,13 @@ export class Diagram {
       roughness: 0,
       roundness: { type: 3 },
     });
-    this.texts.push({ type: "text", x: x + 12, y: y + 8, text: label, fontSize: 14, strokeColor: color });
+    this.texts.push({ type: "text", x: x + 12, y: y + 8, text: label, fontFamily: DIAGRAM_FONT.id, fontSize: 14, strokeColor: color });
     return this;
   }
 
   /** Free-floating annotation. */
   note(text: string, col: number, row: number, color = "#868e96"): this {
-    this.texts.push({ type: "text", x: col * GRID_X, y: row * GRID_Y, text, fontSize: 14, strokeColor: color });
+    this.texts.push({ type: "text", x: col * GRID_X, y: row * GRID_Y, text, fontFamily: DIAGRAM_FONT.id, fontSize: 14, strokeColor: color });
     return this;
   }
 
@@ -233,7 +240,7 @@ export class Diagram {
       x: col * GRID_X,
       y: row * GRID_Y,
       text: `${title}\n${body}`,
-      fontSize: 14,
+      fontFamily: DIAGRAM_FONT.id, fontSize: 14,
       strokeColor: "#495057",
     });
     return this;
@@ -246,10 +253,10 @@ export class Diagram {
     const left = Math.min(0, ...boxes.map((b) => b.x)) - 30;
     const heading: ExcalidrawElementSkeleton[] = [];
     if (this.title) {
-      heading.push({ type: "text", x: left, y: top - 110, text: this.title, fontSize: 36, strokeColor: "#1e1e1e" });
+      heading.push({ type: "text", x: left, y: top - 110, text: this.title, fontFamily: DIAGRAM_FONT.id, fontSize: 36, strokeColor: "#1e1e1e" });
     }
     if (this.subtitle) {
-      heading.push({ type: "text", x: left, y: top - 58, text: this.subtitle, fontSize: 18, strokeColor: "#868e96" });
+      heading.push({ type: "text", x: left, y: top - 58, text: this.subtitle, fontFamily: DIAGRAM_FONT.id, fontSize: 18, strokeColor: "#868e96" });
     }
     // Order matters for z-index: zones at the back, labels on top.
     return [...this.zones, ...this.nodes, ...this.edges, ...this.texts, ...heading];

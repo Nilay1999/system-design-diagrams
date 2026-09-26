@@ -1,0 +1,30 @@
+import { Diagram } from "./dsl";
+
+export default function leaderboard() {
+  return new Diagram("Leaderboard & Top-K", "Exact ranks from Redis sorted sets; approximate trending top-K from a streaming sketch")
+    .zone("Real-time leaderboard", 2, -1.2, 2.1, 3.2, "#1971c2")
+    .zone("Trending top-K (heavy hitters)", 1, 2.5, 3, 2.2, "#e8590c")
+    .node("players", "Players / clients", 0, 0.5, "client")
+    .node("gw", "API gateway", 1, 0.5, "edge")
+    .node("score", "Score service", 2, 0, "service")
+    .node("history", "Score history DB (durable)", 2, -1.2, "db")
+    .node("zset", "Redis sorted sets ZADD · ZREVRANGE · ZRANK", 3, 0, "cache", { w: 1.1 })
+    .node("lbsvc", "Leaderboard service", 2, 1, "service")
+    .node("stream", "Event stream (Kafka)", 1, 2.5, "queue")
+    .node("sketch", "Stream job: count-min sketch + min-heap per window", 2, 2.5, "worker", { h: 1.2 })
+    .node("topk", "Top-K results (per minute / hour)", 3, 2.5, "cache")
+    .node("batch", "Batch job (exact counts, daily)", 2, 3.7, "worker")
+    .edge("players", "gw")
+    .edge("gw", "score", "submit score")
+    .edge("gw", "lbsvc", "top 100 / my rank")
+    .edge("score", "history", "append")
+    .edge("score", "zset", "ZADD (if higher)")
+    .edge("lbsvc", "zset", "ZREVRANGE / ZRANK")
+    .edge("gw", "stream", "events", { async: true })
+    .edge("stream", "sketch", undefined, { async: true })
+    .edge("sketch", "topk", "publish")
+    .edge("stream", "batch", undefined, { async: true })
+    .edge("batch", "topk", "correct")
+    .edge("lbsvc", "topk", "trending")
+    .build();
+}

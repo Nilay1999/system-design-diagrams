@@ -4,19 +4,36 @@ import fundamentals from "./diagrams/fundamentals";
 import urlShortener from "./diagrams/url-shortener";
 import rateLimiter from "./diagrams/rate-limiter";
 import keyValueStore from "./diagrams/key-value-store";
+import distributedCache from "./diagrams/distributed-cache";
+import messageQueue from "./diagrams/message-queue";
+import jobScheduler from "./diagrams/job-scheduler";
+import fileSync from "./diagrams/file-sync";
+import collaborativeEditor from "./diagrams/collaborative-editor";
 import chatSystem from "./diagrams/chat-system";
 import newsFeed from "./diagrams/news-feed";
 import notificationSystem from "./diagrams/notification-system";
 import webCrawler from "./diagrams/web-crawler";
 import typeahead from "./diagrams/typeahead";
 import videoStreaming from "./diagrams/video-streaming";
+import proximityService from "./diagrams/proximity-service";
+import leaderboard from "./diagrams/leaderboard";
+import adClickAggregator from "./diagrams/ad-click-aggregator";
 import rideSharing from "./diagrams/ride-sharing";
+import ticketBooking from "./diagrams/ticket-booking";
+import eCommerce from "./diagrams/e-commerce";
 import paymentSystem from "./diagrams/payment-system";
 
 export interface Topic {
   slug: string;
   title: string;
-  category: "Foundations" | "Infrastructure" | "Social & Messaging" | "Media & Search" | "Marketplace & Fintech";
+  category:
+    | "Foundations"
+    | "Infrastructure"
+    | "Storage & Collaboration"
+    | "Social & Messaging"
+    | "Media & Search"
+    | "Data & Analytics"
+    | "Marketplace & Fintech";
   summary: string;
   tags: string[];
   diagram: () => ExcalidrawElementSkeleton[];
@@ -35,6 +52,7 @@ function doc(slug: string): string {
 
 type TopicMeta = Omit<Topic, "doc">;
 
+// Sidebar order follows this list (categories appear in order of first use).
 const META: TopicMeta[] = [
   {
     slug: "fundamentals",
@@ -67,6 +85,46 @@ const META: TopicMeta[] = [
     summary: "A Dynamo-style, leaderless, highly available store with tunable consistency.",
     tags: ["consistent hashing", "quorum", "gossip", "vector clocks"],
     diagram: keyValueStore,
+  },
+  {
+    slug: "distributed-cache",
+    title: "Distributed Cache",
+    category: "Infrastructure",
+    summary: "A Redis/Memcached-style cache cluster: sharding, replication, eviction and invalidation.",
+    tags: ["consistent hashing", "cache-aside", "hot keys", "stampede", "LRU"],
+    diagram: distributedCache,
+  },
+  {
+    slug: "message-queue",
+    title: "Distributed Message Queue",
+    category: "Infrastructure",
+    summary: "A Kafka-style durable log with partitions, replication, consumer groups and offsets.",
+    tags: ["kafka", "partitions", "ISR", "consumer groups", "exactly-once"],
+    diagram: messageQueue,
+  },
+  {
+    slug: "job-scheduler",
+    title: "Distributed Job Scheduler",
+    category: "Infrastructure",
+    summary: "Run millions of one-off and cron jobs on time, at least once, across a worker fleet.",
+    tags: ["cron", "leases", "leader election", "retries", "idempotency"],
+    diagram: jobScheduler,
+  },
+  {
+    slug: "file-sync",
+    title: "File Storage & Sync (Dropbox)",
+    category: "Storage & Collaboration",
+    summary: "Store files in the cloud and keep them in sync across devices, moving only changed chunks.",
+    tags: ["chunking", "dedup", "metadata", "long polling", "conflicts"],
+    diagram: fileSync,
+  },
+  {
+    slug: "collaborative-editor",
+    title: "Collaborative Editor (Google Docs)",
+    category: "Storage & Collaboration",
+    summary: "Many people edit one document at once and converge on the same result.",
+    tags: ["OT", "CRDT", "websockets", "operation log", "presence"],
+    diagram: collaborativeEditor,
   },
   {
     slug: "chat-system",
@@ -117,12 +175,52 @@ const META: TopicMeta[] = [
     diagram: videoStreaming,
   },
   {
+    slug: "proximity-service",
+    title: "Proximity Service (Yelp)",
+    category: "Media & Search",
+    summary: "Find nearby restaurants and businesses quickly with a geospatial index.",
+    tags: ["geohash", "quadtree", "read replicas", "radius search"],
+    diagram: proximityService,
+  },
+  {
+    slug: "leaderboard",
+    title: "Leaderboard & Top-K",
+    category: "Data & Analytics",
+    summary: "Real-time game rankings with sorted sets, and trending top-K with streaming sketches.",
+    tags: ["sorted sets", "count-min sketch", "heavy hitters", "windows"],
+    diagram: leaderboard,
+  },
+  {
+    slug: "ad-click-aggregator",
+    title: "Ad Click Aggregator",
+    category: "Data & Analytics",
+    summary: "Count billions of ad clicks per minute, accurately enough to bill advertisers.",
+    tags: ["stream processing", "flink", "OLAP", "dedup", "lambda architecture"],
+    diagram: adClickAggregator,
+  },
+  {
     slug: "ride-sharing",
     title: "Ride Sharing",
     category: "Marketplace & Fintech",
     summary: "Match riders with nearby drivers using real-time location and geospatial indexes.",
     tags: ["geohash", "H3", "matching", "location stream"],
     diagram: rideSharing,
+  },
+  {
+    slug: "ticket-booking",
+    title: "Ticket Booking (BookMyShow)",
+    category: "Marketplace & Fintech",
+    summary: "Sell limited seats to huge crowds without ever double-booking a seat.",
+    tags: ["seat holds", "distributed locks", "waiting room", "concurrency"],
+    diagram: ticketBooking,
+  },
+  {
+    slug: "e-commerce",
+    title: "E-commerce Checkout (Amazon)",
+    category: "Marketplace & Fintech",
+    summary: "Catalog, cart and a checkout saga that never oversells inventory, even in a flash sale.",
+    tags: ["saga", "outbox", "inventory", "flash sale", "microservices"],
+    diagram: eCommerce,
   },
   {
     slug: "payment-system",

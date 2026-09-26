@@ -1,0 +1,32 @@
+import { Diagram } from "./dsl";
+
+export default function eCommerce() {
+  return new Diagram("E-commerce Checkout", "Checkout is a saga: reserve inventory → charge → confirm, with compensation on failure")
+    .zone("Checkout saga", 2, 1.9, 2, 2.4, "#2f9e44")
+    .node("user", "Shopper", 0, 1, "client")
+    .node("gw", "API gateway", 1, 1, "edge")
+    .node("catalog", "Catalog & search", 2, -0.4, "service")
+    .node("catalogdb", "Catalog DB + search index", 3, -0.4, "db")
+    .node("cart", "Cart service", 2, 0.7, "service")
+    .node("cartdb", "Cart store (DynamoDB)", 3, 0.7, "db")
+    .node("order", "Order service (saga orchestrator)", 2, 1.9, "service")
+    .node("inventory", "Inventory service", 3, 1.9, "service")
+    .node("invdb", "Inventory DB (conditional decrement)", 4.2, 1.9, "db")
+    .node("orderdb", "Order DB + outbox", 2, 3.3, "db")
+    .node("payment", "Payment service", 3, 3.3, "service")
+    .node("events", "Order events (Kafka)", 3, 4.5, "queue")
+    .node("fulfil", "Fulfilment, shipping, email", 4.2, 4.5, "worker")
+    .edge("user", "gw")
+    .edge("gw", "catalog", "browse")
+    .edge("gw", "cart", "add to cart")
+    .edge("gw", "order", "checkout")
+    .edge("catalog", "catalogdb")
+    .edge("cart", "cartdb")
+    .edge("order", "inventory", "1. reserve")
+    .edge("inventory", "invdb", "stock -= n if ≥ n")
+    .edge("order", "payment", "2. charge")
+    .edge("order", "orderdb", "3. CONFIRMED")
+    .edge("orderdb", "events", "outbox relay", { async: true })
+    .edge("events", "fulfil", undefined, { async: true })
+    .build();
+}
