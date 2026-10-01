@@ -299,9 +299,29 @@ button {
   text-decoration: underline;
 }
 
-.diagram-link {
-  margin-top: 8px;
+.toc-diagrams {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+}
+
+.toc-diagrams strong {
+  font-size: 13px;
+}
+
+.toc-diagrams .current {
   font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markdown .diagram-ref::after {
+  content: " ⧉";
+  font-size: 0.85em;
 }
 
 .markdown h1 {
@@ -391,6 +411,40 @@ button {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.diagram-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 10px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.diagram-tabs button {
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  padding: 6px 12px;
+  margin-bottom: -1px;
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.diagram-tabs button:hover {
+  color: var(--text);
+}
+
+.diagram-tabs button.on {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .diagram-toolbar {
@@ -493,6 +547,10 @@ button {
 
 .line-async {
   border-top: 2px dashed #e8590c;
+}
+
+.line-reply {
+  border-top: 1px dashed #868e96;
 }
 
 :root[data-theme="dark"] .line {

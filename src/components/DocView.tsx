@@ -19,22 +19,47 @@ function slugify(text: string): string {
     .replace(/\s+/g, "-");
 }
 
-const components: Components = {
-  h2: ({ children }) => <h2 id={slugify(textOf(children))}>{children}</h2>,
-  h3: ({ children }) => <h3 id={slugify(textOf(children))}>{children}</h3>,
-  a: ({ href, children }) => (
-    <a href={href} target={href?.startsWith("#") ? undefined : "_blank"} rel="noreferrer">
-      {children}
-    </a>
-  ),
-};
+/** Links of the form `#diagram/<view-id>` open that diagram tab instead of navigating. */
+const DIAGRAM_LINK = /^#diagram\/([\w-]+)$/;
 
 interface Props {
   topic: Topic;
-  onShowDiagram?: () => void;
+  /** Id of the diagram tab currently on screen, or undefined when the diagram pane is hidden. */
+  activeDiagram?: string;
+  onOpenDiagram: (id?: string) => void;
 }
 
-export function DocView({ topic, onShowDiagram }: Props) {
+export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
+  const components: Components = useMemo(
+    () => ({
+      h2: ({ children }) => <h2 id={slugify(textOf(children))}>{children}</h2>,
+      h3: ({ children }) => <h3 id={slugify(textOf(children))}>{children}</h3>,
+      a: ({ href, children }) => {
+        const view = href?.match(DIAGRAM_LINK)?.[1];
+        if (view) {
+          return (
+            <a
+              href={href}
+              className="diagram-ref"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenDiagram(view);
+              }}
+            >
+              {children}
+            </a>
+          );
+        }
+        return (
+          <a href={href} target={href?.startsWith("#") ? undefined : "_blank"} rel="noreferrer">
+            {children}
+          </a>
+        );
+      },
+    }),
+    [onOpenDiagram],
+  );
+
   const toc = useMemo(
     () =>
       [...topic.doc.matchAll(/^## (.+)$/gm)].map((m) => {
@@ -68,11 +93,18 @@ export function DocView({ topic, onShowDiagram }: Props) {
               </li>
             ))}
           </ol>
-          {onShowDiagram && (
-            <button className="link diagram-link" onClick={onShowDiagram}>
-              Open the architecture diagram →
-            </button>
-          )}
+          <div className="toc-diagrams">
+            <strong>Diagrams</strong>
+            {topic.diagrams.map((d) => (
+              <button
+                key={d.id}
+                className={`link ${d.id === activeDiagram ? "current" : ""}`}
+                onClick={() => onOpenDiagram(d.id)}
+              >
+                {d.name}
+              </button>
+            ))}
+          </div>
         </nav>
       )}
       <div className="markdown">

@@ -14,7 +14,7 @@ import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 
 import type { Topic } from "../topics";
-import { DIAGRAM_FONT, LEGEND, kindColor } from "../diagrams/dsl";
+import { DIAGRAM_FONT, LEGEND, MONO_FONT, kindColor, type DiagramSpec } from "../diagrams/dsl";
 
 interface SavedScene {
   /** Hash of the diagram source when the edit was saved; edits to stale sources are discarded. */
@@ -22,11 +22,11 @@ interface SavedScene {
   elements: ExcalidrawElement[];
 }
 
-const storageKey = (slug: string) => `sdd:diagram:${slug}`;
+const storageKey = (key: string) => `sdd:diagram:${key}`;
 
-function loadSaved(slug: string, signature: string): readonly ExcalidrawElement[] | null {
+function loadSaved(key: string, signature: string): readonly ExcalidrawElement[] | null {
   try {
-    const raw = localStorage.getItem(storageKey(slug));
+    const raw = localStorage.getItem(storageKey(key));
     if (!raw) return null;
     const saved = JSON.parse(raw) as SavedScene;
     if (saved.signature !== signature) return null;
@@ -36,17 +36,17 @@ function loadSaved(slug: string, signature: string): readonly ExcalidrawElement[
   }
 }
 
-function save(slug: string, scene: SavedScene) {
+function save(key: string, scene: SavedScene) {
   try {
-    localStorage.setItem(storageKey(slug), JSON.stringify(scene));
+    localStorage.setItem(storageKey(key), JSON.stringify(scene));
   } catch {
     // Storage full or blocked — edits simply won't persist.
   }
 }
 
-function clearSaved(slug: string) {
+function clearSaved(key: string) {
   try {
-    localStorage.removeItem(storageKey(slug));
+    localStorage.removeItem(storageKey(key));
   } catch {
     // ignore
   }
@@ -63,10 +63,18 @@ function download(blob: Blob, filename: string) {
 
 interface Props {
   topic: Topic;
+  /** Selected view; falls back to the first one. */
+  viewId?: string;
+  onViewChange: (id: string) => void;
   theme: "light" | "dark";
 }
 
-export function DiagramView({ topic, theme }: Props) {
+export function DiagramView({ topic, viewId, onViewChange, theme }: Props) {
+  const spec: DiagramSpec = topic.diagrams.find((d) => d.id === viewId) ?? topic.diagrams[0];
+  // The first view keeps the old key, so edits saved before views existed still load.
+  const key = spec === topic.diagrams[0] ? topic.slug : `${topic.slug}:${spec.id}`;
+  const fileName = spec === topic.diagrams[0] ? topic.slug : `${topic.slug}-${spec.id}`;
+
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
   const [generation, setGeneration] = useState(0);
   const [edited, setEdited] = useState(false);
@@ -74,11 +82,11 @@ export function DiagramView({ topic, theme }: Props) {
   const baseline = useRef<number | null>(null);
   const saveTimer = useRef<number | undefined>(undefined);
 
-  const skeleton = useMemo(() => topic.diagram(), [topic]);
+  const skeleton = useMemo(() => spec.build(), [spec]);
   const signature = useMemo(() => String(hashString(JSON.stringify(skeleton))), [skeleton]);
 
   // `generation` is a dependency only to force a fresh read after a reset.
-  const saved = useMemo(() => loadSaved(topic.slug, signature), [topic.slug, signature, generation]);
+  const saved = useMemo(() => loadSaved(key, signature), [key, signature, generation]);
   const initialElements = useMemo(() => saved ?? convertToExcalidrawElements(skeleton), [saved, skeleton]);
 
   useEffect(() => {
@@ -96,7 +104,7 @@ export function DiagramView({ topic, theme }: Props) {
     let cancelled = false;
     (async () => {
       try {
-        await document.fonts.load(`16px ${DIAGRAM_FONT.name}`);
+        await Promise.all([document.fonts.load(`16px ${DIAGRAM_FONT.name}`), document.fonts.load(`13px ${MONO_FONT.name}`)]);
         await document.fonts.ready;
       } catch {
         // Measure with whatever font is available.
@@ -125,16 +133,16 @@ export function DiagramView({ topic, theme }: Props) {
       baseline.current = version;
       window.clearTimeout(saveTimer.current);
       saveTimer.current = window.setTimeout(() => {
-        save(topic.slug, { signature, elements: elements.filter((e) => !e.isDeleted) });
+        save(key, { signature, elements: elements.filter((e) => !e.isDeleted) });
         setEdited(true);
       }, 400);
     },
-    [topic.slug, signature],
+    [key, signature],
   );
 
   const reset = () => {
     window.clearTimeout(saveTimer.current);
-    clearSaved(topic.slug);
+    clearSaved(key);
     setApi(null);
     setGeneration((g) => g + 1);
   };
@@ -142,7 +150,7 @@ export function DiagramView({ topic, theme }: Props) {
   const exportJson = () => {
     if (!api) return;
     const json = serializeAsJSON(api.getSceneElements(), api.getAppState(), api.getFiles(), "local");
-    download(new Blob([json], { type: "application/json" }), `${topic.slug}.excalidraw`);
+    download(new Blob([json], { type: "application/json" }), `${fileName}.excalidraw`);
   };
 
   const exportPng = async () => {
@@ -154,11 +162,26 @@ export function DiagramView({ topic, theme }: Props) {
       mimeType: "image/png",
       exportPadding: 32,
     });
-    download(blob, `${topic.slug}.png`);
+    download(blob, `${fileName}.png`);
   };
 
   return (
     <div className="diagram">
+      {topic.diagrams.length > 1 && (
+        <div className="diagram-tabs" role="tablist" aria-label="Diagram views">
+          {topic.diagrams.map((d) => (
+            <button
+              key={d.id}
+              role="tab"
+              aria-selected={d === spec}
+              className={d === spec ? "on" : ""}
+              onClick={() => onViewChange(d.id)}
+            >
+              {d.name}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="diagram-toolbar">
         <span className={`badge ${edited ? "badge-edited" : ""}`}>{edited ? "Edited (saved locally)" : "Original"}</span>
         <div className="spacer" />
@@ -174,7 +197,7 @@ export function DiagramView({ topic, theme }: Props) {
       </div>
       <div className="diagram-canvas">
         <Excalidraw
-          key={`${topic.slug}:${generation}`}
+          key={`${key}:${generation}`}
           excalidrawAPI={setApi}
           initialData={{
             elements: initialElements,
@@ -201,6 +224,9 @@ export function DiagramView({ topic, theme }: Props) {
             </li>
             <li>
               <span className="line line-async" /> async / event
+            </li>
+            <li>
+              <span className="line line-reply" /> response
             </li>
           </ul>
         )}

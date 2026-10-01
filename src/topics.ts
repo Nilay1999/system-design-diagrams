@@ -1,4 +1,4 @@
-import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
+import type { DiagramSpec } from "./diagrams/dsl";
 
 import fundamentals from "./diagrams/fundamentals";
 import urlShortener from "./diagrams/url-shortener";
@@ -36,7 +36,8 @@ export interface Topic {
     | "Marketplace & Fintech";
   summary: string;
   tags: string[];
-  diagram: () => ExcalidrawElementSkeleton[];
+  /** Diagram views shown as tabs: architecture first, then request flows and deep dives. */
+  diagrams: DiagramSpec[];
   /** Markdown source, loaded from /docs/<slug>.md */
   doc: string;
 }
@@ -60,7 +61,7 @@ const META: TopicMeta[] = [
     category: "Foundations",
     summary: "The recurring components of scalable systems and a repeatable way to approach any design.",
     tags: ["load balancing", "caching", "sharding", "replication", "CAP"],
-    diagram: fundamentals,
+    diagrams: fundamentals,
   },
   {
     slug: "url-shortener",
@@ -68,7 +69,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "Generate short aliases for long URLs and redirect billions of reads with low latency.",
     tags: ["base62", "key generation", "read-heavy", "caching"],
-    diagram: urlShortener,
+    diagrams: urlShortener,
   },
   {
     slug: "rate-limiter",
@@ -76,7 +77,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "Throttle clients across a fleet of API servers with token buckets in Redis.",
     tags: ["token bucket", "sliding window", "redis", "lua"],
-    diagram: rateLimiter,
+    diagrams: rateLimiter,
   },
   {
     slug: "key-value-store",
@@ -84,7 +85,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "A Dynamo-style, leaderless, highly available store with tunable consistency.",
     tags: ["consistent hashing", "quorum", "gossip", "vector clocks"],
-    diagram: keyValueStore,
+    diagrams: keyValueStore,
   },
   {
     slug: "distributed-cache",
@@ -92,7 +93,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "A Redis/Memcached-style cache cluster: sharding, replication, eviction and invalidation.",
     tags: ["consistent hashing", "cache-aside", "hot keys", "stampede", "LRU"],
-    diagram: distributedCache,
+    diagrams: distributedCache,
   },
   {
     slug: "message-queue",
@@ -100,7 +101,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "A Kafka-style durable log with partitions, replication, consumer groups and offsets.",
     tags: ["kafka", "partitions", "ISR", "consumer groups", "exactly-once"],
-    diagram: messageQueue,
+    diagrams: messageQueue,
   },
   {
     slug: "job-scheduler",
@@ -108,7 +109,7 @@ const META: TopicMeta[] = [
     category: "Infrastructure",
     summary: "Run millions of one-off and cron jobs on time, at least once, across a worker fleet.",
     tags: ["cron", "leases", "leader election", "retries", "idempotency"],
-    diagram: jobScheduler,
+    diagrams: jobScheduler,
   },
   {
     slug: "file-sync",
@@ -116,7 +117,7 @@ const META: TopicMeta[] = [
     category: "Storage & Collaboration",
     summary: "Store files in the cloud and keep them in sync across devices, moving only changed chunks.",
     tags: ["chunking", "dedup", "metadata", "long polling", "conflicts"],
-    diagram: fileSync,
+    diagrams: fileSync,
   },
   {
     slug: "collaborative-editor",
@@ -124,7 +125,7 @@ const META: TopicMeta[] = [
     category: "Storage & Collaboration",
     summary: "Many people edit one document at once and converge on the same result.",
     tags: ["OT", "CRDT", "websockets", "operation log", "presence"],
-    diagram: collaborativeEditor,
+    diagrams: collaborativeEditor,
   },
   {
     slug: "chat-system",
@@ -132,7 +133,7 @@ const META: TopicMeta[] = [
     category: "Social & Messaging",
     summary: "1:1 and group messaging with presence, delivery receipts and offline sync.",
     tags: ["websockets", "fan-out", "presence", "wide-column"],
-    diagram: chatSystem,
+    diagrams: chatSystem,
   },
   {
     slug: "news-feed",
@@ -140,7 +141,7 @@ const META: TopicMeta[] = [
     category: "Social & Messaging",
     summary: "Build personalised timelines using hybrid push/pull fan-out.",
     tags: ["fan-out on write", "celebrity problem", "ranking", "timeline cache"],
-    diagram: newsFeed,
+    diagrams: newsFeed,
   },
   {
     slug: "notification-system",
@@ -148,7 +149,7 @@ const META: TopicMeta[] = [
     category: "Social & Messaging",
     summary: "Reliable multi-channel delivery (push, SMS, email) with preferences and retries.",
     tags: ["queues", "idempotency", "retries", "third-party providers"],
-    diagram: notificationSystem,
+    diagrams: notificationSystem,
   },
   {
     slug: "web-crawler",
@@ -156,7 +157,7 @@ const META: TopicMeta[] = [
     category: "Media & Search",
     summary: "Crawl billions of pages politely, deduplicate content, and feed an index.",
     tags: ["URL frontier", "politeness", "bloom filter", "simhash"],
-    diagram: webCrawler,
+    diagrams: webCrawler,
   },
   {
     slug: "typeahead",
@@ -164,7 +165,7 @@ const META: TopicMeta[] = [
     category: "Media & Search",
     summary: "Return the top suggestions for a prefix in under 100 ms.",
     tags: ["trie", "top-k", "offline aggregation", "edge caching"],
-    diagram: typeahead,
+    diagrams: typeahead,
   },
   {
     slug: "video-streaming",
@@ -172,7 +173,7 @@ const META: TopicMeta[] = [
     category: "Media & Search",
     summary: "Upload, transcode and stream video with adaptive bitrate over a CDN.",
     tags: ["transcoding DAG", "HLS/DASH", "CDN", "pre-signed URLs"],
-    diagram: videoStreaming,
+    diagrams: videoStreaming,
   },
   {
     slug: "proximity-service",
@@ -180,7 +181,7 @@ const META: TopicMeta[] = [
     category: "Media & Search",
     summary: "Find nearby restaurants and businesses quickly with a geospatial index.",
     tags: ["geohash", "quadtree", "read replicas", "radius search"],
-    diagram: proximityService,
+    diagrams: proximityService,
   },
   {
     slug: "leaderboard",
@@ -188,7 +189,7 @@ const META: TopicMeta[] = [
     category: "Data & Analytics",
     summary: "Real-time game rankings with sorted sets, and trending top-K with streaming sketches.",
     tags: ["sorted sets", "count-min sketch", "heavy hitters", "windows"],
-    diagram: leaderboard,
+    diagrams: leaderboard,
   },
   {
     slug: "ad-click-aggregator",
@@ -196,7 +197,7 @@ const META: TopicMeta[] = [
     category: "Data & Analytics",
     summary: "Count billions of ad clicks per minute, accurately enough to bill advertisers.",
     tags: ["stream processing", "flink", "OLAP", "dedup", "lambda architecture"],
-    diagram: adClickAggregator,
+    diagrams: adClickAggregator,
   },
   {
     slug: "ride-sharing",
@@ -204,7 +205,7 @@ const META: TopicMeta[] = [
     category: "Marketplace & Fintech",
     summary: "Match riders with nearby drivers using real-time location and geospatial indexes.",
     tags: ["geohash", "H3", "matching", "location stream"],
-    diagram: rideSharing,
+    diagrams: rideSharing,
   },
   {
     slug: "ticket-booking",
@@ -212,7 +213,7 @@ const META: TopicMeta[] = [
     category: "Marketplace & Fintech",
     summary: "Sell limited seats to huge crowds without ever double-booking a seat.",
     tags: ["seat holds", "distributed locks", "waiting room", "concurrency"],
-    diagram: ticketBooking,
+    diagrams: ticketBooking,
   },
   {
     slug: "e-commerce",
@@ -220,7 +221,7 @@ const META: TopicMeta[] = [
     category: "Marketplace & Fintech",
     summary: "Catalog, cart and a checkout saga that never oversells inventory, even in a flash sale.",
     tags: ["saga", "outbox", "inventory", "flash sale", "microservices"],
-    diagram: eCommerce,
+    diagrams: eCommerce,
   },
   {
     slug: "payment-system",
@@ -228,7 +229,7 @@ const META: TopicMeta[] = [
     category: "Marketplace & Fintech",
     summary: "Move money exactly once with idempotency, a double-entry ledger and reconciliation.",
     tags: ["idempotency", "ledger", "PSP", "reconciliation", "saga"],
-    diagram: paymentSystem,
+    diagrams: paymentSystem,
   },
 ];
 

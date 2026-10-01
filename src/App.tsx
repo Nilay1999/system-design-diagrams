@@ -16,9 +16,12 @@ const VIEWS: { id: View; label: string }[] = [
   { id: "diagram", label: "Diagram" },
 ];
 
-function slugFromHash(): string {
-  const slug = window.location.hash.replace(/^#\/?/, "");
-  return TOPICS.some((t) => t.slug === slug) ? slug : TOPICS[0].slug;
+/** `#/<slug>` or `#/<slug>/<diagram view id>`. */
+function parseHash(): { slug: string; view?: string } {
+  const [slug, view] = window.location.hash.replace(/^#\/?/, "").split("/");
+  const topic = TOPICS.find((t) => t.slug === slug);
+  if (!topic) return { slug: TOPICS[0].slug };
+  return { slug, view: topic.diagrams.some((d) => d.id === view) ? view : undefined };
 }
 
 function readPref<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
@@ -39,7 +42,7 @@ function writePref(key: string, value: string) {
 }
 
 export default function App() {
-  const [slug, setSlug] = useState(slugFromHash);
+  const [slug, setSlug] = useState(() => parseHash().slug);
   const [view, setView] = useState<View>(() => {
     const fromUrl = new URLSearchParams(window.location.search).get("view");
     const views = VIEWS.map((v) => v.id);
@@ -54,11 +57,21 @@ export default function App() {
     ),
   );
   const [menuOpen, setMenuOpen] = useState(false);
+  // Selected diagram tab, remembered only for the topic it was picked on.
+  const [diagram, setDiagram] = useState<{ slug: string; id: string } | null>(() => {
+    const { slug, view } = parseHash();
+    return view ? { slug, id: view } : null;
+  });
 
   const topic = TOPICS.find((t) => t.slug === slug) ?? TOPICS[0];
+  const diagramId = diagram?.slug === topic.slug ? diagram.id : undefined;
 
   useEffect(() => {
-    const onHash = () => setSlug(slugFromHash());
+    const onHash = () => {
+      const { slug, view } = parseHash();
+      setSlug(slug);
+      if (view) setDiagram({ slug, id: view });
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
@@ -79,6 +92,26 @@ export default function App() {
     window.location.hash = `/${next}`;
     setMenuOpen(false);
   }, []);
+
+  const selectDiagram = useCallback(
+    (id: string) => {
+      setDiagram({ slug: topic.slug, id });
+      // Keep the tab in the URL so it can be shared, without adding a history entry per click.
+      const url = new URL(window.location.href);
+      url.hash = id === topic.diagrams[0].id ? `/${topic.slug}` : `/${topic.slug}/${id}`;
+      window.history.replaceState(null, "", url);
+    },
+    [topic],
+  );
+
+  /** Called from the document: show a diagram tab, opening the diagram pane if it is hidden. */
+  const openDiagram = useCallback(
+    (id?: string) => {
+      if (id) selectDiagram(id);
+      if (view === "doc") setView(window.innerWidth > 1100 ? "split" : "diagram");
+    },
+    [selectDiagram, view],
+  );
 
   return (
     <div className={`app ${menuOpen ? "menu-open" : ""}`}>
@@ -123,13 +156,13 @@ export default function App() {
       <main className={`content view-${view}`}>
         {view !== "diagram" && (
           <div className="doc-pane">
-            <DocView topic={topic} onShowDiagram={view === "doc" ? () => setView("diagram") : undefined} />
+            <DocView topic={topic} activeDiagram={view === "doc" ? undefined : diagramId ?? topic.diagrams[0].id} onOpenDiagram={openDiagram} />
           </div>
         )}
         {view !== "doc" && (
           <div className="diagram-pane">
             <Suspense fallback={<div className="diagram-loading">Loading diagram…</div>}>
-              <DiagramView topic={topic} theme={theme} />
+              <DiagramView topic={topic} viewId={diagramId} onViewChange={selectDiagram} theme={theme} />
             </Suspense>
           </div>
         )}
