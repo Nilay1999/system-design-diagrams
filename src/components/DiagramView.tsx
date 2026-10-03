@@ -15,6 +15,7 @@ import "@excalidraw/excalidraw/index.css";
 
 import type { Topic } from "../topics";
 import { DIAGRAM_FONT, LEGEND, MONO_FONT, kindColor, type DiagramSpec } from "../diagrams/dsl";
+import { iconFilesFor } from "../diagrams/icon-files";
 
 interface SavedScene {
   /** Hash of the diagram source when the edit was saved; edits to stale sources are discarded. */
@@ -88,6 +89,8 @@ export function DiagramView({ topic, viewId, onViewChange, theme }: Props) {
   // `generation` is a dependency only to force a fresh read after a reset.
   const saved = useMemo(() => loadSaved(key, signature), [key, signature, generation]);
   const initialElements = useMemo(() => saved ?? convertToExcalidrawElements(skeleton), [saved, skeleton]);
+  // Icons are image elements; their SVG files are derived from the file ids, never stored.
+  const initialFiles = useMemo(() => iconFilesFor(initialElements), [initialElements]);
 
   useEffect(() => {
     setEdited(saved !== null);
@@ -112,7 +115,9 @@ export function DiagramView({ topic, viewId, onViewChange, theme }: Props) {
       if (cancelled) return;
       if (saved === null) {
         baseline.current = null;
-        api.updateScene({ elements: convertToExcalidrawElements(skeleton), captureUpdate: CaptureUpdateAction.NEVER });
+        const elements = convertToExcalidrawElements(skeleton);
+        api.addFiles(Object.values(iconFilesFor(elements)));
+        api.updateScene({ elements, captureUpdate: CaptureUpdateAction.NEVER });
       }
       api.scrollToContent(undefined, { fitToViewport: true, viewportZoomFactor: 0.8 });
     })();
@@ -201,6 +206,7 @@ export function DiagramView({ topic, viewId, onViewChange, theme }: Props) {
           excalidrawAPI={setApi}
           initialData={{
             elements: initialElements,
+            files: initialFiles,
             // New text typed by the user uses the same font as the diagram.
             appState: { viewBackgroundColor: "#ffffff", currentItemFontFamily: DIAGRAM_FONT.id },
           }}

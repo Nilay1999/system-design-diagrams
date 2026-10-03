@@ -1,5 +1,10 @@
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/data/transform";
-import type { ExcalidrawLinearElement } from "@excalidraw/excalidraw/element/types";
+import type { ExcalidrawLinearElement, FileId } from "@excalidraw/excalidraw/element/types";
+
+import { findBrand, inferIcon } from "./icon-rules";
+import type { IconName } from "./icons.generated";
+
+export type { IconName };
 
 /**
  * A tiny DSL for authoring architecture diagrams as code.
@@ -238,6 +243,34 @@ function freeText(x: number, y: number, text: string, fontSize: number, color: s
 }
 
 // ---------------------------------------------------------------------------
+// Icons. An icon is an Excalidraw image whose file id names the icon and the
+// tint for generic (single-colour) icons; DiagramView turns ids into SVG files.
+// ---------------------------------------------------------------------------
+
+const ICON = 28;
+const ICON_GAP = 4;
+
+export const ICON_FILE_PREFIX = "icon__";
+
+/** `icon__<name>__<hex tint>` — the tint is ignored for full-colour brand logos. */
+export function iconFileId(name: IconName, tint: string): string {
+  return `${ICON_FILE_PREFIX}${name}__${tint.replace("#", "")}`;
+}
+
+function iconImage(name: IconName, x: number, y: number, size: number, tint: string, groupIds?: string[]): Skeleton {
+  return {
+    type: "image",
+    x,
+    y,
+    width: size,
+    height: size,
+    fileId: iconFileId(name, tint) as FileId,
+    status: "saved",
+    groupIds,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Panels (notes / callouts) — shared by Diagram and Sequence
 // ---------------------------------------------------------------------------
 
@@ -314,6 +347,11 @@ interface DiagramOpts {
   gridX?: number;
   /** Vertical distance between grid rows, in px (default 170). */
   gridY?: number;
+  /**
+   * Pick an icon for every node that doesn't name one, from its text and kind (default true).
+   * Turn off for abstract diagrams (state machines, trees) where icons are noise.
+   */
+  icons?: boolean;
 }
 
 interface NodeOpts {
@@ -325,6 +363,8 @@ interface NodeOpts {
   detail?: string | string[];
   /** Draw in red to call attention to it (a failure, a mismatch, a hot spot). */
   highlight?: boolean;
+  /** Icon above the title; `false` for none. Defaults to one inferred from the text (see icon-rules.ts). */
+  icon?: IconName | false;
 }
 
 interface EdgeOpts {
@@ -343,6 +383,8 @@ interface TableOpts {
   /** Width in pixels; defaults to fit the longest row. */
   width?: number;
   kind?: NodeKind;
+  /** Icon in the header; defaults to a technology named in the table name, if any. */
+  icon?: IconName | false;
 }
 
 const NODE_W = 210;
@@ -360,6 +402,7 @@ export class Diagram {
   private readonly gy: number;
   /** Group ids must be deterministic: saved edits are keyed by a hash of the output. */
   private groups = 0;
+  private readonly autoIcons: boolean;
 
   constructor(
     private readonly title?: string,
@@ -368,6 +411,7 @@ export class Diagram {
   ) {
     this.gx = opts.gridX ?? 330;
     this.gy = opts.gridY ?? 170;
+    this.autoIcons = opts.icons ?? true;
   }
 
   private register(id: string | undefined, box: Box) {
@@ -405,9 +449,15 @@ export class Diagram {
     const detailLines = detail.flatMap((d) => wrap(d, innerW - 2 * BOUND_PAD, 13));
     const titleH = titleLines.length * 16 * SANS_LINE + BOUND_PAD * 2;
     const detailH = detailLines.length ? detailLines.length * 13 * SANS_LINE + BOUND_PAD * 2 : 0;
-    const contentH = titleH + detailH;
+    const textH = titleH + detailH;
+    const icon = opts.icon === false ? undefined : (opts.icon ?? (this.autoIcons ? inferIcon(label, detail, kind) : undefined));
+    const iconH = icon ? ICON + ICON_GAP : 0;
     const minH = NODE_H + ((opts.h ?? 1) - 1) * this.gy;
-    const height = Math.max(minH, Math.ceil((contentH + 14) / k));
+    // An ellipse fits text in its inscribed rectangle, but the narrow icon can sit
+    // higher up in the curved cap, so it only needs room above the text block.
+    const height = ellipse
+      ? Math.max(minH, Math.ceil((textH + 14) / k), icon ? Math.ceil(textH + 2 * (iconH + 6)) : 0)
+      : Math.max(minH, Math.ceil(textH + iconH + 14));
 
     const x = col * this.gx;
     const y = row * this.gy + NODE_H / 2 - height / 2;
@@ -430,28 +480,32 @@ export class Diagram {
       roundness: ellipse ? null : ({ type: 3 } as const),
     } as const;
 
-    if (!detailLines.length) {
+    if (!detailLines.length && !icon) {
       this.shapes.push({ ...base, label: { text: titleLines.join("\n"), fontFamily: DIAGRAM_FONT.id, fontSize: 16, strokeColor: TEXT } });
       return this;
     }
 
-    // Title and detail are separate text boxes grouped with the shape, so they
-    // can use different sizes and colours and still move as one.
+    // Icon, title and detail are separate elements grouped with the shape, so
+    // they can use different sizes and colours and still move as one.
     const g = this.group(id);
-    const top = y + height / 2 - contentH / 2;
+    const textTop = ellipse ? y + height / 2 - textH / 2 : y + height / 2 - (textH + iconH) / 2 + iconH;
     const tx = x + width / 2 - innerW / 2;
-    this.shapes.push(
-      { ...base, groupIds: [g] },
-      textBox(tx, top, innerW, titleH, titleLines.join("\n"), { fontSize: 16, color: TEXT, groupIds: [g] }),
-      textBox(tx, top + titleH, innerW, detailH, detailLines.join("\n"), { fontSize: 13, color: MUTED, groupIds: [g] }),
-    );
+    this.shapes.push({ ...base, groupIds: [g] });
+    if (icon) this.shapes.push(iconImage(icon, x + width / 2 - ICON / 2, textTop - iconH, ICON, base.strokeColor, [g]));
+    this.shapes.push(textBox(tx, textTop, innerW, titleH, titleLines.join("\n"), { fontSize: 16, color: TEXT, groupIds: [g] }));
+    if (detailLines.length) {
+      this.shapes.push(textBox(tx, textTop + titleH, innerW, detailH, detailLines.join("\n"), { fontSize: 13, color: MUTED, groupIds: [g] }));
+    }
     return this;
   }
 
   /** A database table / record schema. Rows are monospace, so pad with spaces to line up columns. */
   table(id: string, name: string, rows: string[], col: number, row: number, opts: TableOpts = {}): this {
     const style = STYLES[opts.kind ?? "db"];
-    const longest = Math.max(textWidth(name, 15), ...rows.map((r) => textWidth(r, 13, true)));
+    const icon = opts.icon === false ? undefined : (opts.icon ?? (this.autoIcons ? findBrand(name) : undefined));
+    // With an icon in the header, keep the centred name clear of it on both sides.
+    const nameW = textWidth(name, 15) + (icon ? 2 * (22 + 14) : 0);
+    const longest = Math.max(nameW, ...rows.map((r) => textWidth(r, 13, true)));
     const width = opts.width ?? Math.ceil(longest + 34);
     const headH = 34;
     const bodyH = Math.ceil(rows.length * 13 * MONO_LINE + BOUND_PAD * 2 + 14);
@@ -496,6 +550,7 @@ export class Diagram {
         groupIds: [g],
       }),
     );
+    if (icon) this.shapes.push(iconImage(icon, x + 8, y + 6, 22, style.strokeColor, [g]));
     // Arrows attach to the header, but route as if the table were one box.
     this.register(id, { x, y, width, height: headH + bodyH, shape: "rectangle" });
     return this;
@@ -624,6 +679,8 @@ export class Diagram {
 interface SequenceOpts {
   /** Distance between lifelines, in px (default 250). */
   gap?: number;
+  /** Pick an icon for every participant that doesn't name one (default true). */
+  icons?: boolean;
 }
 
 interface MsgOpts {
@@ -652,6 +709,7 @@ interface Actor {
   label: string;
   kind: NodeKind;
   x: number; // lifeline x
+  icon?: IconName;
 }
 
 const ACTOR_W = 190;
@@ -668,6 +726,7 @@ export class Sequence {
   private n = 0;
   private notes = 0;
   private readonly gap: number;
+  private readonly autoIcons: boolean;
 
   constructor(
     private readonly title?: string,
@@ -675,14 +734,16 @@ export class Sequence {
     opts: SequenceOpts = {},
   ) {
     this.gap = opts.gap ?? 250;
+    this.autoIcons = opts.icons ?? true;
   }
 
   /** Declare a participant. Participants are laid out left to right in declaration order. */
-  actor(id: string, label: string, kind: NodeKind = "service", opts: { extraGap?: number } = {}): this {
+  actor(id: string, label: string, kind: NodeKind = "service", opts: { extraGap?: number; icon?: IconName | false } = {}): this {
     if (this.byId.has(id)) throw new Error(`Duplicate actor "${id}"`);
     const prev = this.actors[this.actors.length - 1];
     const x = prev ? prev.x + this.gap + (opts.extraGap ?? 0) : ACTOR_W / 2;
-    const a = { id, label, kind, x };
+    const icon = opts.icon === false ? undefined : (opts.icon ?? (this.autoIcons ? inferIcon(label, [], kind) : undefined));
+    const a = { id, label, kind, x, icon };
     this.actors.push(a);
     this.byId.set(id, a);
     return this;
@@ -868,11 +929,12 @@ export class Sequence {
     if (this.blocks.length) throw new Error(`Unclosed ${this.blocks[this.blocks.length - 1].kind} block`);
     const endY = this.y + 20;
     const heads: Skeleton[] = [];
-    for (const a of this.actors) {
+    this.actors.forEach((a, i) => {
       const style = STYLES[a.kind];
-      heads.push({
+      const left = a.x - ACTOR_W / 2;
+      const box = {
         type: "rectangle",
-        x: a.x - ACTOR_W / 2,
+        x: left,
         y: 0,
         width: ACTOR_W,
         height: ACTOR_H,
@@ -883,8 +945,23 @@ export class Sequence {
         strokeWidth: 2,
         roughness: 1,
         roundness: { type: 3 },
-        label: { text: a.label, fontFamily: DIAGRAM_FONT.id, fontSize: 16, strokeColor: TEXT },
-      });
+      } as const;
+      if (!a.icon) {
+        heads.push({ ...box, label: { text: a.label, fontFamily: DIAGRAM_FONT.id, fontSize: 16, strokeColor: TEXT } });
+      } else {
+        // Icon on the left, label centred in the space to its right.
+        const g = `actor-g${i + 1}`;
+        const textLeft = left + 12 + 26 + 4;
+        heads.push(
+          { ...box, groupIds: [g] },
+          iconImage(a.icon, left + 12, ACTOR_H / 2 - 13, 26, style.strokeColor, [g]),
+          textBox(textLeft, 4, left + ACTOR_W - 6 - textLeft, ACTOR_H - 8, wrap(a.label, left + ACTOR_W - 6 - textLeft - 2 * BOUND_PAD, 16).join("\n"), {
+            fontSize: 16,
+            color: TEXT,
+            groupIds: [g],
+          }),
+        );
+      }
       this.back.push({
         type: "line",
         ...linear([
@@ -896,7 +973,7 @@ export class Sequence {
         strokeWidth: 1,
         roughness: 0,
       });
-    }
+    });
     const left = this.actors[0].x - 120;
     const heading: Skeleton[] = [];
     if (this.title) heading.push(freeText(left, this.subtitle ? -110 : -66, this.title, 34, TEXT));
