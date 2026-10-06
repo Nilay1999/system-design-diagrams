@@ -2,7 +2,7 @@
 
 **Live site:** https://system-design-diagrams.vercel.app/
 
-22 in-depth system design write-ups, each paired with a set of editable [Excalidraw](https://excalidraw.com) diagrams, in a React + Vite + TypeScript app.
+24 in-depth system design write-ups, each paired with a set of editable [Excalidraw](https://excalidraw.com) diagrams, in a React + Vite + TypeScript app.
 
 - **Docs** are plain Markdown in [`docs/`](docs/), so you can read them on GitHub without running anything. Each one covers requirements, capacity math, API, data model, architecture, step-by-step request flows, deep dives, failure modes, observability, trade-offs and interview follow-ups.
 - **Diagrams** are defined as code in [`src/diagrams/`](src/diagrams/) with a small DSL, then rendered as Excalidraw scenes you can pan, zoom, edit and export. Every topic has 4–5 diagram tabs: a detailed architecture, sequence diagrams for the main request flows, and deep dives (data models, algorithms, state machines).
@@ -12,6 +12,8 @@
 | Topic | Category | Key ideas |
 | --- | --- | --- |
 | [Building Blocks & Interview Framework](docs/fundamentals.md) | Foundations | load balancing, caching, sharding, replication, CAP |
+| [Networking Fundamentals](docs/networking.md) | Foundations | DNS, TCP/UDP, TLS 1.3, HTTP/1.1–3, WebSockets/SSE, NAT, VPCs |
+| [Core Concepts: Data & Distributed Systems](docs/core-concepts.md) | Foundations | B-tree vs LSM, isolation levels, Raft, 2PC vs saga, Bloom filters |
 | [URL Shortener](docs/url-shortener.md) | Infrastructure | base62, key generation, read-heavy caching |
 | [Distributed Rate Limiter](docs/rate-limiter.md) | Infrastructure | token bucket, sliding window, Redis + Lua |
 | [Distributed Key-Value Store](docs/key-value-store.md) | Infrastructure | consistent hashing, quorums, gossip, LSM trees |

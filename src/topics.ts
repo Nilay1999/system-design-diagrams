@@ -1,6 +1,8 @@
 import type { DiagramSpec } from "./diagrams/dsl";
 
 import fundamentals from "./diagrams/fundamentals";
+import networking from "./diagrams/networking";
+import coreConcepts from "./diagrams/core-concepts";
 import urlShortener from "./diagrams/url-shortener";
 import rateLimiter from "./diagrams/rate-limiter";
 import keyValueStore from "./diagrams/key-value-store";
@@ -62,6 +64,22 @@ const META: TopicMeta[] = [
     summary: "The recurring components of scalable systems and a repeatable way to approach any design.",
     tags: ["load balancing", "caching", "sharding", "replication", "CAP"],
     diagrams: fundamentals,
+  },
+  {
+    slug: "networking",
+    title: "Networking Fundamentals",
+    category: "Foundations",
+    summary: "What every arrow costs: IP, DNS, TCP, TLS, HTTP/1.1–3, real-time transports, proxies and cloud networking.",
+    tags: ["TCP", "DNS", "TLS", "HTTP/2", "QUIC", "WebSockets", "VPC", "NAT"],
+    diagrams: networking,
+  },
+  {
+    slug: "core-concepts",
+    title: "Core Concepts: Data & Distributed Systems",
+    category: "Foundations",
+    summary: "Storage engines, indexes, isolation, consensus, distributed transactions, clocks, IDs and probabilistic structures.",
+    tags: ["B-tree", "LSM", "isolation levels", "Raft", "2PC", "saga", "Bloom filter", "HyperLogLog"],
+    diagrams: coreConcepts,
   },
   {
     slug: "url-shortener",
