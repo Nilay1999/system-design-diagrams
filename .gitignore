@@ -5,3 +5,4 @@ dist
 .vite
 public/fonts
 *.tsbuildinfo
+.vercel
