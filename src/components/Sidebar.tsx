@@ -1,22 +1,18 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 
-import { CATEGORIES, TOPICS, type Topic } from "../topics";
+import { SOURCES, groupByCategory, topicPath, useTopics, type Topic } from "../topics";
 
 interface Props {
-  current: Topic;
-  onSelect: (slug: string) => void;
+  current?: Topic;
+  /** Called after a topic link is followed, e.g. to close the mobile menu. */
+  onNavigate: () => void;
 }
 
-export function Sidebar({ current, onSelect }: Props) {
+export function Sidebar({ current, onNavigate }: Props) {
+  const catalog = useTopics();
   const [query, setQuery] = useState("");
-
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return TOPICS;
-    return TOPICS.filter((t) =>
-      [t.title, t.summary, t.category, ...t.tags].some((field) => field.toLowerCase().includes(q)),
-    );
-  }, [query]);
+  const matches = useMemo(() => catalog.search(query), [catalog, query]);
 
   return (
     <aside className="sidebar">
@@ -28,29 +24,44 @@ export function Sidebar({ current, onSelect }: Props) {
         onChange={(e) => setQuery(e.target.value)}
         aria-label="Search topics"
       />
-      {CATEGORIES.map((category) => {
-        const items = matches.filter((t) => t.category === category);
-        if (items.length === 0) return null;
+      {SOURCES.map(({ source, label, emptyText }) => {
+        const topics = matches.filter((t) => t.source === source);
+        // While searching, hide sections with no hits; otherwise show a section if it can explain being empty.
+        if (topics.length === 0 && (query || !emptyText)) return null;
         return (
-          <section key={category}>
-            <h4>{category}</h4>
-            <ul>
-              {items.map((t) => (
-                <li key={t.slug}>
-                  <button
-                    className={`topic ${t.slug === current.slug ? "active" : ""}`}
-                    onClick={() => onSelect(t.slug)}
-                    title={t.summary}
-                  >
-                    {t.title}
-                  </button>
-                </li>
-              ))}
-            </ul>
+          <section key={source} className="source-section">
+            <h3>{label}</h3>
+            {topics.length === 0 && <p className="empty">{emptyText}</p>}
+            {groupByCategory(topics).map(([category, items]) => (
+              <section key={category}>
+                <h4>{category}</h4>
+                <ul>
+                  {items.map((t) => (
+                    <li key={t.slug}>
+                      <TopicLink topic={t} active={t === current} onClick={onNavigate} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
           </section>
         );
       })}
       {matches.length === 0 && <p className="empty">No topics match "{query}".</p>}
     </aside>
+  );
+}
+
+function TopicLink({ topic, active, onClick }: { topic: Topic; active: boolean; onClick: () => void }) {
+  return (
+    <Link
+      to={topicPath(topic)}
+      className={`topic ${active ? "active" : ""}`}
+      aria-current={active ? "page" : undefined}
+      onClick={onClick}
+      title={topic.summary}
+    >
+      {topic.title}
+    </Link>
   );
 }

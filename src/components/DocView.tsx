@@ -1,23 +1,9 @@
-import { isValidElement, useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import type { Topic } from "../topics";
-
-function textOf(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join("");
-  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
-  return "";
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-}
+import { slugify, textOf } from "../lib/text";
 
 /** Links of the form `#diagram/<view-id>` open that diagram tab instead of navigating. */
 const DIAGRAM_LINK = /^#diagram\/([\w-]+)$/;

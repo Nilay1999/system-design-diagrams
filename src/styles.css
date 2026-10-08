@@ -173,6 +173,19 @@ button {
   margin-bottom: 8px;
 }
 
+.sidebar h3 {
+  margin: 20px 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.source-section + .source-section {
+  margin-top: 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
 .sidebar h4 {
   margin: 18px 8px 6px;
   font-size: 11px;
@@ -188,8 +201,11 @@ button {
 }
 
 .topic {
+  display: block;
   width: 100%;
   text-align: left;
+  color: inherit;
+  text-decoration: none;
   border: 0;
   background: transparent;
   padding: 6px 10px;

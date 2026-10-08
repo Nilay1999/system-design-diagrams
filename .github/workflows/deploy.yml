@@ -27,6 +27,12 @@ jobs:
           node-version: 24
           cache: npm
 
+      # Failing tests stop the deploy before anything is built.
+      - name: Test
+        run: |
+          npm ci
+          npm test
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 

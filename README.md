@@ -54,7 +54,7 @@ npm run preview    # serve the production build
 - Pick a topic in the sidebar, or search by keyword (e.g. `cache`, `kafka`, `idempotency`).
 - Switch between **Split**, **Document** and **Diagram** views in the top bar.
 - Each topic has several **diagram tabs** (e.g. *Architecture*, *Redirect flow*, *Key generation & data model*). Links inside a doc (marked ⧉) and the "Diagrams" row under "On this page" open the matching tab.
-- Link straight to a tab with `#/<topic>/<tab>`, e.g. `?view=diagram#/url-shortener/redirect-flow`.
+- Link straight to a tab with `/topics/<topic>/<tab>`, e.g. `/topics/url-shortener/redirect-flow?view=diagram`. Old `#/<topic>/<tab>` links still redirect.
 - The diagram is a full Excalidraw canvas: drag boxes (arrows stay attached), add notes, restyle anything.
   - Edits are **saved in your browser** (localStorage) per diagram tab. **Reset** restores the original.
   - Export with **PNG** or **.excalidraw**. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
@@ -68,15 +68,34 @@ src/
   diagrams/
     dsl.ts                  Diagram-as-code helpers: Diagram (grid layout) and Sequence (sequence diagrams)
     <topic>.ts              The diagram tabs for one topic
+  topics/
+    curated.ts              Curated topic metadata (+ doc + diagram tabs)
+    catalog.ts              TopicCatalog: lookup, search, grouping, sidebar sections
+    paths.ts                Topic URLs and legacy #/slug parsing
+    index.ts                useTopics(): the one place new topic sources plug in
   components/
-    DiagramView.tsx         Excalidraw canvas, local persistence, export
+    diagram/                Excalidraw canvas: source strategies (DSL / raw scene), saved-edit
+                            store, autosave hook, exporters, legend
     DocView.tsx             Markdown renderer with an on-this-page index
-    Sidebar.tsx             Topic navigation and search
-  topics.ts                 Topic registry (metadata + doc + diagram)
-  App.tsx                   Layout, routing (#/slug), theme and view mode
+    Sidebar.tsx             Topic navigation (Curated / Community) and search
+    Tabs.tsx                Reusable tab list (view switcher, diagram tabs)
+  layout/AppShell.tsx       Top bar, sidebar drawer and main area shared by pages
+  pages/topic/              Topic page and its view-mode (split / doc / diagram) hook
+  theme/                    ThemeProvider + useTheme
+  providers/                Router, TanStack Query and theme providers
+  hooks/                    usePreference, useDebouncedCallback
+  lib/                      Safe localStorage, download, text and viewport helpers
+  api/                      Fetch client + TanStack Query setup for the community API
+  App.tsx                   Routes (/topics/:slug/:view?) and legacy #/slug redirects
 scripts/
   copy-excalidraw-assets.mjs
 ```
+
+## Tests
+
+`npm test` runs the unit tests (Vitest) for storage, routing paths, the topic catalog, saved
+diagram edits, and integrity checks on every curated topic (unique slugs and tabs, doc links that
+point at real tabs). CI runs them before each deploy.
 
 ## Adding a topic
 
@@ -124,7 +143,7 @@ scripts/
    ```
 
    Node kinds (`client`, `edge`, `service`, `worker`, `queue`, `cache`, `db`, `storage`, `external`) each have their own shape and colour, listed in the in-app legend. Coordinates are grid cells and fractions like `2.5` are allowed; box heights grow to fit their text. Use `{ highlight: true }` to draw a node in red (a failure, a hot spot).
-3. Register it in `src/topics.ts`.
+3. Register it in `src/topics/curated.ts`.
 
 If you change a diagram's source, browsers that saved edits of the old version start from the new version, because saved edits are tied to a hash of the diagram source.
 

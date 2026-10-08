@@ -1,59 +1,54 @@
-import type { DiagramSpec } from "./diagrams/dsl";
+import type { DiagramSpec } from "../diagrams/dsl";
+import type { Topic } from "./types";
 
-import fundamentals from "./diagrams/fundamentals";
-import networking from "./diagrams/networking";
-import coreConcepts from "./diagrams/core-concepts";
-import urlShortener from "./diagrams/url-shortener";
-import rateLimiter from "./diagrams/rate-limiter";
-import keyValueStore from "./diagrams/key-value-store";
-import distributedCache from "./diagrams/distributed-cache";
-import messageQueue from "./diagrams/message-queue";
-import jobScheduler from "./diagrams/job-scheduler";
-import fileSync from "./diagrams/file-sync";
-import collaborativeEditor from "./diagrams/collaborative-editor";
-import chatSystem from "./diagrams/chat-system";
-import newsFeed from "./diagrams/news-feed";
-import notificationSystem from "./diagrams/notification-system";
-import webCrawler from "./diagrams/web-crawler";
-import typeahead from "./diagrams/typeahead";
-import videoStreaming from "./diagrams/video-streaming";
-import proximityService from "./diagrams/proximity-service";
-import leaderboard from "./diagrams/leaderboard";
-import adClickAggregator from "./diagrams/ad-click-aggregator";
-import rideSharing from "./diagrams/ride-sharing";
-import ticketBooking from "./diagrams/ticket-booking";
-import eCommerce from "./diagrams/e-commerce";
-import paymentSystem from "./diagrams/payment-system";
-
-export interface Topic {
-  slug: string;
-  title: string;
-  category:
-    | "Foundations"
-    | "Infrastructure"
-    | "Storage & Collaboration"
-    | "Social & Messaging"
-    | "Media & Search"
-    | "Data & Analytics"
-    | "Marketplace & Fintech";
-  summary: string;
-  tags: string[];
-  /** Diagram views shown as tabs: architecture first, then request flows and deep dives. */
-  diagrams: DiagramSpec[];
-  /** Markdown source, loaded from /docs/<slug>.md */
-  doc: string;
-}
+import fundamentals from "../diagrams/fundamentals";
+import networking from "../diagrams/networking";
+import coreConcepts from "../diagrams/core-concepts";
+import urlShortener from "../diagrams/url-shortener";
+import rateLimiter from "../diagrams/rate-limiter";
+import keyValueStore from "../diagrams/key-value-store";
+import distributedCache from "../diagrams/distributed-cache";
+import messageQueue from "../diagrams/message-queue";
+import jobScheduler from "../diagrams/job-scheduler";
+import fileSync from "../diagrams/file-sync";
+import collaborativeEditor from "../diagrams/collaborative-editor";
+import chatSystem from "../diagrams/chat-system";
+import newsFeed from "../diagrams/news-feed";
+import notificationSystem from "../diagrams/notification-system";
+import webCrawler from "../diagrams/web-crawler";
+import typeahead from "../diagrams/typeahead";
+import videoStreaming from "../diagrams/video-streaming";
+import proximityService from "../diagrams/proximity-service";
+import leaderboard from "../diagrams/leaderboard";
+import adClickAggregator from "../diagrams/ad-click-aggregator";
+import rideSharing from "../diagrams/ride-sharing";
+import ticketBooking from "../diagrams/ticket-booking";
+import eCommerce from "../diagrams/e-commerce";
+import paymentSystem from "../diagrams/payment-system";
 
 // Docs live at the repo root so they are readable on GitHub without running the app.
-const docs = import.meta.glob<string>("../docs/*.md", { query: "?raw", import: "default", eager: true });
+const docs = import.meta.glob<string>("../../docs/*.md", { query: "?raw", import: "default", eager: true });
 
 function doc(slug: string): string {
-  const source = docs[`../docs/${slug}.md`];
+  const source = docs[`../../docs/${slug}.md`];
   if (source === undefined) throw new Error(`Missing document docs/${slug}.md`);
   return source;
 }
 
-type TopicMeta = Omit<Topic, "doc">;
+type CuratedCategory =
+  | "Foundations"
+  | "Infrastructure"
+  | "Storage & Collaboration"
+  | "Social & Messaging"
+  | "Media & Search"
+  | "Data & Analytics"
+  | "Marketplace & Fintech";
+
+/** Curated metadata is stricter than `Topic`: a known category, and DSL diagrams only. */
+type TopicMeta = Omit<Topic, "doc" | "source" | "category" | "diagrams"> & {
+  category: CuratedCategory;
+  diagrams: DiagramSpec[];
+};
 
 // Sidebar order follows this list (categories appear in order of first use).
 const META: TopicMeta[] = [
@@ -251,6 +246,4 @@ const META: TopicMeta[] = [
   },
 ];
 
-export const TOPICS: Topic[] = META.map((m) => ({ ...m, doc: doc(m.slug) }));
-
-export const CATEGORIES = [...new Set(TOPICS.map((t) => t.category))];
+export const CURATED_TOPICS: Topic[] = META.map((m) => ({ ...m, source: "curated", doc: doc(m.slug) }));

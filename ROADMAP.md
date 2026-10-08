@@ -2,7 +2,7 @@
 
 Goal: let users **add their own problem statements**, let others **submit solutions** (write-up + Excalidraw diagram), **review and score** them, and show a **leaderboard**.
 
-Today the app is a static React + Vite site on Vercel. The 24 curated topics are code (`src/topics.ts`, `src/diagrams/*.ts`, `docs/*.md`), and the only state is per-browser diagram edits in `localStorage`. Each phase below ships something usable on its own, and the static site keeps working through all of them.
+Today the app is a static React + Vite site on Vercel. The 24 curated topics are code (`src/topics/curated.ts`, `src/diagrams/*.ts`, `docs/*.md`), and the only state is per-browser diagram edits in `localStorage`. Each phase below ships something usable on its own, and the static site keeps working through all of them.
 
 ---
 
@@ -164,10 +164,10 @@ Each phase ends with something deployable. Sizes: **S** ≈ a few evenings, **M*
 
 ### Phase 0: Prepare the frontend (S), no backend yet
 
-- [ ] Add **React Router** and move from `#/slug` to real routes (`/topics/:slug/:view?`, later `/problems/:slug`, `/leaderboard`, `/u/:handle`). Keep the old hash URLs working with a redirect. Add the SPA fallback to `vercel.json`.
-- [ ] Split `Topic` into a source-agnostic shape: `{ source: 'curated' | 'community', slug, title, …, doc, diagrams | scene }`. `DiagramView` should accept either a DSL `DiagramSpec[]` or a raw Excalidraw scene.
-- [ ] Add **TanStack Query** (unused for now) and a small `api/` client module.
-- [ ] Sidebar: group into **Curated** and **Community** sections.
+- [x] Add **React Router** and move from `#/slug` to real routes (`/topics/:slug/:view?`, later `/problems/:slug`, `/leaderboard`, `/u/:handle`). Keep the old hash URLs working with a redirect. Add the SPA fallback to `vercel.json`.
+- [x] Split `Topic` into a source-agnostic shape: `{ source: 'curated' | 'community', slug, title, …, doc, diagrams | scene }`. `DiagramView` should accept either a DSL `DiagramSpec[]` or a raw Excalidraw scene.
+- [x] Add **TanStack Query** (unused for now) and a small `api/` client module.
+- [x] Sidebar: group into **Curated** and **Community** sections.
 
 Done when: same UX as today, cleaner seams, real URLs.
 
