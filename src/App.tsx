@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import { parseLegacyHash, topicPath, useTopics } from "./topics";
 import { TopicPage } from "./pages/topic/TopicPage";
+import { EditTopicPage, NewTopicPage } from "./pages/myTopic/TopicFormPage";
 
 /** `/` → the first topic. Also upgrades the old `#/<slug>/<view>` links to real routes. */
 function Home() {
@@ -16,7 +17,10 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/topics/:slug/:view?" element={<TopicPage />} />
+      <Route path="/topics/:slug/:view?" element={<TopicPage source="curated" />} />
+      <Route path="/my/new" element={<NewTopicPage />} />
+      <Route path="/my/:slug/edit" element={<EditTopicPage />} />
+      <Route path="/my/:slug/:view?" element={<TopicPage source="local" />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

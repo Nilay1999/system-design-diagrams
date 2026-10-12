@@ -1,7 +1,6 @@
-import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 
-import { slugify, textOf } from "./text";
+import { createSlugger, outline, slugify } from "./text";
 
 describe("slugify", () => {
   it("matches the ids headings get in the docs", () => {
@@ -11,9 +10,31 @@ describe("slugify", () => {
   });
 });
 
-describe("textOf", () => {
-  it("flattens nested elements", () => {
-    const node = ["The ", createElement("code", null, "LRU"), " cache ", 2];
-    expect(textOf(node)).toBe("The LRU cache 2");
+describe("createSlugger", () => {
+  it("suffixes repeats", () => {
+    const slug = createSlugger();
+    expect(["API", "Data model", "API", "API"].map(slug)).toEqual(["api", "data-model", "api-1", "api-2"]);
+  });
+});
+
+describe("outline", () => {
+  it("lists ## and ### headings with unique ids, ignoring code fences", () => {
+    const doc = [
+      "# Title",
+      "## Requirements",
+      "### The `LRU` *cache*",
+      "```md",
+      "## not a heading",
+      "```",
+      "## [Linked](https://x) heading ##",
+      "## Requirements",
+      "#### too deep",
+    ].join("\n");
+    expect(outline(doc)).toEqual([
+      { depth: 2, title: "Requirements", id: "requirements" },
+      { depth: 3, title: "The LRU cache", id: "the-lru-cache" },
+      { depth: 2, title: "Linked heading", id: "linked-heading" },
+      { depth: 2, title: "Requirements", id: "requirements-1" },
+    ]);
   });
 });

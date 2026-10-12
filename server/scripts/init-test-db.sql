@@ -1,0 +1,1 @@
+CREATE DATABASE sdd_test;

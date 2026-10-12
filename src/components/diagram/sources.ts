@@ -4,7 +4,7 @@ import type { BinaryFiles } from "@excalidraw/excalidraw/types";
 
 import { DIAGRAM_FONT, MONO_FONT, type DiagramSpec } from "../../diagrams/dsl";
 import { iconFilesFor } from "../../diagrams/icon-files";
-import { isScene, type DiagramTab, type SceneSpec } from "../../topics";
+import { isScene, type SceneSpec, type ShippedTab } from "../../topics";
 
 /**
  * What the canvas needs from a diagram tab, whatever produced it. One implementation per
@@ -44,7 +44,7 @@ function sceneSource({ scene }: SceneSpec): DiagramSource {
   };
 }
 
-export const createDiagramSource = (tab: DiagramTab): DiagramSource => (isScene(tab) ? sceneSource(tab) : dslSource(tab));
+export const createDiagramSource = (tab: ShippedTab): DiagramSource => (isScene(tab) ? sceneSource(tab) : dslSource(tab));
 
 /** Resolves once the diagram fonts are usable (or failed to load; text then uses a fallback). */
 export async function diagramFontsReady(): Promise<void> {

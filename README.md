@@ -49,6 +49,20 @@ npm run preview    # serve the production build
 
 `npm install` also copies Excalidraw's fonts into `public/fonts` (see `scripts/copy-excalidraw-assets.mjs`), so diagrams render offline.
 
+### API (optional)
+
+The community API lives in `server/` (Go 1.26, Postgres). The site works without it; nothing calls
+it yet beyond the health checks. See [`server/README.md`](server/README.md).
+
+```bash
+docker compose up -d --wait postgres
+cd server && cp .env.example .env && set -a && . ./.env && set +a
+go run ./cmd/server migrate up
+go run ./cmd/server api          # http://localhost:8080/api/health
+```
+
+`npm run dev` proxies `/api` to `localhost:8080` (override with `API_ORIGIN`).
+
 ## Using the app
 
 - Pick a topic in the sidebar, or search by keyword (e.g. `cache`, `kafka`, `idempotency`).
@@ -60,6 +74,17 @@ npm run preview    # serve the production build
   - Export with **PNG** or **.excalidraw**. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
 - Toggle light/dark mode with the button in the top-right corner.
 
+### My Topics
+
+Write up your own problem and sketch it, no account needed. **+ New** in the sidebar opens a form
+(title, summary, category, tags, difficulty, and a Markdown problem statement with live preview).
+Each topic gets blank Excalidraw canvases; add, rename and delete tabs from the diagram pane.
+
+- Everything autosaves to this browser's IndexedDB and survives reloads. Nothing is uploaded.
+- **Export** downloads the topic (statement and every drawing) as one `.sdd-topic.json` file;
+  **Import** in the sidebar adds it back as a new topic, here or on another device.
+- My Topics live at `/my/<id>`, so a link to one only works in the browser that has it.
+
 ## Project structure
 
 ```text
@@ -68,34 +93,47 @@ src/
   diagrams/
     dsl.ts                  Diagram-as-code helpers: Diagram (grid layout) and Sequence (sequence diagrams)
     <topic>.ts              The diagram tabs for one topic
+  myTopics/                 My Topics: model + validation, IndexedDB repository, export/import
+                            file format, TanStack Query hooks
   topics/
     curated.ts              Curated topic metadata (+ doc + diagram tabs)
     catalog.ts              TopicCatalog: lookup, search, grouping, sidebar sections
     paths.ts                Topic URLs and legacy #/slug parsing
     index.ts                useTopics(): the one place new topic sources plug in
   components/
-    diagram/                Excalidraw canvas: source strategies (DSL / raw scene), saved-edit
-                            store, autosave hook, exporters, legend
+    diagram/                DiagramCanvas (toolbar + Excalidraw) under ShippedDiagram (curated:
+                            local edits + reset) and LocalDiagram (My Topics: autosaved, tabs);
+                            source strategies, saved-edit store, exporters, legend
+    myTopics/               Topic form, import button, edit/export/delete actions
     DocView.tsx             Markdown renderer with an on-this-page index
     Sidebar.tsx             Topic navigation (Curated / Community) and search
     Tabs.tsx                Reusable tab list (view switcher, diagram tabs)
   layout/AppShell.tsx       Top bar, sidebar drawer and main area shared by pages
   pages/topic/              Topic page and its view-mode (split / doc / diagram) hook
+  pages/myTopic/            New / edit topic pages
   theme/                    ThemeProvider + useTheme
   providers/                Router, TanStack Query and theme providers
   hooks/                    usePreference, useDebouncedCallback
   lib/                      Safe localStorage, download, text and viewport helpers
   api/                      Fetch client + TanStack Query setup for the community API
-  App.tsx                   Routes (/topics/:slug/:view?) and legacy #/slug redirects
+  App.tsx                   Routes (/topics/…, /my/…) and legacy #/slug redirects
 scripts/
   copy-excalidraw-assets.mjs
+server/                     Go API: openapi.yaml contract, cmd/server, internal/{api,httpapi,db,config}
+docker-compose.yml          Local Postgres for the API
 ```
 
 ## Tests
 
-`npm test` runs the unit tests (Vitest) for storage, routing paths, the topic catalog, saved
-diagram edits, and integrity checks on every curated topic (unique slugs and tabs, doc links that
-point at real tabs). CI runs them before each deploy.
+`npm test` runs the unit tests (Vitest): storage, debouncing, routing paths, the topic catalog,
+saved diagram edits, My Topics (validation, IndexedDB repository via `fake-indexeddb`, export/import
+format), Markdown rendering (heading ids, no raw HTML), and integrity checks on every curated topic
+(unique slugs and tabs, doc links that point at real tabs, page-index ids that match the rendered
+headings). CI runs them before each deploy.
+
+`cd server && go test ./...` runs the API tests. Set `TEST_DATABASE_URL` to also run the migration
+tests against Postgres (the `API` workflow does this in CI, plus `golangci-lint` and a check that the
+generated code matches `openapi.yaml`).
 
 ## Adding a topic
 

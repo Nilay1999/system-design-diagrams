@@ -1,0 +1,10 @@
+package: api
+output: api.gen.go
+generate:
+  chi-server: true
+  strict-server: true
+  models: true
+  embedded-spec: true
+output-options:
+  # Keep shared schemas (e.g. Error) that no operation references yet.
+  skip-prune: true

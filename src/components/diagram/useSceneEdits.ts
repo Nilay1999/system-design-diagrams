@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { hashElementsVersion, restoreElements } from "@excalidraw/excalidraw";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { restoreElements } from "@excalidraw/excalidraw";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
@@ -8,52 +8,33 @@ import { editStore } from "./editStore";
 const SAVE_DELAY_MS = 400;
 
 /**
- * Tracks the user's edits to one diagram: loads saved edits, saves changes (debounced) and resets.
- * Feed every canvas change to `onChange`; call `ignoreNextChange` before replacing the scene from code.
+ * The user's local edits on top of a shipped diagram: loads saved edits, saves edits
+ * (debounced) and resets. `generation` changes on reset; key the canvas on it to remount.
  */
 export function useSceneEdits(key: string, signature: string) {
   // Bumped on reset, only to force a fresh read of the store.
   const [generation, setGeneration] = useState(0);
   const [edited, setEdited] = useState(false);
-  // Version of the scene last seen; null means the next change is a load, not a user edit.
-  const baseline = useRef<number | null>(null);
 
   const saved = useMemo(() => {
     const elements = editStore.load(key, signature);
     return elements && restoreElements(elements, null);
   }, [key, signature, generation]);
 
-  useEffect(() => {
-    setEdited(saved !== null);
-    baseline.current = null;
-  }, [saved]);
-
-  const save = useDebouncedCallback((elements: readonly ExcalidrawElement[]) => {
+  const onEdit = useDebouncedCallback((elements: readonly ExcalidrawElement[]) => {
     editStore.save(key, signature, elements);
     setEdited(true);
   }, SAVE_DELAY_MS);
 
-  const onChange = useCallback(
-    (elements: readonly ExcalidrawElement[]) => {
-      const version = hashElementsVersion(elements);
-      if (baseline.current === null) baseline.current = version;
-      else if (version !== baseline.current) {
-        baseline.current = version;
-        save(elements);
-      }
-    },
-    [save],
-  );
-
-  const ignoreNextChange = useCallback(() => {
-    baseline.current = null;
-  }, []);
+  useEffect(() => setEdited(saved !== null), [saved]);
 
   const reset = useCallback(() => {
-    save.cancel();
+    onEdit.cancel();
     editStore.clear(key);
+    // Set directly: if nothing was saved when the tab loaded, `saved` stays null and the effect won't rerun.
+    setEdited(false);
     setGeneration((g) => g + 1);
-  }, [key, save]);
+  }, [key, onEdit]);
 
-  return { saved, edited, generation, onChange, ignoreNextChange, reset };
+  return { saved, edited, generation, onEdit, reset };
 }

@@ -2,26 +2,39 @@ import type { Topic, TopicSource } from "./types";
 
 /** Sidebar sections, in display order. */
 export const SOURCES: readonly { source: TopicSource; label: string; emptyText?: string }[] = [
+  { source: "local", label: "My Topics", emptyText: "Write up your own problem and sketch it on a blank canvas." },
   { source: "curated", label: "Curated" },
   { source: "community", label: "Community", emptyText: "Community problems will appear here." },
 ];
 
+/** Sources still loading, or that failed to load (with a message). */
+export type SourceStatus = Partial<Record<TopicSource, { state: "pending" } | { state: "error"; message: string }>>;
+
 /** Read-only lookups over a set of topics, whatever their source. */
 export class TopicCatalog {
-  private readonly bySlug: ReadonlyMap<string, Topic>;
+  private readonly byKey: ReadonlyMap<string, Topic>;
 
-  constructor(readonly topics: readonly Topic[]) {
-    if (topics.length === 0) throw new Error("A topic catalog needs at least one topic");
-    this.bySlug = new Map(topics.map((t) => [t.slug, t]));
+  /** `topics` must include at least one curated topic, the fallback when nothing is chosen. */
+  constructor(
+    readonly topics: readonly Topic[],
+    readonly status: SourceStatus = {},
+  ) {
+    if (!topics.some((t) => t.source === "curated")) throw new Error("A topic catalog needs a curated topic");
+    this.byKey = new Map(topics.map((t) => [`${t.source}/${t.slug}`, t]));
   }
 
   /** The topic shown when none is chosen. */
   get first(): Topic {
-    return this.topics[0];
+    return this.topics.find((t) => t.source === "curated")!;
   }
 
-  find(slug: string | undefined): Topic | undefined {
-    return slug === undefined ? undefined : this.bySlug.get(slug);
+  /** Slugs are unique within a source, not across sources. */
+  find(slug: string | undefined, source: TopicSource = "curated"): Topic | undefined {
+    return slug === undefined ? undefined : this.byKey.get(`${source}/${slug}`);
+  }
+
+  isPending(source: TopicSource): boolean {
+    return this.status[source]?.state === "pending";
   }
 
   /** Case-insensitive match on title, summary, category and tags. An empty query matches everything. */

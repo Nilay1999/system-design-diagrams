@@ -1,22 +1,27 @@
 import { Suspense, lazy, useCallback, useEffect } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router";
 
-import { isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics";
+import { isNonDefaultView, topicPath, useTopics, type Topic, type TopicSource } from "../../topics";
 import { AppShell } from "../../layout/AppShell";
 import { DocView } from "../../components/DocView";
 import { Tabs } from "../../components/Tabs";
+import { MyTopicActions } from "../../components/myTopics/MyTopicActions";
 import { VIEW_MODE_TABS, useViewMode } from "./useViewMode";
 
 // Excalidraw is by far the heaviest dependency; only load it when a diagram is shown.
 const DiagramView = lazy(() => import("../../components/diagram/DiagramView").then((m) => ({ default: m.DiagramView })));
 
-/** `/topics/:slug/:view?`. Unknown topics go to the first one; unknown or default tabs to the bare topic URL. */
-export function TopicPage() {
+/**
+ * `/topics/:slug/:view?` (curated) and `/my/:slug/:view?` (My Topics). Unknown topics go to the
+ * first one; unknown or default tabs to the bare topic URL.
+ */
+export function TopicPage({ source }: { source: TopicSource }) {
   const { slug, view } = useParams();
   const { search } = useLocation();
   const catalog = useTopics();
-  const topic = catalog.find(slug);
+  const topic = catalog.find(slug, source);
 
+  if (!topic && catalog.isPending(source)) return <AppShell heading={null}>{null}</AppShell>;
   if (!topic) return <Navigate to={{ pathname: topicPath(catalog.first), search }} replace />;
   if (view !== undefined && !isNonDefaultView(topic, view))
     return <Navigate to={{ pathname: topicPath(topic), search }} replace />;
@@ -30,8 +35,12 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
 
   useEffect(() => {
     document.title = `${topic.title} · System Design Diagrams`;
+  }, [topic.title]);
+
+  // Only on moving to another topic: My Topics objects are rebuilt whenever they're saved.
+  useEffect(() => {
     document.querySelector(".doc-pane")?.scrollTo({ top: 0 });
-  }, [topic]);
+  }, [topic.source, topic.slug]);
 
   const selectDiagram = useCallback(
     // Keep the tab in the URL so it can be shared, without adding a history entry per click.
@@ -66,6 +75,7 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
             topic={topic}
             activeDiagram={mode === "doc" ? undefined : (diagramId ?? topic.diagrams[0].id)}
             onOpenDiagram={openDiagram}
+            actions={topic.source === "local" ? <MyTopicActions topic={topic} /> : undefined}
           />
         </div>
       )}

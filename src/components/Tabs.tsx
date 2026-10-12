@@ -13,23 +13,28 @@ interface Props<T extends string> {
   label: string;
   /** Visual style: `segmented` (pill group) or `diagram-tabs` (folder tabs). */
   className: string;
+  /** Rendered after the tabs, e.g. an "add tab" button. */
+  trailing?: ReactNode;
 }
 
 /** A row of mutually exclusive buttons, exposed to assistive tech as a tab list. */
-export function Tabs<T extends string>({ items, value, onChange, label, className }: Props<T>) {
+export function Tabs<T extends string>({ items, value, onChange, label, className, trailing }: Props<T>) {
   return (
-    <div className={className} role="tablist" aria-label={label}>
-      {items.map((item) => (
-        <button
-          key={item.id}
-          role="tab"
-          aria-selected={item.id === value}
-          className={item.id === value ? "on" : ""}
-          onClick={() => onChange(item.id)}
-        >
-          {item.label}
-        </button>
-      ))}
+    <div className={className}>
+      <div className="tab-list" role="tablist" aria-label={label}>
+        {items.map((item) => (
+          <button
+            key={item.id}
+            role="tab"
+            aria-selected={item.id === value}
+            className={item.id === value ? "on" : ""}
+            onClick={() => onChange(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      {trailing}
     </div>
   );
 }

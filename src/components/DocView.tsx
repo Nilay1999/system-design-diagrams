@@ -1,9 +1,9 @@
-import { useMemo } from "react";
-import Markdown, { type Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useMemo, type ReactNode } from "react";
+import type { Components } from "react-markdown";
 
-import type { Topic } from "../topics";
-import { slugify, textOf } from "../lib/text";
+import { DIFFICULTY_LABELS, type Topic } from "../topics";
+import { outline } from "../lib/text";
+import { MarkdownContent } from "./MarkdownContent";
 
 /** Links of the form `#diagram/<view-id>` open that diagram tab instead of navigating. */
 const DIAGRAM_LINK = /^#diagram\/([\w-]+)$/;
@@ -13,13 +13,13 @@ interface Props {
   /** Id of the diagram tab currently on screen, or undefined when the diagram pane is hidden. */
   activeDiagram?: string;
   onOpenDiagram: (id?: string) => void;
+  /** Controls shown beside the tags, e.g. edit and export for My Topics. */
+  actions?: ReactNode;
 }
 
-export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
+export function DocView({ topic, activeDiagram, onOpenDiagram, actions }: Props) {
   const components: Components = useMemo(
     () => ({
-      h2: ({ children }) => <h2 id={slugify(textOf(children))}>{children}</h2>,
-      h3: ({ children }) => <h3 id={slugify(textOf(children))}>{children}</h3>,
       a: ({ href, children }) => {
         const view = href?.match(DIAGRAM_LINK)?.[1];
         if (view) {
@@ -46,14 +46,7 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
     [onOpenDiagram],
   );
 
-  const toc = useMemo(
-    () =>
-      [...topic.doc.matchAll(/^## (.+)$/gm)].map((m) => {
-        const title = m[1].replace(/[`*_]/g, "").trim();
-        return { title, id: slugify(title) };
-      }),
-    [topic.doc],
-  );
+  const toc = useMemo(() => outline(topic.doc).filter((h) => h.depth === 2), [topic.doc]);
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -61,11 +54,15 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
     <article className="doc">
       <div className="doc-tags">
         <span className="category">{topic.category}</span>
+        {topic.difficulty && (
+          <span className={`tag difficulty difficulty-${topic.difficulty}`}>{DIFFICULTY_LABELS[topic.difficulty]}</span>
+        )}
         {topic.tags.map((t) => (
           <span key={t} className="tag">
             {t}
           </span>
         ))}
+        {actions && <div className="doc-actions">{actions}</div>}
       </div>
       {toc.length > 0 && (
         <nav className="toc" aria-label="On this page">
@@ -93,11 +90,7 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
           </div>
         </nav>
       )}
-      <div className="markdown">
-        <Markdown remarkPlugins={[remarkGfm]} components={components}>
-          {topic.doc}
-        </Markdown>
-      </div>
+      <MarkdownContent components={components}>{topic.doc}</MarkdownContent>
     </article>
   );
 }

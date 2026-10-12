@@ -1,0 +1,59 @@
+name: API
+
+on:
+  push:
+    branches: [main]
+    paths: ["server/**", ".github/workflows/api.yml"]
+  pull_request:
+    paths: ["server/**", ".github/workflows/api.yml"]
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: server
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: sdd
+          POSTGRES_PASSWORD: sdd
+          POSTGRES_DB: sdd_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sdd -d sdd_test"
+          --health-interval 2s --health-timeout 3s --health-retries 15
+    env:
+      TEST_DATABASE_URL: postgres://sdd:sdd@localhost:5432/sdd_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      # Fails if openapi.yaml changed without regenerating the Go code.
+      - name: Generated code is up to date
+        run: |
+          go generate ./...
+          git diff --exit-code -- .
+
+      - run: go vet ./...
+
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.4
+          working-directory: server
+
+      - run: go test -race ./...
+
+      - name: Build image
+        run: docker build --build-arg VERSION=${{ github.sha }} -t sdd-api .

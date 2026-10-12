@@ -6,3 +6,6 @@ dist
 public/fonts
 *.tsbuildinfo
 .vercel
+
+# API
+server/.env

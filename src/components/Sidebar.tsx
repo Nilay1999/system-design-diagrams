@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 
-import { SOURCES, groupByCategory, topicPath, useTopics, type Topic } from "../topics";
+import { NEW_TOPIC_PATH, SOURCES, groupByCategory, sameTopic, topicPath, useTopics, type Topic } from "../topics";
+import { ImportTopicButton } from "./myTopics/ImportTopicButton";
 
 interface Props {
   current?: Topic;
@@ -26,19 +27,36 @@ export function Sidebar({ current, onNavigate }: Props) {
       />
       {SOURCES.map(({ source, label, emptyText }) => {
         const topics = matches.filter((t) => t.source === source);
+        const status = catalog.status[source];
         // While searching, hide sections with no hits; otherwise show a section if it can explain being empty.
         if (topics.length === 0 && (query || !emptyText)) return null;
         return (
           <section key={source} className="source-section">
-            <h3>{label}</h3>
-            {topics.length === 0 && <p className="empty">{emptyText}</p>}
+            <div className="source-heading">
+              <h3>{label}</h3>
+              {source === "local" && (
+                <div className="source-actions">
+                  <Link className="button small primary" to={NEW_TOPIC_PATH} onClick={onNavigate}>
+                    + New
+                  </Link>
+                  <ImportTopicButton className="button small" onImported={onNavigate} />
+                </div>
+              )}
+            </div>
+            {status?.state === "pending" && <p className="empty">Loading…</p>}
+            {status?.state === "error" && (
+              <p className="empty" role="alert">
+                {status.message}
+              </p>
+            )}
+            {topics.length === 0 && !status && <p className="empty">{emptyText}</p>}
             {groupByCategory(topics).map(([category, items]) => (
               <section key={category}>
                 <h4>{category}</h4>
                 <ul>
                   {items.map((t) => (
                     <li key={t.slug}>
-                      <TopicLink topic={t} active={t === current} onClick={onNavigate} />
+                      <TopicLink topic={t} active={sameTopic(t, current)} onClick={onNavigate} />
                     </li>
                   ))}
                 </ul>

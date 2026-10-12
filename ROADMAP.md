@@ -175,22 +175,22 @@ Done when: same UX as today, cleaner seams, real URLs.
 
 The originally requested feature, without a backend:
 
-- [ ] **"New topic"** form: title, summary, category, tags, difficulty, problem statement (Markdown with live preview via the existing `react-markdown`).
-- [ ] Blank Excalidraw canvas per topic (reuse `DiagramView`), with multiple tabs allowed.
-- [ ] Store in **IndexedDB** (scenes outgrow the ~5 MB `localStorage` quota), for example via `idb-keyval`.
-- [ ] **Export / import** a topic as one `.json` file (statement + scenes), so it can be shared before a backend exists.
-- [ ] Shown under **My Topics** in the sidebar.
+- [x] **"New topic"** form: title, summary, category, tags, difficulty, problem statement (Markdown with live preview via the existing `react-markdown`).
+- [x] Blank Excalidraw canvas per topic (reuse `DiagramView`), with multiple tabs allowed.
+- [x] Store in **IndexedDB** (scenes outgrow the ~5 MB `localStorage` quota), for example via `idb-keyval`.
+- [x] **Export / import** a topic as one `.json` file (statement + scenes), so it can be shared before a backend exists.
+- [x] Shown under **My Topics** in the sidebar.
 
 Done when: a user can create, edit, delete, export and import their own topics, and they survive reloads. The editor UI is the same one Phase 4 uses for solutions.
 
 ### Phase 2: Backend foundation (M)
 
-- [ ] `server/` Go module (keep the web app at the repo root to avoid churn; move to `apps/web` + `apps/api` later if it grows).
-- [ ] `openapi.yaml` as the contract, with codegen for Go handlers and TS types.
-- [ ] Postgres + migrations, `sqlc` queries, `docker-compose.yml` for local Postgres.
-- [ ] Health/readiness endpoints, structured logging (`slog`), request IDs, graceful shutdown, config from env.
-- [ ] CI: `go vet`, `golangci-lint`, `go test` against a real Postgres (testcontainers or a service container), plus the existing web build.
-- [ ] Deploy the API (Fly.io/Render) and add the Vercel `/api/*` rewrite.
+- [x] `server/` Go module (keep the web app at the repo root to avoid churn; move to `apps/web` + `apps/api` later if it grows).
+- [x] `openapi.yaml` as the contract, with codegen for Go handlers and TS types.
+- [x] Postgres + migrations (goose, embedded), `docker-compose.yml` for local Postgres. `sqlc` is deferred to Phase 3, when the first real tables and queries land.
+- [x] Health/readiness endpoints, structured logging (`slog`), request IDs, graceful shutdown, config from env.
+- [x] CI: `go vet`, `golangci-lint`, `go test` against a real Postgres (service container), plus the existing web build.
+- [ ] Deploy the API (Fly.io/Render) and add the Vercel `/api/*` rewrite. A `server/Dockerfile` is ready; this needs a hosting account and the API's hostname.
 
 Done when: `GET /api/health` works through the Vercel domain, and CI runs on both apps.
 

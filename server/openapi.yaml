@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: System Design Diagrams API
+  version: 0.1.0
+  description: |
+    Community API for problems, solutions, reviews and the leaderboard.
+    Served same-origin under `/api` (a Vercel rewrite in production).
+servers:
+  - url: /api
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness probe
+      description: Returns 200 while the process is up. Does not touch dependencies.
+      tags: [ops]
+      responses:
+        "200":
+          description: The process is alive.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /ready:
+    get:
+      operationId: getReady
+      summary: Readiness probe
+      description: Returns 200 when the API can serve traffic (database reachable, not shutting down), 503 otherwise.
+      tags: [ops]
+      responses:
+        "200":
+          description: Ready to serve traffic.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
+        "503":
+          description: Not ready; see `checks` for which dependency failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
+
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, version]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        version:
+          type: string
+          description: Build version (git SHA in deployed builds).
+
+    Readiness:
+      type: object
+      required: [status, checks]
+      properties:
+        status:
+          type: string
+          enum: [ok, unavailable]
+        checks:
+          type: object
+          description: Result of each dependency check, keyed by name.
+          additionalProperties:
+            type: string
+
+    Error:
+      type: object
+      description: Body of every non-2xx response.
+      required: [message]
+      properties:
+        message:
+          type: string
+        requestId:
+          type: string
