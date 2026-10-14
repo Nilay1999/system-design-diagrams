@@ -577,6 +577,178 @@ button {
   filter: invert(93%) hue-rotate(180deg);
 }
 
+/* ---------- Account ---------- */
+
+.user-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-button {
+  display: flex;
+  border: 0;
+  padding: 0;
+  background: none;
+  border-radius: 50%;
+}
+
+.avatar-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.avatar {
+  display: block;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar-fallback {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.menu-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  min-width: 200px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  display: grid;
+}
+
+.menu-popover a,
+.menu-popover button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.menu-popover a:hover,
+.menu-popover button:hover {
+  background: var(--bg-muted);
+}
+
+.menu-identity {
+  display: grid;
+  padding: 6px 10px 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.menu-identity span {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.signin-error {
+  position: fixed;
+  top: calc(var(--topbar-h) + 12px);
+  right: 16px;
+  left: auto;
+  z-index: 40;
+  max-width: min(420px, calc(100vw - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.signin-error button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.profile {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 16px;
+}
+
+.profile-details h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-handle {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+}
+
+.role-badge {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.profile-stats {
+  display: flex;
+  gap: 32px;
+  margin: 20px 0 0;
+}
+
+.profile-stats dt {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profile-stats dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+@media (max-width: 800px) {
+  .profile {
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 16px;
+  }
+}
+
 /* ---------- Shared controls ---------- */
 
 .button {

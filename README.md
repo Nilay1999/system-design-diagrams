@@ -61,7 +61,9 @@ go run ./cmd/server migrate up
 go run ./cmd/server api          # http://localhost:8080/api/health
 ```
 
-`npm run dev` proxies `/api` to `localhost:8080` (override with `API_ORIGIN`).
+`npm run dev` proxies `/api` to `localhost:8080` (override with `API_ORIGIN`). With the API running,
+the top bar shows **Sign in with GitHub** (it needs a GitHub OAuth app; see `server/README.md`) and
+profiles live at `/u/<handle>`. Without the API, the account UI stays hidden.
 
 ## Using the app
 
@@ -107,6 +109,7 @@ src/
     myTopics/               Topic form, import button, edit/export/delete actions
     DocView.tsx             Markdown renderer with an on-this-page index
     Sidebar.tsx             Topic navigation (Curated / Community) and search
+    UserMenu.tsx            Sign in with GitHub / avatar menu in the top bar
     Tabs.tsx                Reusable tab list (view switcher, diagram tabs)
   layout/AppShell.tsx       Top bar, sidebar drawer and main area shared by pages
   pages/topic/              Topic page and its view-mode (split / doc / diagram) hook
@@ -115,7 +118,9 @@ src/
   providers/                Router, TanStack Query and theme providers
   hooks/                    usePreference, useDebouncedCallback
   lib/                      Safe localStorage, download, text and viewport helpers
-  api/                      Fetch client + TanStack Query setup for the community API
+  api/                      Fetch client, TanStack Query setup, auth hooks, and schema.d.ts
+                            (types generated from server/openapi.yaml)
+  pages/user/               Community profile (/u/:handle)
   App.tsx                   Routes (/topics/…, /my/…) and legacy #/slug redirects
 scripts/
   copy-excalidraw-assets.mjs
@@ -131,7 +136,7 @@ format), Markdown rendering (heading ids, no raw HTML), and integrity checks on 
 (unique slugs and tabs, doc links that point at real tabs, page-index ids that match the rendered
 headings). CI runs them before each deploy.
 
-`cd server && go test ./...` runs the API tests. Set `TEST_DATABASE_URL` to also run the migration
+`cd server && go test ./...` runs the API tests, including the full sign-in flow against a fake GitHub. Set `TEST_DATABASE_URL` to also run the migration
 tests against Postgres (the `API` workflow does this in CI, plus `golangci-lint` and a check that the
 generated code matches `openapi.yaml`).
 

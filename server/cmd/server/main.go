@@ -19,7 +19,9 @@ import (
 
 	"github.com/Nilay1999/system-design-diagrams/server/internal/config"
 	"github.com/Nilay1999/system-design-diagrams/server/internal/db"
+	"github.com/Nilay1999/system-design-diagrams/server/internal/github"
 	"github.com/Nilay1999/system-design-diagrams/server/internal/httpapi"
+	"github.com/Nilay1999/system-design-diagrams/server/internal/store"
 )
 
 // version is set at build time with -ldflags "-X main.version=<sha>".
@@ -74,7 +76,22 @@ func serveAPI(ctx context.Context, cfg config.Config, logger *slog.Logger) error
 	}
 	defer pool.Close()
 
-	api := httpapi.New(logger, pool, buildVersion())
+	deps := httpapi.Deps{
+		Logger:         logger,
+		DB:             pool,
+		Store:          store.New(pool),
+		PublicURL:      cfg.PublicURL,
+		AdminGitHubIDs: cfg.AdminGitHubIDs,
+		SessionTTL:     cfg.SessionTTL,
+		Version:        buildVersion(),
+	}
+	if cfg.GitHubEnabled() {
+		callback := cfg.PublicURL.JoinPath("/api/auth/github/callback").String()
+		deps.GitHub = github.New(cfg.GitHubClientID, cfg.GitHubClientSecret, callback, nil)
+	} else {
+		logger.Warn("GITHUB_CLIENT_ID is not set: sign-in is disabled")
+	}
+	api := httpapi.New(deps)
 	srv := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           api.Handler(),

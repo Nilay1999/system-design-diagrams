@@ -9,14 +9,17 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
+	"github.com/oapi-codegen/runtime"
 )
 
 // Defines values for HealthStatus.
@@ -52,6 +55,27 @@ func (e ReadinessStatus) Valid() bool {
 	}
 }
 
+// Defines values for UserRole.
+const (
+	UserRoleAdmin     UserRole = "admin"
+	UserRoleModerator UserRole = "moderator"
+	UserRoleUser      UserRole = "user"
+)
+
+// Valid indicates whether the value is a known member of the UserRole enum.
+func (e UserRole) Valid() bool {
+	switch e {
+	case UserRoleAdmin:
+		return true
+	case UserRoleModerator:
+		return true
+	case UserRoleUser:
+		return true
+	default:
+		return false
+	}
+}
+
 // Error Body of every non-2xx response.
 type Error struct {
 	Message   string  `json:"message"`
@@ -79,19 +103,83 @@ type Readiness struct {
 // ReadinessStatus defines model for Readiness.Status.
 type ReadinessStatus string
 
+// User defines model for User.
+type User struct {
+	AvatarUrl string    `json:"avatarUrl"`
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Handle GitHub login.
+	Handle     string   `json:"handle"`
+	Name       string   `json:"name"`
+	Reputation int32    `json:"reputation"`
+	Role       UserRole `json:"role"`
+}
+
+// UserRole defines model for User.Role.
+type UserRole string
+
+// GithubCallbackParams defines parameters for GithubCallback.
+type GithubCallbackParams struct {
+	Code  *string `form:"code,omitempty" json:"code,omitempty"`
+	State *string `form:"state,omitempty" json:"state,omitempty"`
+
+	// Error Set by GitHub when the user declines.
+	Error    *string `form:"error,omitempty" json:"error,omitempty"`
+	SddOauth *string `form:"sdd_oauth,omitempty" json:"sdd_oauth,omitempty"`
+}
+
+// GithubLoginParams defines parameters for GithubLogin.
+type GithubLoginParams struct {
+	// ReturnTo Same-site path to land on after signing in. Anything else is replaced with `/`.
+	ReturnTo *string `form:"returnTo,omitempty" json:"returnTo,omitempty"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// GithubCallback Finish GitHub sign-in
+	// (GET /auth/github/callback)
+	GithubCallback(w http.ResponseWriter, r *http.Request, params GithubCallbackParams)
+	// GithubLogin Start GitHub sign-in
+	// (GET /auth/github/login)
+	GithubLogin(w http.ResponseWriter, r *http.Request, params GithubLoginParams)
+	// Logout Sign out
+	// (POST /auth/logout)
+	Logout(w http.ResponseWriter, r *http.Request)
 	// GetHealth Liveness probe
 	// (GET /health)
 	GetHealth(w http.ResponseWriter, r *http.Request)
+	// GetMe The signed-in user
+	// (GET /me)
+	GetMe(w http.ResponseWriter, r *http.Request)
 	// GetReady Readiness probe
 	// (GET /ready)
 	GetReady(w http.ResponseWriter, r *http.Request)
+	// GetUser A user's public profile
+	// (GET /users/{handle})
+	GetUser(w http.ResponseWriter, r *http.Request, handle string)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// GithubCallback Finish GitHub sign-in
+// (GET /auth/github/callback)
+func (_ Unimplemented) GithubCallback(w http.ResponseWriter, r *http.Request, params GithubCallbackParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GithubLogin Start GitHub sign-in
+// (GET /auth/github/login)
+func (_ Unimplemented) GithubLogin(w http.ResponseWriter, r *http.Request, params GithubLoginParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Logout Sign out
+// (POST /auth/logout)
+func (_ Unimplemented) Logout(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // GetHealth Liveness probe
 // (GET /health)
@@ -99,9 +187,21 @@ func (_ Unimplemented) GetHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GetMe The signed-in user
+// (GET /me)
+func (_ Unimplemented) GetMe(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetReady Readiness probe
 // (GET /ready)
 func (_ Unimplemented) GetReady(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetUser A user's public profile
+// (GET /users/{handle})
+func (_ Unimplemented) GetUser(w http.ResponseWriter, r *http.Request, handle string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -113,6 +213,127 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GithubCallback operation middleware
+func (siw *ServerInterfaceWrapper) GithubCallback(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GithubCallbackParams
+
+	// ------------- Optional query parameter "code" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "code", r.URL.Query(), &params.Code, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "error" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "error", r.URL.Query(), &params.Error, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "error"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "error", Err: err})
+		}
+		return
+	}
+
+	{
+		var cookie *http.Cookie
+
+		if cookie, err = r.Cookie("sdd_oauth"); err == nil {
+			var value string
+			err = runtime.BindStyledParameterWithOptions("simple", "sdd_oauth", cookie.Value, &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationCookie, Explode: true, Required: false, Type: "string", Format: ""})
+			if err != nil {
+				siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sdd_oauth", Err: err})
+				return
+			}
+			params.SddOauth = &value
+
+		}
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GithubCallback(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GithubLogin operation middleware
+func (siw *ServerInterfaceWrapper) GithubLogin(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GithubLoginParams
+
+	// ------------- Optional query parameter "returnTo" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "returnTo", r.URL.Query(), &params.ReturnTo, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "returnTo"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "returnTo", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GithubLogin(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// Logout operation middleware
+func (siw *ServerInterfaceWrapper) Logout(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Logout(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetHealth operation middleware
 func (siw *ServerInterfaceWrapper) GetHealth(w http.ResponseWriter, r *http.Request) {
@@ -128,11 +349,51 @@ func (siw *ServerInterfaceWrapper) GetHealth(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
+// GetMe operation middleware
+func (siw *ServerInterfaceWrapper) GetMe(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetMe(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetReady operation middleware
 func (siw *ServerInterfaceWrapper) GetReady(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetReady(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetUser operation middleware
+func (siw *ServerInterfaceWrapper) GetUser(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "handle" -------------
+	var handle string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "handle", chi.URLParam(r, "handle"), &handle, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "handle", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetUser(w, r, handle)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -261,8 +522,84 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ready", wrapper.GetReady)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/auth/github/login", wrapper.GithubLogin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/auth/github/callback", wrapper.GithubCallback)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/auth/logout", wrapper.Logout)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/me", wrapper.GetMe)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/users/{handle}", wrapper.GetUser)
+	})
 
 	return r
+}
+
+type GithubCallbackRequestObject struct {
+	Params GithubCallbackParams
+}
+
+type GithubCallbackResponseObject interface {
+	VisitGithubCallbackResponse(w http.ResponseWriter) error
+}
+
+type GithubCallback302Response struct {
+}
+
+func (response GithubCallback302Response) VisitGithubCallbackResponse(w http.ResponseWriter) error {
+	w.WriteHeader(302)
+	return nil
+}
+
+type GithubLoginRequestObject struct {
+	Params GithubLoginParams
+}
+
+type GithubLoginResponseObject interface {
+	VisitGithubLoginResponse(w http.ResponseWriter) error
+}
+
+type GithubLogin302Response struct {
+}
+
+func (response GithubLogin302Response) VisitGithubLoginResponse(w http.ResponseWriter) error {
+	w.WriteHeader(302)
+	return nil
+}
+
+type GithubLogin503JSONResponse Error
+
+func (response GithubLogin503JSONResponse) VisitGithubLoginResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LogoutRequestObject struct {
+}
+
+type LogoutResponseObject interface {
+	VisitLogoutResponse(w http.ResponseWriter) error
+}
+
+type Logout204Response struct {
+}
+
+func (response Logout204Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
 }
 
 type GetHealthRequestObject struct {
@@ -282,6 +619,41 @@ func (response GetHealth200JSONResponse) VisitGetHealthResponse(w http.ResponseW
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMeRequestObject struct {
+}
+
+type GetMeResponseObject interface {
+	VisitGetMeResponse(w http.ResponseWriter) error
+}
+
+type GetMe200JSONResponse User
+
+func (response GetMe200JSONResponse) VisitGetMeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMe401JSONResponse Error
+
+func (response GetMe401JSONResponse) VisitGetMeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -321,14 +693,65 @@ func (response GetReady503JSONResponse) VisitGetReadyResponse(w http.ResponseWri
 	return err
 }
 
+type GetUserRequestObject struct {
+	Handle string `json:"handle"`
+}
+
+type GetUserResponseObject interface {
+	VisitGetUserResponse(w http.ResponseWriter) error
+}
+
+type GetUser200JSONResponse User
+
+func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetUser404JSONResponse Error
+
+func (response GetUser404JSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// GithubCallback Finish GitHub sign-in
+	// (GET /auth/github/callback)
+	GithubCallback(ctx context.Context, request GithubCallbackRequestObject) (GithubCallbackResponseObject, error)
+	// GithubLogin Start GitHub sign-in
+	// (GET /auth/github/login)
+	GithubLogin(ctx context.Context, request GithubLoginRequestObject) (GithubLoginResponseObject, error)
+	// Logout Sign out
+	// (POST /auth/logout)
+	Logout(ctx context.Context, request LogoutRequestObject) (LogoutResponseObject, error)
 	// GetHealth Liveness probe
 	// (GET /health)
 	GetHealth(ctx context.Context, request GetHealthRequestObject) (GetHealthResponseObject, error)
+	// GetMe The signed-in user
+	// (GET /me)
+	GetMe(ctx context.Context, request GetMeRequestObject) (GetMeResponseObject, error)
 	// GetReady Readiness probe
 	// (GET /ready)
 	GetReady(ctx context.Context, request GetReadyRequestObject) (GetReadyResponseObject, error)
+	// GetUser A user's public profile
+	// (GET /users/{handle})
+	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -370,6 +793,82 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
+// GithubCallback operation middleware
+func (sh *strictHandler) GithubCallback(w http.ResponseWriter, r *http.Request, params GithubCallbackParams) {
+	var request GithubCallbackRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GithubCallback(ctx, request.(GithubCallbackRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GithubCallback")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GithubCallbackResponseObject); ok {
+		if err := validResponse.VisitGithubCallbackResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GithubLogin operation middleware
+func (sh *strictHandler) GithubLogin(w http.ResponseWriter, r *http.Request, params GithubLoginParams) {
+	var request GithubLoginRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GithubLogin(ctx, request.(GithubLoginRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GithubLogin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GithubLoginResponseObject); ok {
+		if err := validResponse.VisitGithubLoginResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Logout operation middleware
+func (sh *strictHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	var request LogoutRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.Logout(ctx, request.(LogoutRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Logout")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(LogoutResponseObject); ok {
+		if err := validResponse.VisitLogoutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetHealth operation middleware
 func (sh *strictHandler) GetHealth(w http.ResponseWriter, r *http.Request) {
 	var request GetHealthRequestObject
@@ -387,6 +886,30 @@ func (sh *strictHandler) GetHealth(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetHealthResponseObject); ok {
 		if err := validResponse.VisitGetHealthResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMe operation middleware
+func (sh *strictHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	var request GetMeRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMe(ctx, request.(GetMeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMe")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetMeResponseObject); ok {
+		if err := validResponse.VisitGetMeResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -418,23 +941,62 @@ func (sh *strictHandler) GetReady(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetUser operation middleware
+func (sh *strictHandler) GetUser(w http.ResponseWriter, r *http.Request, handle string) {
+	var request GetUserRequestObject
+
+	request.Handle = handle
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUser(ctx, request.(GetUserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUser")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetUserResponseObject); ok {
+		if err := validResponse.VisitGetUserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

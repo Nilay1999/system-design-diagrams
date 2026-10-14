@@ -8,8 +8,10 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 type fakeDB struct{ err error }
@@ -19,7 +21,14 @@ func (f fakeDB) Ping(context.Context) error { return f.err }
 func newTestServer(db Pinger) (*Server, *bytes.Buffer) {
 	var logs bytes.Buffer
 	logger := slog.New(slog.NewJSONHandler(&logs, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	return New(logger, db, "test-sha"), &logs
+	return New(Deps{
+		Logger:     logger,
+		DB:         db,
+		Store:      newFakeStore(),
+		PublicURL:  &url.URL{Scheme: "https", Host: "sdd.example"},
+		SessionTTL: 30 * 24 * time.Hour,
+		Version:    "test-sha",
+	}), &logs
 }
 
 func do(t *testing.T, h http.Handler, method, path string, header http.Header) (*httptest.ResponseRecorder, map[string]any) {
@@ -115,7 +124,7 @@ func TestRequestID(t *testing.T) {
 
 func TestRecoverReturnsJSON500(t *testing.T) {
 	s, logs := newTestServer(fakeDB{})
-	h := withRequestID(withRecover(s.logger)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+	h := withRequestID(withRecover(s.Logger)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 		panic("boom")
 	})))
 	rec, body := do(t, h, http.MethodGet, "/x", nil)

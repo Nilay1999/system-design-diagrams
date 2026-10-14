@@ -53,7 +53,8 @@ jobs:
           version: v2.4
           working-directory: server
 
-      - run: go test -race ./...
+      # -p 1: the db and store tests share (and reset) one database.
+      - run: go test -race -p 1 ./...
 
       - name: Build image
         run: docker build --build-arg VERSION=${{ github.sha }} -t sdd-api .

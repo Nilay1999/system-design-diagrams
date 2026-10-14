@@ -2,12 +2,13 @@ import { useCallback, useState, type ReactNode } from "react";
 
 import { Sidebar } from "../components/Sidebar";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { UserMenu } from "../components/UserMenu";
 import type { Topic } from "../topics";
 
 interface Props {
   /** Page title area in the top bar. */
   heading: ReactNode;
-  /** Page-specific controls, placed before the theme toggle. */
+  /** Page-specific controls, placed before the theme toggle and account menu. */
   actions?: ReactNode;
   /** Topic highlighted in the sidebar, if any. */
   current?: Topic;
@@ -34,6 +35,7 @@ export function AppShell({ heading, actions, current, mainClassName = "", childr
         {heading}
         {actions}
         <ThemeToggle />
+        <UserMenu />
       </header>
 
       <Sidebar current={current} onNavigate={closeMenu} />

@@ -43,7 +43,111 @@ paths:
               schema:
                 $ref: "#/components/schemas/Readiness"
 
+  /auth/github/login:
+    get:
+      operationId: githubLogin
+      summary: Start GitHub sign-in
+      description: |
+        Redirects to GitHub's consent page. A short-lived cookie holds the OAuth `state`, the
+        PKCE verifier and where to return afterwards.
+      tags: [auth]
+      parameters:
+        - name: returnTo
+          in: query
+          description: Same-site path to land on after signing in. Anything else is replaced with `/`.
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect to GitHub.
+        "503":
+          description: GitHub sign-in isn't configured on this server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/github/callback:
+    get:
+      operationId: githubCallback
+      summary: Finish GitHub sign-in
+      description: |
+        GitHub redirects here. On success a session cookie is set and the browser goes to
+        `returnTo`; on failure it goes there with `?signInError=<denied|state|github|server>`.
+      tags: [auth]
+      parameters:
+        - { name: code, in: query, schema: { type: string } }
+        - { name: state, in: query, schema: { type: string } }
+        - { name: error, in: query, description: Set by GitHub when the user declines., schema: { type: string } }
+        - { name: sdd_oauth, in: cookie, schema: { type: string } }
+      responses:
+        "302":
+          description: Redirect back into the app.
+
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Sign out
+      description: Deletes the current session (if any) and clears the cookie.
+      tags: [auth]
+      responses:
+        "204":
+          description: Signed out.
+
+  /me:
+    get:
+      operationId: getMe
+      summary: The signed-in user
+      tags: [users]
+      security:
+        - sessionCookie: []
+      responses:
+        "200":
+          description: The signed-in user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not signed in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users/{handle}:
+    get:
+      operationId: getUser
+      summary: A user's public profile
+      tags: [users]
+      parameters:
+        - name: handle
+          in: path
+          required: true
+          description: GitHub login, case-insensitive.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: No such user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: sdd_session
+
   schemas:
     Health:
       type: object
@@ -68,6 +172,27 @@ components:
           description: Result of each dependency check, keyed by name.
           additionalProperties:
             type: string
+
+    User:
+      type: object
+      required: [handle, name, avatarUrl, role, reputation, createdAt]
+      properties:
+        handle:
+          type: string
+          description: GitHub login.
+        name:
+          type: string
+        avatarUrl:
+          type: string
+        role:
+          type: string
+          enum: [user, moderator, admin]
+        reputation:
+          type: integer
+          format: int32
+        createdAt:
+          type: string
+          format: date-time
 
     Error:
       type: object

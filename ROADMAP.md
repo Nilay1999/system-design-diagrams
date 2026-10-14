@@ -187,7 +187,7 @@ Done when: a user can create, edit, delete, export and import their own topics, 
 
 - [x] `server/` Go module (keep the web app at the repo root to avoid churn; move to `apps/web` + `apps/api` later if it grows).
 - [x] `openapi.yaml` as the contract, with codegen for Go handlers and TS types.
-- [x] Postgres + migrations (goose, embedded), `docker-compose.yml` for local Postgres. `sqlc` is deferred to Phase 3, when the first real tables and queries land.
+- [x] Postgres + migrations (goose, embedded), `docker-compose.yml` for local Postgres. `sqlc` arrived in Phase 3 with the first tables.
 - [x] Health/readiness endpoints, structured logging (`slog`), request IDs, graceful shutdown, config from env.
 - [x] CI: `go vet`, `golangci-lint`, `go test` against a real Postgres (service container), plus the existing web build.
 - [ ] Deploy the API (Fly.io/Render) and add the Vercel `/api/*` rewrite. A `server/Dockerfile` is ready; this needs a hosting account and the API's hostname.
@@ -196,11 +196,11 @@ Done when: `GET /api/health` works through the Vercel domain, and CI runs on bot
 
 ### Phase 3: Authentication & users (S/M)
 
-- [ ] GitHub OAuth (authorization code flow with `state`; PKCE optional for a confidential client).
-- [ ] Server-side sessions: random 256-bit token in an `HttpOnly; Secure; SameSite=Lax` cookie, storing only its **hash** in `sessions`. Use sliding expiry.
-- [ ] CSRF: same-origin plus an `Origin`/`Sec-Fetch-Site` check on mutating requests.
-- [ ] `GET /api/me`, profile page, sign-in button in the top bar.
-- [ ] Roles: `user`, `moderator`, `admin` (seed yourself as admin).
+- [x] GitHub OAuth (authorization code flow with `state` and PKCE).
+- [x] Server-side sessions: random 256-bit token in an `HttpOnly; Secure; SameSite=Lax` cookie, storing only its **hash** in `sessions`. Use sliding expiry.
+- [x] CSRF: same-origin plus an `Origin`/`Sec-Fetch-Site` check on mutating requests (`http.CrossOriginProtection`).
+- [x] `GET /api/me`, profile page (`/u/:handle`), sign-in button in the top bar.
+- [x] Roles: `user`, `moderator`, `admin` (seed yourself as admin with `ADMIN_GITHUB_IDS`).
 
 Done when: users can sign in with GitHub and see their profile.
 
