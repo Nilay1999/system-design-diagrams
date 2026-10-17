@@ -88,8 +88,13 @@ export function DiagramView({ topic, viewId, onViewChange }: Props) {
           initialData={{
             elements: initialElements,
             files: initialFiles,
-            // New text typed by the user uses the same font as the diagram.
-            appState: { viewBackgroundColor: "#ffffff", currentItemFontFamily: DIAGRAM_FONT.id },
+            appState: {
+              viewBackgroundColor: "#ffffff",
+              // New text typed by the user uses the same font as the diagram.
+              currentItemFontFamily: DIAGRAM_FONT.id,
+              // Open in pan mode so moving around the diagram doesn't accidentally edit it.
+              activeTool: { type: "hand", customType: null, lastActiveTool: null, locked: false },
+            },
           }}
           theme={theme}
           onChange={edits.onChange}
