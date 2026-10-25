@@ -1,13 +1,25 @@
 :root {
+  /* Surfaces: cool slate neutrals, lightest to darkest. */
   --bg: #ffffff;
-  --bg-subtle: #f8f9fa;
-  --bg-muted: #f1f3f5;
-  --border: #e3e6ea;
-  --text: #1f2328;
-  --text-muted: #636c76;
-  --accent: #6965db;
-  --accent-soft: #ecebfd;
-  --code-bg: #f3f4f6;
+  --bg-subtle: #f8fafc;
+  --bg-muted: #eef2f7;
+  --bg-raised: #ffffff;
+  --border: #e3e8ef;
+  --border-strong: #cbd3df;
+  --text: #0f172a;
+  --text-muted: #5b6678;
+  /* Indigo accent, shared with the Excalidraw toolbar below. */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef0ff;
+  --on-accent: #ffffff;
+  --code-bg: #f1f5f9;
+  --warn-bg: #fef3c7;
+  --warn-text: #92400e;
+  --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.28);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.1);
+  --scrim: rgba(15, 23, 42, 0.4);
   --radius: 8px;
   --sidebar-w: 260px;
   --topbar-h: 64px;
@@ -15,15 +27,25 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #121212;
-  --bg-subtle: #191a1c;
-  --bg-muted: #232427;
-  --border: #2e3035;
-  --text: #e6e7ea;
-  --text-muted: #9aa0a8;
-  --accent: #a8a5ff;
-  --accent-soft: #2a2950;
-  --code-bg: #202226;
+  --bg: #0f141b;
+  --bg-subtle: #141a23;
+  --bg-muted: #1d2430;
+  --bg-raised: #252d3a;
+  --border: #262e3b;
+  --border-strong: #364152;
+  --text: #e4e8ef;
+  --text-muted: #96a1b3;
+  --accent: #8b93fb;
+  --accent-hover: #a9affc;
+  --accent-soft: rgba(139, 147, 251, 0.15);
+  --on-accent: #0f141b;
+  --code-bg: #1a212c;
+  --warn-bg: rgba(250, 204, 21, 0.15);
+  --warn-text: #fcd34d;
+  --focus-ring: 0 0 0 3px rgba(139, 147, 251, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --scrim: rgba(0, 0, 0, 0.55);
   color-scheme: dark;
 }
 
@@ -50,6 +72,21 @@ button {
   font: inherit;
   color: inherit;
   cursor: pointer;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.sidebar,
+.doc-pane,
+.diagram-tabs {
+  scrollbar-color: var(--border-strong) transparent;
 }
 
 /* ---------- Layout ---------- */
@@ -111,30 +148,33 @@ button {
 
 .segmented {
   display: flex;
+  gap: 2px;
+  padding: 3px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  background: var(--bg-muted);
   flex-shrink: 0;
 }
 
 .segmented button {
   border: 0;
+  border-radius: 6px;
   background: transparent;
-  padding: 6px 12px;
+  padding: 4px 12px;
   font-size: 13px;
+  color: var(--text-muted);
+  transition: color 0.15s, background-color 0.15s;
 }
 
-.segmented button + button {
-  border-left: 1px solid var(--border);
+.segmented button:hover {
+  color: var(--text);
 }
 
 .segmented button.on {
-  background: var(--accent);
-  color: #fff;
-}
-
-:root[data-theme="dark"] .segmented button.on {
-  color: #121212;
+  background: var(--bg-raised);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
 }
 
 .theme-toggle,
@@ -145,6 +185,15 @@ button {
   width: 34px;
   height: 34px;
   flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+
+.theme-toggle:hover,
+.menu-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--bg-muted);
 }
 
 .menu-toggle {
@@ -171,6 +220,17 @@ button {
   font: inherit;
   font-size: 14px;
   margin-bottom: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search::placeholder {
+  color: var(--text-muted);
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
 }
 
 .sidebar h3 {
@@ -221,6 +281,7 @@ button {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .empty {
@@ -278,6 +339,7 @@ button {
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid var(--border);
+  background: var(--bg-subtle);
   color: var(--text-muted);
 }
 
@@ -312,7 +374,9 @@ button {
 }
 
 .link:hover {
+  color: var(--accent-hover);
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .toc-diagrams {
@@ -361,6 +425,11 @@ button {
 
 .markdown a {
   color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.markdown a:hover {
+  color: var(--accent-hover);
 }
 
 .markdown code {
@@ -403,6 +472,11 @@ button {
 
 .markdown th {
   background: var(--bg-muted);
+  font-weight: 600;
+}
+
+.markdown tbody tr:nth-child(even) td {
+  background: var(--bg-subtle);
 }
 
 .markdown blockquote {
@@ -454,6 +528,7 @@ button {
 
 .diagram-tabs button:hover {
   color: var(--text);
+  background: var(--bg-muted);
 }
 
 .diagram-tabs button.on {
@@ -461,6 +536,7 @@ button {
   border-color: var(--border);
   color: var(--accent);
   font-weight: 600;
+  box-shadow: inset 0 2px 0 var(--accent);
 }
 
 .diagram-toolbar {
@@ -483,11 +559,19 @@ button {
   border-radius: 6px;
   padding: 4px 10px;
   font-size: 13px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.diagram-toolbar button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--bg-muted);
 }
 
 .diagram-toolbar button:disabled {
   opacity: 0.45;
   cursor: default;
+  box-shadow: none;
 }
 
 .badge {
@@ -499,13 +583,8 @@ button {
 }
 
 .badge-edited {
-  background: #fff3bf;
-  color: #8a6100;
-}
-
-:root[data-theme="dark"] .badge-edited {
-  background: #4d3f00;
-  color: #ffe066;
+  background: var(--warn-bg);
+  color: var(--warn-text);
 }
 
 .diagram-loading {
@@ -521,6 +600,25 @@ button {
   min-height: 0;
 }
 
+/* Recolour Excalidraw's own UI (selected tool, menus) to the app accent. Nested to beat its stylesheet. */
+.diagram-canvas .excalidraw {
+  --color-primary: var(--accent);
+  --color-primary-darker: #4338ca;
+  --color-primary-darkest: #3730a3;
+  --color-primary-hover: var(--accent-hover);
+  --color-primary-light: #e0e7ff;
+  --color-primary-light-darker: #c7d2fe;
+  --color-surface-primary-container: #e0e7ff;
+}
+
+.diagram-canvas .excalidraw.theme--dark {
+  --color-primary-darker: #a9affc;
+  --color-primary-darkest: #c7cbfd;
+  --color-primary-light: #383d72;
+  --color-primary-light-darker: #454b8a;
+  --color-surface-primary-container: #383d72;
+}
+
 .legend {
   position: absolute;
   right: 12px;
@@ -534,7 +632,7 @@ button {
   border-radius: var(--radius);
   font-size: 12px;
   line-height: 1.9;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
   pointer-events: none;
 }
 
@@ -629,7 +727,7 @@ button {
   .scrim {
     position: fixed;
     inset: var(--topbar-h) 0 0 0;
-    background: rgba(0, 0, 0, 0.35);
+    background: var(--scrim);
     z-index: 15;
   }
 
