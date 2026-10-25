@@ -14,6 +14,12 @@ describe("topicPath", () => {
   it("includes any other tab", () => {
     expect(topicPath(t, "redirect-flow")).toBe("/topics/url-shortener/redirect-flow");
   });
+
+  it("puts each track under its own prefix", () => {
+    const k8s = topic({ track: "kubernetes", slug: "pods" });
+    expect(topicPath(k8s)).toBe("/kubernetes/pods");
+    expect(topicPath(k8s, "redirect-flow")).toBe("/kubernetes/pods/redirect-flow");
+  });
 });
 
 describe("isNonDefaultView", () => {

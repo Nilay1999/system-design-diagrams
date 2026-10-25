@@ -21,6 +21,12 @@ describe("editKey / exportName", () => {
     expect(editKey(community, community.diagrams[0])).toBe("community:url-shortener");
   });
 
+  it("prefixes other tracks so slugs can't collide", () => {
+    const k8s = topic({ track: "kubernetes", slug: "pods" });
+    expect(editKey(k8s, k8s.diagrams[0])).toBe("kubernetes:pods");
+    expect(editKey(k8s, k8s.diagrams[1])).toBe("kubernetes:pods:redirect-flow");
+  });
+
   it("names exports after the topic and tab", () => {
     expect(exportName(curated, first)).toBe("url-shortener");
     expect(exportName(curated, second)).toBe("url-shortener-redirect-flow");

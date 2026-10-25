@@ -5,6 +5,8 @@ import { isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics
 import { AppShell } from "../../layout/AppShell";
 import { DocView } from "../../components/DocView";
 import { Tabs } from "../../components/Tabs";
+import { pageTitle } from "../../site";
+import { useTrack } from "../../tracks/context";
 import { VIEW_MODE_TABS, useViewMode } from "./useViewMode";
 
 // Excalidraw is by far the heaviest dependency; only load it when a diagram is shown.
@@ -27,11 +29,12 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
   const navigate = useNavigate();
   const { search } = useLocation();
   const { mode, setMode, revealDiagram } = useViewMode();
+  const track = useTrack();
 
   useEffect(() => {
-    document.title = `${topic.title} · System Design Diagrams`;
+    document.title = pageTitle(topic.title, track.name);
     document.querySelector(".doc-pane")?.scrollTo({ top: 0 });
-  }, [topic]);
+  }, [topic, track]);
 
   const selectDiagram = useCallback(
     // Keep the tab in the URL so it can be shared, without adding a history entry per click.

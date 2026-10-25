@@ -1,12 +1,38 @@
-import { useMemo } from "react";
+import { Children, isValidElement, useMemo, type ReactNode } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import type { Topic } from "../topics";
+import { highlight } from "../lib/highlight";
+import { remarkCallouts } from "../lib/remarkCallouts";
 import { slugify, textOf } from "../lib/text";
 
 /** Links of the form `#diagram/<view-id>` open that diagram tab instead of navigating. */
 const DIAGRAM_LINK = /^#diagram\/([\w-]+)$/;
+
+const REMARK_PLUGINS = [remarkGfm, remarkCallouts];
+
+/** A fenced code block, tagged with its language and lightly highlighted (colours come from the theme). */
+function CodeBlock({ children }: { children?: ReactNode }) {
+  const code = Children.toArray(children).find(isValidElement<{ className?: string; children?: ReactNode }>);
+  if (!code) return <pre>{children}</pre>;
+  const lang = /language-([\w-]+)/.exec(code.props.className ?? "")?.[1];
+  return (
+    <pre data-lang={lang}>
+      <code className={code.props.className}>
+        {highlight(textOf(code.props.children), lang).map((t, i) =>
+          t.kind ? (
+            <span key={i} className={`tok-${t.kind}`}>
+              {t.text}
+            </span>
+          ) : (
+            t.text
+          ),
+        )}
+      </code>
+    </pre>
+  );
+}
 
 interface Props {
   topic: Topic;
@@ -20,6 +46,7 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
     () => ({
       h2: ({ children }) => <h2 id={slugify(textOf(children))}>{children}</h2>,
       h3: ({ children }) => <h3 id={slugify(textOf(children))}>{children}</h3>,
+      pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
       a: ({ href, children }) => {
         const view = href?.match(DIAGRAM_LINK)?.[1];
         if (view) {
@@ -94,7 +121,7 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
         </nav>
       )}
       <div className="markdown">
-        <Markdown remarkPlugins={[remarkGfm]} components={components}>
+        <Markdown remarkPlugins={REMARK_PLUGINS} components={components}>
           {topic.doc}
         </Markdown>
       </div>

@@ -1,8 +1,14 @@
-import type { Topic } from "./types";
+import type { Topic, TrackId } from "./types";
+
+/** Where each track's topic pages live. */
+export const TRACK_BASE: Record<TrackId, string> = {
+  "system-design": "/topics",
+  kubernetes: "/kubernetes",
+};
 
 /** Canonical URL of a topic, optionally on a diagram tab. The first tab is the default and is left out. */
 export function topicPath(topic: Topic, view?: string): string {
-  const base = `/topics/${topic.slug}`;
+  const base = `${TRACK_BASE[topic.track]}/${topic.slug}`;
   return view && view !== topic.diagrams[0].id ? `${base}/${view}` : base;
 }
 

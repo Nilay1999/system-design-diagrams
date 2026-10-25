@@ -143,6 +143,8 @@ const BY_KIND: Record<NodeKind, IconName> = {
   db: "database",
   storage: "hard-drive",
   external: "cloud",
+  control: "kubernetes",
+  object: "file",
 };
 
 /** First brand mentioned in the text (by position), if any. */

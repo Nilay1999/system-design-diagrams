@@ -17,8 +17,12 @@ export const isScene = (tab: DiagramTab): tab is SceneSpec => "scene" in tab;
 /** Curated topics live in this repo; community topics are user-generated. */
 export type TopicSource = "curated" | "community";
 
+/** A separate library of topics, with its own URLs, sidebar, legend and theme. */
+export type TrackId = "system-design" | "kubernetes";
+
 export interface Topic {
   source: TopicSource;
+  track: TrackId;
   slug: string;
   title: string;
   category: string;

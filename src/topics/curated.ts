@@ -45,7 +45,7 @@ type CuratedCategory =
   | "Marketplace & Fintech";
 
 /** Curated metadata is stricter than `Topic`: a known category, and DSL diagrams only. */
-type TopicMeta = Omit<Topic, "doc" | "source" | "category" | "diagrams"> & {
+type TopicMeta = Omit<Topic, "doc" | "source" | "track" | "category" | "diagrams"> & {
   category: CuratedCategory;
   diagrams: DiagramSpec[];
 };
@@ -246,4 +246,4 @@ const META: TopicMeta[] = [
   },
 ];
 
-export const CURATED_TOPICS: Topic[] = META.map((m) => ({ ...m, source: "curated", doc: doc(m.slug) }));
+export const CURATED_TOPICS: Topic[] = META.map((m) => ({ ...m, source: "curated", track: "system-design", doc: doc(m.slug) }));

@@ -28,11 +28,12 @@ export const editStore = {
 };
 
 /**
- * Storage key for edits to one tab. The first tab of a curated topic is keyed by slug alone, as it was
- * before topics had several tabs; other sources are prefixed so their slugs can't collide with curated ones.
+ * Storage key for edits to one tab. The first tab of a curated system-design topic is keyed by slug alone,
+ * as it was before topics had several tabs; other tracks and sources are prefixed so slugs can't collide.
  */
 export function editKey(topic: Topic, tab: DiagramTab): string {
-  const prefix = topic.source === "curated" ? topic.slug : `${topic.source}:${topic.slug}`;
+  const id = topic.track === "system-design" ? topic.slug : `${topic.track}:${topic.slug}`;
+  const prefix = topic.source === "curated" ? id : `${topic.source}:${id}`;
   return tab === topic.diagrams[0] ? prefix : `${prefix}:${tab.id}`;
 }
 
