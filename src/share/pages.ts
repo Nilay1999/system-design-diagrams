@@ -36,7 +36,8 @@ export function sharePages(tracks: readonly Track[]): SharePage[] {
     { path: "/", title: `${SITE.name} — ${SITE.tagline}`, description: SITE.description, image: siteImage, fallbackImage: siteImage },
   ];
   for (const track of tracks) {
-    if (track.overview) {
+    // A track whose overview is the home page is already covered by the "/" entry above.
+    if (track.overview && track.home !== "/") {
       pages.push({
         path: track.home,
         title: pageTitle(track.overview.title),

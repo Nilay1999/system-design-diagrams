@@ -1,11 +1,13 @@
-import { Children, isValidElement, useMemo, type ReactNode } from "react";
+import { Children, isValidElement, useMemo, useRef, type ReactNode } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import type { Topic } from "../topics";
+import { useActiveHeading } from "../hooks/useActiveHeading";
 import { highlight } from "../lib/highlight";
 import { remarkCallouts } from "../lib/remarkCallouts";
 import { slugify, textOf } from "../lib/text";
+import { TopicPager } from "./TopicPager";
 
 /** Links of the form `#diagram/<view-id>` open that diagram tab instead of navigating. */
 const DIAGRAM_LINK = /^#diagram\/([\w-]+)$/;
@@ -81,11 +83,14 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
       }),
     [topic.doc],
   );
+  const ref = useRef<HTMLElement>(null);
+  const headingIds = useMemo(() => toc.map((h) => h.id), [toc]);
+  const activeHeading = useActiveHeading(headingIds, ref);
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <article className="doc">
+    <article className="doc" ref={ref}>
       <div className="doc-tags">
         <span className="category">{topic.category}</span>
         {topic.tags.map((t) => (
@@ -100,7 +105,11 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
           <ol>
             {toc.map((h) => (
               <li key={h.id}>
-                <button className="link" onClick={() => scrollTo(h.id)}>
+                <button
+                  className={`link ${h.id === activeHeading ? "current" : ""}`}
+                  aria-current={h.id === activeHeading ? "location" : undefined}
+                  onClick={() => scrollTo(h.id)}
+                >
                   {h.title}
                 </button>
               </li>
@@ -125,6 +134,7 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
           {topic.doc}
         </Markdown>
       </div>
+      <TopicPager topic={topic} />
     </article>
   );
 }

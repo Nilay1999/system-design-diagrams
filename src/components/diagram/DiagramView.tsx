@@ -7,6 +7,7 @@ import { DIAGRAM_FONT } from "../../diagrams/dsl";
 import { useTheme } from "../../theme/context";
 import { useTrack } from "../../tracks/context";
 import type { Topic } from "../../topics";
+import { Dropdown } from "../Dropdown";
 import { Tabs } from "../Tabs";
 import { Legend } from "./Legend";
 import { editKey, exportName } from "./editStore";
@@ -77,8 +78,13 @@ export function DiagramView({ topic, viewId, onViewChange }: Props) {
         <div className="spacer" />
         {source.hasLegend && <button onClick={() => setShowLegend((s) => !s)}>{showLegend ? "Hide" : "Show"} legend</button>}
         <button onClick={() => api?.scrollToContent(undefined, { ...FIT, animate: true })}>Fit</button>
-        <button onClick={() => api && exportPng(api, fileName, theme === "dark")}>PNG</button>
-        <button onClick={() => api && exportExcalidraw(api, fileName)}>.excalidraw</button>
+        <Dropdown
+          label="Export"
+          items={[
+            { label: "PNG image", onSelect: () => api && exportPng(api, fileName, theme === "dark") },
+            { label: "Excalidraw file (.excalidraw)", onSelect: () => api && exportExcalidraw(api, fileName) },
+          ]}
+        />
         <button onClick={reset} disabled={!edits.edited} title="Discard your edits and restore the original diagram">
           Reset
         </button>

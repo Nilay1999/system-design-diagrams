@@ -37,8 +37,8 @@ Run `npx tsc -b && npm test && npm run build` before calling any change done.
 ## Architecture
 
 - `src/site.ts`: site name, tagline, logo (`public/yggdrasil.svg`), and `pageTitle()` ("Topic · Section · Yggdrasil").
-- `src/tracks/`: a `Track` is a self-contained library: id, section `name`, small `logo`, `home`, its `TopicCatalog`, sidebar `sources`, diagram `legend`, optional `overview` (landing-page text). `TrackRoute` provides the track to its routes and sets `<html data-track>`. `useTopics()` returns the current track's catalog, so pages don't care which track they're in.
-- `src/App.tsx`: routes. System Design under `/` and `/topics/...`; Kubernetes under `/kubernetes` (index = `OverviewPage`).
+- `src/tracks/`: a `Track` is a self-contained library: id, section `name`, small `logo`, `home`, its `TopicCatalog`, sidebar `sources`, diagram `legend`, optional `overview` (landing-page text; both tracks have one). `TrackRoute` provides the track to its routes and sets `<html data-track>`. `useTopics()` returns the current track's catalog, so pages don't care which track they're in.
+- `src/App.tsx`: routes. System Design under `/` (the System Design `OverviewPage`, which is also the site home) and `/topics/...`; Kubernetes under `/kubernetes` (index = `OverviewPage`).
 - `src/topics/`: `Topic` (has `track`), `curated.ts` (System Design list), `kubernetes.ts` (Kubernetes list, sidebar order = list order), `paths.ts` (`TRACK_BASE`, `topicPath`).
 - `src/diagrams/dsl.ts`: diagram-as-code. `Diagram` (grid: col × 330px, row × 170px; nodes 210px wide) and `Sequence`. Node kinds include Kubernetes-specific `control` (control plane) and `object` (API objects). `K8S_LEGEND` relabels the kinds for the Kubernetes track. Icons are inferred from text (`icon-rules.ts`) or set with `{ icon: "name" }` (names in `icons.generated.ts`).
 - `src/diagrams/layout-lint.ts`: reports overlapping boxes, boxes crossing a zone border, and arrows passing through a box they don't connect. `src/topics/kubernetes.test.ts` runs it on every Kubernetes tab. Fix a failing arrow with `{ via: [[col, row]] }` waypoints or by moving nodes. It does not check edge-label placement.
@@ -52,9 +52,9 @@ Previews don't run JavaScript. `src/share/pages.ts` lists every shareable page (
 - Absolute URLs: `SITE_URL` env, else `VERCEL_PROJECT_PRODUCTION_URL`, else `DEFAULT_SITE_URL`.
 - `scripts/build-og-images.mjs` (`npm run og`) draws 1200×630 cards into `public/og/` (site, one per track, one per topic) with `@resvg/resvg-js` and the system Inter font. The images are committed, not built in CI (CI has no Inter). A missing topic image falls back to the track image.
 
-### Themes
+### Theme
 
-`<html data-theme="light|dark" data-palette="forest|parchment|nordic|classic">`, set by `src/theme/ThemeProvider.tsx` and chosen with `PalettePicker` in the top bar. `src/styles.css` → "Colour themes": each palette is one light and one dark block of CSS variables. Optional variables (`--topbar-*`, `--block-*`, `--tok-*`, `--accent-2`, `--heading-font`) turn on the dark top bar, dark highlighted code blocks, a gold second accent and serif headings. "Classic" is the original look (purple System Design, navy Kubernetes). New palettes must keep text contrast ≥ 4.5:1 (check with a quick script; there's no visual check).
+One colour theme, Nordic (deep teal top bar, sea-green accent, gold), the same in both tracks. `<html data-theme="light|dark">` is set by `src/theme/ThemeProvider.tsx` and switched with `ThemeToggle`. The light and dark values are the CSS variables on `:root` at the top of `src/styles.css`; the "Theme" section further down holds the rules that read the extra ones (`--topbar-*`, `--block-*`, `--tok-*`, `--accent-2`). Colour changes must keep text contrast ≥ 4.5:1 (check with a quick script; there's no visual check).
 
 ## Adding a Kubernetes topic
 
@@ -67,11 +67,11 @@ System Design topics follow the same pattern with `docs/`, `src/diagrams/` and `
 
 ## Status (as of 2026-10-25)
 
-Work is on branch `feat/kubernetes-track`. Done: the Kubernetes track (29 topics, ~98 diagrams), the Yggdrasil name and logo, per-page share HTML and preview images, and the theme picker.
+Work is on branch `feat/kubernetes-track`. Done: the Kubernetes track (29 topics, ~98 diagrams), the Yggdrasil name and logo, per-page share HTML and preview images, and the Nordic theme (the other palettes and the theme dropdown were removed on 2026-10-26).
 
 Open items:
 
-- **Theme choice pending.** The owner is comparing Forest / Parchment / Nordic / Classic (Forest is the default). Once they pick, possibly remove the other palettes and regenerate `public/og/` so the cards use the chosen colours (the cards still use navy and purple).
+- **Preview images.** `public/og/` cards still use the old navy and purple; they could be redrawn in the Nordic colours (`scripts/build-og-images.mjs`, then `npm run og`).
 - **Domain.** The site is still at `system-design-diagrams.vercel.app`; the owner may rename the Vercel project or add a domain, then set `SITE_URL`. After deploying, check links with LinkedIn Post Inspector, and confirm Vercel serves `dist/kubernetes/index.html` at `/kubernetes`.
 - **Bundle size.** All docs load eagerly, so the main JS grew from ~830 KB to ~1.3 MB. An option is to lazy-load the Kubernetes track's catalog.
 - **Icon placeholders.** Diagram icons appeared as placeholder squares in an early check, in both tracks. It's unconfirmed whether this is just loading time.

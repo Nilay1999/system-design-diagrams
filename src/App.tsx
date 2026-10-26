@@ -5,12 +5,13 @@ import { KUBERNETES, SYSTEM_DESIGN, TrackRoute } from "./tracks";
 import { OverviewPage } from "./pages/overview/OverviewPage";
 import { TopicPage } from "./pages/topic/TopicPage";
 
-/** `/` → the first topic. Also upgrades the old `#/<slug>/<view>` links to real routes. */
+/** `/` → the System Design overview. Also upgrades the old `#/<slug>/<view>` links to real routes. */
 function Home() {
   const { hash, search } = useLocation();
   const catalog = useTopics();
   const { slug, view } = parseLegacyHash(hash);
-  const topic = catalog.find(slug) ?? catalog.first;
+  const topic = catalog.find(slug);
+  if (!topic) return <OverviewPage />;
   return <Navigate to={{ pathname: topicPath(topic, view), search }} replace />;
 }
 

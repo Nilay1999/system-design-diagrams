@@ -17,6 +17,26 @@ export const SYSTEM_DESIGN: Track = {
   sources: SOURCES,
   legend: LEGEND,
   searchPlaceholder: "Search topics, e.g. cache",
+  overview: {
+    title: "System design, explained with diagrams",
+    lead:
+      "Every topic is an in-depth write-up next to editable diagrams: the architecture, the request flows, and what happens when parts fail. " +
+      "Start with the foundations, then work through real systems, from a URL shortener to a payment system.",
+    points: [
+      {
+        title: "Foundations first",
+        text: "The first three topics cover the building blocks, networking and distributed-data ideas that every later design reuses. Read them once, then come back to them as needed.",
+      },
+      {
+        title: "One way to approach any design",
+        text: "Each design walks the same path: requirements and numbers, the API, the data model, the high-level architecture, then the deep dives and trade-offs.",
+      },
+      {
+        title: "How to study a topic",
+        text: "Read the write-up, then open each diagram tab. Be able to redraw it from memory and explain what breaks first as the load grows.",
+      },
+    ],
+  },
 };
 
 export const KUBERNETES: Track = {

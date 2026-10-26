@@ -1,12 +1,14 @@
-import { Suspense, lazy, useCallback, useEffect } from "react";
+import { Suspense, lazy, useCallback, useEffect, type CSSProperties } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router";
 
 import { isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics";
 import { AppShell } from "../../layout/AppShell";
 import { DocView } from "../../components/DocView";
+import { Splitter } from "../../components/Splitter";
 import { Tabs } from "../../components/Tabs";
 import { pageTitle } from "../../site";
 import { useTrack } from "../../tracks/context";
+import { SPLIT, useSplitWidth } from "./useSplitWidth";
 import { VIEW_MODE_TABS, useViewMode } from "./useViewMode";
 
 // Excalidraw is by far the heaviest dependency; only load it when a diagram is shown.
@@ -29,6 +31,7 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
   const navigate = useNavigate();
   const { search } = useLocation();
   const { mode, setMode, revealDiagram } = useViewMode();
+  const [docWidth, setDocWidth] = useSplitWidth();
   const track = useTrack();
 
   useEffect(() => {
@@ -55,6 +58,7 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
     <AppShell
       current={topic}
       mainClassName={`view-${mode}`}
+      mainStyle={{ "--doc-w": `${docWidth}%` } as CSSProperties}
       heading={
         <div className="topic-heading">
           <h1>{topic.title}</h1>
@@ -71,6 +75,16 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
             onOpenDiagram={openDiagram}
           />
         </div>
+      )}
+      {mode === "split" && (
+        <Splitter
+          value={docWidth}
+          onChange={setDocWidth}
+          defaultValue={SPLIT.default}
+          min={SPLIT.min}
+          max={SPLIT.max}
+          label="Resize the document and diagram"
+        />
       )}
       {mode !== "doc" && (
         <div className="diagram-pane">

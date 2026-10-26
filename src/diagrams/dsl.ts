@@ -500,7 +500,7 @@ export class Diagram {
       strokeStyle: style.strokeStyle ?? "solid",
       fillStyle: "solid",
       strokeWidth: opts.highlight ? 3 : 2,
-      roughness: 1,
+      roughness: 0,
       roundness: ellipse ? null : ({ type: 3 } as const),
     } as const;
 
@@ -609,7 +609,7 @@ export class Diagram {
       strokeColor: opts.color ?? (opts.async ? "#e8590c" : "#495057"),
       strokeStyle: opts.async ? "dashed" : "solid",
       strokeWidth: 2,
-      roughness: 1,
+      roughness: 0,
       startArrowhead: opts.both ? "arrow" : null,
       endArrowhead: opts.none ? null : "arrow",
       label: label ? { text: label, fontFamily: DIAGRAM_FONT.id, fontSize: 14, strokeColor: "#343a40" } : undefined,
@@ -967,7 +967,7 @@ export class Sequence {
         strokeStyle: style.strokeStyle ?? "solid",
         fillStyle: "solid",
         strokeWidth: 2,
-        roughness: 1,
+        roughness: 0,
         roundness: { type: 3 },
       } as const;
       if (!a.icon) {
