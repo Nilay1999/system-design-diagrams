@@ -5,7 +5,9 @@ import "@excalidraw/excalidraw/index.css";
 
 import { DIAGRAM_FONT } from "../../diagrams/dsl";
 import { useTheme } from "../../theme/context";
+import { useTrack } from "../../tracks/context";
 import type { Topic } from "../../topics";
+import { Dropdown } from "../Dropdown";
 import { Tabs } from "../Tabs";
 import { Legend } from "./Legend";
 import { editKey, exportName } from "./editStore";
@@ -25,6 +27,7 @@ interface Props {
 /** Editable Excalidraw canvas for one diagram tab, with local autosave and export. */
 export function DiagramView({ topic, viewId, onViewChange }: Props) {
   const { theme } = useTheme();
+  const { legend } = useTrack();
   const tab = topic.diagrams.find((d) => d.id === viewId) ?? topic.diagrams[0];
   const source = useMemo(() => createDiagramSource(tab), [tab]);
   const key = editKey(topic, tab);
@@ -75,8 +78,13 @@ export function DiagramView({ topic, viewId, onViewChange }: Props) {
         <div className="spacer" />
         {source.hasLegend && <button onClick={() => setShowLegend((s) => !s)}>{showLegend ? "Hide" : "Show"} legend</button>}
         <button onClick={() => api?.scrollToContent(undefined, { ...FIT, animate: true })}>Fit</button>
-        <button onClick={() => api && exportPng(api, fileName, theme === "dark")}>PNG</button>
-        <button onClick={() => api && exportExcalidraw(api, fileName)}>.excalidraw</button>
+        <Dropdown
+          label="Export"
+          items={[
+            { label: "PNG image", onSelect: () => api && exportPng(api, fileName, theme === "dark") },
+            { label: "Excalidraw file (.excalidraw)", onSelect: () => api && exportExcalidraw(api, fileName) },
+          ]}
+        />
         <button onClick={reset} disabled={!edits.edited} title="Discard your edits and restore the original diagram">
           Reset
         </button>
@@ -100,7 +108,7 @@ export function DiagramView({ topic, viewId, onViewChange }: Props) {
           onChange={edits.onChange}
           UIOptions={{ canvasActions: { loadScene: false } }}
         />
-        {source.hasLegend && showLegend && <Legend />}
+        {source.hasLegend && showLegend && <Legend entries={legend} />}
       </div>
     </div>
   );

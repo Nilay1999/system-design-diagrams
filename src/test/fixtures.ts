@@ -4,6 +4,7 @@ import type { Topic } from "../topics/types";
 export function topic(overrides: Partial<Topic> = {}): Topic {
   return {
     source: "curated",
+    track: "system-design",
     slug: "url-shortener",
     title: "URL Shortener",
     category: "Infrastructure",

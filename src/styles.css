@@ -1,13 +1,34 @@
 :root {
   --bg: #ffffff;
-  --bg-subtle: #f8f9fa;
-  --bg-muted: #f1f3f5;
-  --border: #e3e6ea;
-  --text: #1f2328;
-  --text-muted: #636c76;
-  --accent: #6965db;
-  --accent-soft: #ecebfd;
-  --code-bg: #f3f4f6;
+  --bg-subtle: #f1f6f7;
+  --bg-muted: #e4edef;
+  --border: #d3e0e3;
+  --text: #13222a;
+  --text-muted: #566a72;
+  --accent: #0b7285;
+  --accent-soft: #ddf0f3;
+  --accent-2: #b8860b;
+  --code-bg: #e8f1f3;
+  --topbar-bg: linear-gradient(90deg, #0a1b24 0%, #123f4b 100%);
+  --hero-bg: linear-gradient(135deg, #e3f2f5 0%, #f6fafb 60%, #ffffff 100%);
+  --block-bg: #0b1a21;
+  --block-fg: #d4e6eb;
+  --block-border: #193440;
+  --tok-comment: #7895a0;
+  --tok-key: #7fd3e0;
+  --tok-string: #f2c14e;
+  --tok-command: #ffd166;
+  --tok-flag: #a5d8ff;
+  --topbar-fg: #ffffff;
+  --topbar-muted: rgba(255, 255, 255, 0.68);
+  --topbar-line: rgba(255, 255, 255, 0.24);
+  --topbar-control: rgba(255, 255, 255, 0.08);
+  --topbar-border: transparent;
+  --h2-rule: 2px solid var(--accent-soft);
+  --th-bg: var(--accent-soft);
+  --lang-label: block;
+  --tok-italic: italic;
+  --tok-bold: 600;
   --radius: 8px;
   --sidebar-w: 260px;
   --topbar-h: 64px;
@@ -15,15 +36,26 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #121212;
-  --bg-subtle: #191a1c;
-  --bg-muted: #232427;
-  --border: #2e3035;
-  --text: #e6e7ea;
-  --text-muted: #9aa0a8;
-  --accent: #a8a5ff;
-  --accent-soft: #2a2950;
-  --code-bg: #202226;
+  --bg: #08121a;
+  --bg-subtle: #0c1a22;
+  --bg-muted: #14262f;
+  --border: #1e3540;
+  --text: #dde9ed;
+  --text-muted: #91a7ae;
+  --accent: #66d9e8;
+  --accent-soft: #10303a;
+  --accent-2: #f2c14e;
+  --code-bg: #10222b;
+  --topbar-bg: linear-gradient(90deg, #040c10 0%, #0d2c36 100%);
+  --hero-bg: linear-gradient(135deg, #0f2a33 0%, #0c1a22 70%);
+  --block-bg: #050c10;
+  --block-fg: #d4e6eb;
+  --block-border: #15303a;
+  --tok-comment: #7895a0;
+  --tok-key: #7fd3e0;
+  --tok-string: #f2c14e;
+  --tok-command: #ffd166;
+  --tok-flag: #a5d8ff;
   color-scheme: dark;
 }
 
@@ -72,7 +104,8 @@ button {
   gap: 16px;
   padding: 0 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--bg-subtle);
+  background: var(--topbar-bg, var(--bg-subtle));
+  color: var(--topbar-fg, inherit);
   min-width: 0;
 }
 
@@ -84,6 +117,26 @@ button {
   flex-shrink: 0;
   font-weight: 700;
   font-size: 15px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.brand-name {
+  font-size: 17px;
+  letter-spacing: 0.01em;
+}
+
+.brand-section {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
 }
 
 .topic-heading {
@@ -159,6 +212,69 @@ button {
   border-right: 1px solid var(--border);
   background: var(--bg-subtle);
   padding: 16px 12px 32px;
+}
+
+.site-name {
+  display: none;
+  margin: 0 4px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.track-switch {
+  display: grid;
+  /* minmax(0, …) keeps both halves equal; plain 1fr lets the bold active label push the other out. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 3px;
+  padding: 3px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.track-switch a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 6px 4px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.track-switch img {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.track-switch span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-switch a:hover {
+  color: var(--text);
+  background: var(--bg-muted);
+}
+
+.track-switch a.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.overview-link {
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .search {
@@ -239,8 +355,42 @@ button {
   min-height: 0;
 }
 
+/* Document | splitter (zero-width column; its handle overlaps both panes) | diagram. */
 .content.view-split {
-  grid-template-columns: minmax(360px, 42%) 1fr;
+  grid-template-columns: minmax(320px, var(--doc-w, 42%)) 0 minmax(0, 1fr);
+}
+
+.splitter {
+  position: relative;
+  z-index: 5;
+  width: 10px;
+  margin-left: -5px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.splitter::after {
+  content: "";
+  position: absolute;
+  inset: 0 4px;
+  transition: background 0.15s;
+}
+
+.splitter:hover::after,
+.splitter:focus-visible::after,
+.resizing .splitter::after {
+  background: var(--accent);
+}
+
+.splitter:focus-visible {
+  outline: none;
+}
+
+/* While dragging the splitter: keep the resize cursor everywhere and don't select text. */
+.resizing,
+.resizing * {
+  cursor: col-resize !important;
+  user-select: none;
 }
 
 .doc-pane {
@@ -329,10 +479,88 @@ button {
   font-size: 13px;
 }
 
-.toc-diagrams .current {
+.toc .current {
   font-weight: 600;
+}
+
+.toc-diagrams .current {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Document view on a wide screen: the contents become a sticky column beside the text. */
+@media (min-width: 1280px) {
+  .view-doc .doc {
+    max-width: 1160px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    column-gap: 40px;
+    align-items: start;
+  }
+
+  .view-doc .doc > * {
+    grid-column: 1;
+  }
+
+  .view-doc .toc {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - var(--topbar-h) - 32px);
+    overflow-y: auto;
+  }
+
+  .view-doc .toc ol {
+    columns: 1;
+  }
+
+  .view-doc .toc li {
+    margin: 3px 0;
+  }
+
+  .view-doc .toc-diagrams {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.pager-link:hover {
+  border-color: var(--accent);
+}
+
+.pager-link span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.pager-link strong {
+  color: var(--accent);
+}
+
+.pager-next {
+  grid-column: 2;
+  text-align: right;
 }
 
 .markdown .diagram-ref::after {
@@ -421,6 +649,240 @@ button {
   max-width: 100%;
 }
 
+/* GitHub-style alerts (`> [!WARNING]`), see lib/remarkCallouts.ts. */
+.markdown blockquote.callout {
+  border-left-color: var(--callout);
+  background: var(--callout-bg);
+}
+
+.markdown blockquote.callout::before {
+  content: attr(data-callout);
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--callout);
+}
+
+.callout-note {
+  --callout: #1c7ed6;
+  --callout-bg: #e7f5ff;
+}
+
+.callout-tip {
+  --callout: #2f9e44;
+  --callout-bg: #ebfbee;
+}
+
+.callout-important {
+  --callout: #7048e8;
+  --callout-bg: #f3f0ff;
+}
+
+.callout-warning {
+  --callout: #e67700;
+  --callout-bg: #fff9db;
+}
+
+.callout-caution {
+  --callout: #e03131;
+  --callout-bg: #fff5f5;
+}
+
+:root[data-theme="dark"] .callout-note {
+  --callout: #74c0fc;
+  --callout-bg: rgba(116, 192, 252, 0.1);
+}
+
+:root[data-theme="dark"] .callout-tip {
+  --callout: #8ce99a;
+  --callout-bg: rgba(140, 233, 154, 0.09);
+}
+
+:root[data-theme="dark"] .callout-important {
+  --callout: #b197fc;
+  --callout-bg: rgba(177, 151, 252, 0.1);
+}
+
+:root[data-theme="dark"] .callout-warning {
+  --callout: #ffd43b;
+  --callout-bg: rgba(255, 212, 59, 0.08);
+}
+
+:root[data-theme="dark"] .callout-caution {
+  --callout: #ffa8a8;
+  --callout-bg: rgba(255, 168, 168, 0.09);
+}
+
+/* ---------- Overview (a track's landing page) ---------- */
+
+.content.view-overview {
+  display: block;
+  overflow-y: auto;
+}
+
+.overview {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 32px 80px;
+}
+
+.hero {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--hero-bg, var(--bg-subtle));
+}
+
+.hero h2 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.hero p {
+  margin: 0;
+  max-width: 760px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.button {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+:root[data-theme="dark"] .button.primary {
+  color: #0a1020;
+}
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 18px 0 8px;
+}
+
+.point {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  border-top: 3px solid var(--accent-2, var(--accent));
+}
+
+.point h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.point p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.path-group h2 {
+  margin: 32px 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.topic-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 16px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.topic-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(20, 40, 90, 0.08);
+}
+
+.topic-card h3 {
+  margin: 0;
+  padding-right: 36px;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.topic-card p {
+  margin: 0;
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.topic-number {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-2, var(--accent));
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.card-tags .tag {
+  font-size: 11px;
+  padding: 1px 7px;
+}
+
+.card-meta {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ---------- Diagram ---------- */
 
 .diagram {
@@ -485,6 +947,37 @@ button {
   font-size: 13px;
 }
 
+.dropdown {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.diagram-toolbar .dropdown-list button {
+  border: 0;
+  background: transparent;
+  padding: 7px 10px;
+  text-align: left;
+  color: var(--text);
+}
+
+.diagram-toolbar .dropdown-list button:hover {
+  background: var(--bg-muted);
+}
+
 .diagram-toolbar button:disabled {
   opacity: 0.45;
   cursor: default;
@@ -517,6 +1010,8 @@ button {
 
 .diagram-canvas {
   position: relative;
+  /* Keep Excalidraw's own layers below the toolbar's export menu. */
+  z-index: 0;
   flex: 1;
   min-height: 0;
 }
@@ -573,6 +1068,92 @@ button {
   filter: invert(93%) hue-rotate(180deg);
 }
 
+/* ---------- Theme ----------
+ * The site uses one colour theme, Nordic (a northern night: deep teal bar, sea-green accent, gold),
+ * with light and dark values set on :root above. These rules read its extra variables:
+ *   --topbar-*   dark top bar and its controls     --block-*, --tok-*   dark, highlighted code blocks
+ *   --accent-2   a second highlight colour         --heading-font       headings typeface (unset: inherit)
+ */
+
+.topbar {
+  border-bottom-color: var(--topbar-border, var(--border));
+}
+
+.topbar .topic-heading p {
+  color: var(--topbar-muted, var(--text-muted));
+}
+
+.topbar .segmented,
+.topbar .segmented button + button {
+  border-color: var(--topbar-line, var(--border));
+}
+
+.topbar .theme-toggle,
+.topbar .menu-toggle {
+  border-color: var(--topbar-line, var(--border));
+  background: var(--topbar-control, var(--bg));
+  color: var(--topbar-fg, inherit);
+}
+
+.markdown h2 {
+  border-bottom: var(--h2-rule, 1px solid var(--border));
+}
+
+.markdown th {
+  background: var(--th-bg, var(--bg-muted));
+}
+
+.markdown pre {
+  position: relative;
+  border-color: var(--block-border, var(--border));
+  background: var(--block-bg, var(--code-bg));
+  color: var(--block-fg, inherit);
+}
+
+.markdown pre[data-lang]::before {
+  display: var(--lang-label, none);
+  content: attr(data-lang);
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tok-comment);
+}
+
+.tok-comment {
+  color: var(--tok-comment);
+  font-style: var(--tok-italic, normal);
+}
+
+.tok-key {
+  color: var(--tok-key);
+}
+
+.tok-string {
+  color: var(--tok-string);
+}
+
+.tok-command {
+  color: var(--tok-command);
+  font-weight: var(--tok-bold, inherit);
+}
+
+.tok-flag {
+  color: var(--tok-flag);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.hero h2,
+.topic-heading h1,
+.topic-card h3,
+.brand-name {
+  font-family: var(--heading-font, inherit);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1100px) {
@@ -584,6 +1165,10 @@ button {
   .view-split .doc-pane {
     border-right: 0;
     border-bottom: 1px solid var(--border);
+  }
+
+  .splitter {
+    display: none;
   }
 
   .topic-heading p {
@@ -600,11 +1185,16 @@ button {
   }
 
   .menu-toggle {
-    display: block;
+    display: grid;
+    place-items: center;
   }
 
   .brand {
     display: none;
+  }
+
+  .site-name {
+    display: block;
   }
 
   .topbar {
@@ -641,8 +1231,30 @@ button {
     padding: 16px 16px 64px;
   }
 
+  .overview {
+    padding: 16px 16px 64px;
+  }
+
+  .hero {
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .hero h2 {
+    font-size: 21px;
+  }
+
   .toc ol {
     columns: 1;
+  }
+
+  .pager {
+    grid-template-columns: 1fr;
+  }
+
+  .pager-next {
+    grid-column: auto;
   }
 
   .legend {

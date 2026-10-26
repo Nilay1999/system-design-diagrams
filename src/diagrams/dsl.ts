@@ -38,7 +38,10 @@ export type NodeKind =
   | "cache"
   | "queue"
   | "storage"
-  | "external";
+  | "external"
+  // Kubernetes track
+  | "control" // control plane: API server, scheduler, controllers
+  | "object"; // an API object: Deployment, ReplicaSet, ConfigMap, PVC…
 
 interface KindStyle {
   shape: "rectangle" | "ellipse";
@@ -57,9 +60,16 @@ const STYLES: Record<NodeKind, KindStyle> = {
   queue: { shape: "rectangle", backgroundColor: "#ffd8a8", strokeColor: "#e8590c", strokeStyle: "dashed" },
   storage: { shape: "ellipse", backgroundColor: "#eebefa", strokeColor: "#9c36b5" },
   external: { shape: "rectangle", backgroundColor: "#e9ecef", strokeColor: "#495057", strokeStyle: "dashed" },
+  control: { shape: "rectangle", backgroundColor: "#bac8ff", strokeColor: "#3b5bdb" },
+  object: { shape: "rectangle", backgroundColor: "#ffdeeb", strokeColor: "#c2255c" },
 };
 
-export const LEGEND: { kind: NodeKind; label: string }[] = [
+export interface LegendEntry {
+  kind: NodeKind;
+  label: string;
+}
+
+export const LEGEND: LegendEntry[] = [
   { kind: "client", label: "Client" },
   { kind: "edge", label: "Edge / Gateway / LB" },
   { kind: "service", label: "Service" },
@@ -69,6 +79,20 @@ export const LEGEND: { kind: NodeKind; label: string }[] = [
   { kind: "db", label: "Database" },
   { kind: "storage", label: "Object / Blob store" },
   { kind: "external", label: "Third party" },
+];
+
+/** The same colours, named for what they mean in the Kubernetes diagrams. */
+export const K8S_LEGEND: LegendEntry[] = [
+  { kind: "client", label: "User / kubectl / CI" },
+  { kind: "control", label: "Control plane" },
+  { kind: "object", label: "API object (Deployment, PVC…)" },
+  { kind: "service", label: "Pod / app container" },
+  { kind: "worker", label: "Node agent / add-on" },
+  { kind: "edge", label: "Service / Ingress / LB" },
+  { kind: "db", label: "etcd / database" },
+  { kind: "storage", label: "Volume / disk" },
+  { kind: "queue", label: "Queue / stream" },
+  { kind: "external", label: "Cloud / external" },
 ];
 
 export function kindColor(kind: NodeKind): { bg: string; stroke: string } {
@@ -476,7 +500,7 @@ export class Diagram {
       strokeStyle: style.strokeStyle ?? "solid",
       fillStyle: "solid",
       strokeWidth: opts.highlight ? 3 : 2,
-      roughness: 1,
+      roughness: 0,
       roundness: ellipse ? null : ({ type: 3 } as const),
     } as const;
 
@@ -585,7 +609,7 @@ export class Diagram {
       strokeColor: opts.color ?? (opts.async ? "#e8590c" : "#495057"),
       strokeStyle: opts.async ? "dashed" : "solid",
       strokeWidth: 2,
-      roughness: 1,
+      roughness: 0,
       startArrowhead: opts.both ? "arrow" : null,
       endArrowhead: opts.none ? null : "arrow",
       label: label ? { text: label, fontFamily: DIAGRAM_FONT.id, fontSize: 14, strokeColor: "#343a40" } : undefined,
@@ -943,7 +967,7 @@ export class Sequence {
         strokeStyle: style.strokeStyle ?? "solid",
         fillStyle: "solid",
         strokeWidth: 2,
-        roughness: 1,
+        roughness: 0,
         roundness: { type: 3 },
       } as const;
       if (!a.icon) {

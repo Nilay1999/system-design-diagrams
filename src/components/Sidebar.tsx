@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 
-import { SOURCES, groupByCategory, topicPath, useTopics, type Topic } from "../topics";
+import { groupByCategory, topicPath, useTopics, type Topic } from "../topics";
+import { SITE } from "../site";
+import { TRACKS, useTrack } from "../tracks";
 
 interface Props {
   current?: Topic;
@@ -10,21 +12,47 @@ interface Props {
 }
 
 export function Sidebar({ current, onNavigate }: Props) {
+  const track = useTrack();
   const catalog = useTopics();
   const [query, setQuery] = useState("");
   const matches = useMemo(() => catalog.search(query), [catalog, query]);
 
   return (
     <aside className="sidebar">
+      <p className="site-name">{SITE.name}</p>
+      <nav className="track-switch" aria-label="Library">
+        {TRACKS.map((t) => (
+          <Link
+            key={t.id}
+            to={t.home}
+            className={t === track ? "on" : ""}
+            aria-current={t === track ? "true" : undefined}
+            onClick={onNavigate}
+          >
+            <img src={t.logo} alt="" width={14} height={14} />
+            <span>{t.name}</span>
+          </Link>
+        ))}
+      </nav>
       <input
         className="search"
         type="search"
-        placeholder="Search topics, e.g. cache"
+        placeholder={track.searchPlaceholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-label="Search topics"
       />
-      {SOURCES.map(({ source, label, emptyText }) => {
+      {track.overview && !query && (
+        <NavLink
+          to={track.home}
+          end
+          className={({ isActive }) => `topic overview-link ${isActive ? "active" : ""}`}
+          onClick={onNavigate}
+        >
+          Overview & learning path
+        </NavLink>
+      )}
+      {track.sources.map(({ source, label, emptyText }) => {
         const topics = matches.filter((t) => t.source === source);
         // While searching, hide sections with no hits; otherwise show a section if it can explain being empty.
         if (topics.length === 0 && (query || !emptyText)) return null;

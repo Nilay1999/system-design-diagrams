@@ -1,4 +1,4 @@
-import { LEGEND, kindColor } from "../../diagrams/dsl";
+import { kindColor, type LegendEntry } from "../../diagrams/dsl";
 
 const LINES = [
   { className: "line", label: "sync call" },
@@ -6,11 +6,11 @@ const LINES = [
   { className: "line line-reply", label: "response" },
 ];
 
-/** Key to the node colours and arrow styles used by DSL diagrams. */
-export function Legend() {
+/** Key to the node colours and arrow styles used by DSL diagrams. Each track names the colours its own way. */
+export function Legend({ entries }: { entries: readonly LegendEntry[] }) {
   return (
     <ul className="legend" aria-label="Legend">
-      {LEGEND.map(({ kind, label }) => {
+      {entries.map(({ kind, label }) => {
         const c = kindColor(kind);
         return (
           <li key={kind}>

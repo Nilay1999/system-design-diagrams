@@ -23,6 +23,13 @@ describe("TopicCatalog", () => {
     expect(catalog.search("infrastructure")).toEqual([a, c]);
   });
 
+  it("finds the previous and next topic in list order", () => {
+    expect(catalog.neighbours(a)).toEqual({ previous: undefined, next: b });
+    expect(catalog.neighbours(b)).toEqual({ previous: a, next: c });
+    expect(catalog.neighbours(c)).toEqual({ previous: b, next: undefined });
+    expect(catalog.neighbours(topic({ slug: "x" }))).toEqual({});
+  });
+
   it("rejects an empty catalog", () => {
     expect(() => new TopicCatalog([])).toThrow();
   });

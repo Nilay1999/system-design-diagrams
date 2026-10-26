@@ -24,6 +24,13 @@ export class TopicCatalog {
     return slug === undefined ? undefined : this.bySlug.get(slug);
   }
 
+  /** The topics just before and after this one, in reading order (the order of the list). */
+  neighbours(topic: Topic): { previous?: Topic; next?: Topic } {
+    const i = this.topics.indexOf(topic);
+    if (i === -1) return {};
+    return { previous: this.topics[i - 1], next: this.topics[i + 1] };
+  }
+
   /** Case-insensitive match on title, summary, category and tags. An empty query matches everything. */
   search(query: string): Topic[] {
     const q = query.trim().toLowerCase();

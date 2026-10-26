@@ -1,5 +1,5 @@
 {
-  "name": "system-design-diagrams",
+  "name": "yggdrasil",
   "private": true,
   "version": "1.0.0",
   "description": "System design documents with interactive Excalidraw diagrams, served by a React + Vite app.",
@@ -14,7 +14,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "og": "node scripts/build-og-images.mjs"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",
@@ -29,6 +30,7 @@
     "@iconify-json/logos": "^1.2.15",
     "@iconify-json/lucide": "^1.2.139",
     "@iconify-json/simple-icons": "^1.2.98",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^26.6.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",

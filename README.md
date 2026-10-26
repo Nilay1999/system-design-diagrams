@@ -1,8 +1,15 @@
-# System Design Diagrams
+# Yggdrasil
 
-**Live site:** https://system-design-diagrams.vercel.app/
+<img src="public/yggdrasil.svg" alt="" width="72" align="right" />
 
-24 in-depth system design write-ups, each paired with a set of editable [Excalidraw](https://excalidraw.com) diagrams, in a React + Vite + TypeScript app.
+**The tree of engineering knowledge.** Live: https://yggdrasil-books.vercel.app/
+
+In Norse myth, Yggdrasil is the world tree whose branches hold the nine worlds. Here each branch is a section, and every topic is an in-depth write-up beside editable [Excalidraw](https://excalidraw.com) diagrams, in one React + Vite + TypeScript app:
+
+- **System Design** (`/topics/…`): 24 classic system designs.
+- **Kubernetes** (`/kubernetes`): 29 Kubernetes topics, from desired state to EKS.
+
+The rest of this README starts with the System Design section.
 
 - **Docs** are plain Markdown in [`docs/`](docs/), so you can read them on GitHub without running anything. Each one covers requirements, capacity math, API, data model, architecture, step-by-step request flows, deep dives, failure modes, observability, trade-offs and interview follow-ups.
 - **Diagrams** are defined as code in [`src/diagrams/`](src/diagrams/) with a small DSL, then rendered as Excalidraw scenes you can pan, zoom, edit and export. Every topic has 4–5 diagram tabs: a detailed architecture, sequence diagrams for the main request flows, and deep dives (data models, algorithms, state machines).
@@ -36,6 +43,33 @@
 | [E-commerce Checkout (Amazon)](docs/e-commerce.md) | Marketplace & Fintech | saga, outbox, inventory, flash sales |
 | [Payment System](docs/payment-system.md) | Marketplace & Fintech | idempotency, double-entry ledger, reconciliation |
 
+## Kubernetes section
+
+A second, separate section lives at [`/kubernetes`](https://yggdrasil-books.vercel.app/kubernetes): 29 Kubernetes topics, from *Why Kubernetes* to EKS and interview prep, each a plain-language doc beside 2–4 diagram tabs. One made-up food-delivery app, **FoodDash**, runs through every example.
+
+- Its own sidebar, overview page (a numbered learning path, like the System Design home page) and diagram legend. Switch libraries with the toggle at the top of the sidebar.
+- Docs are in [`docs/kubernetes/`](docs/kubernetes/); diagrams in [`src/diagrams/kubernetes/`](src/diagrams/kubernetes/); topics are registered in `src/topics/kubernetes.ts`.
+- Docs can use GitHub-style callouts (`> [!TIP]`, `> [!WARNING]`…), which render as styled boxes in the app and as alerts on GitHub.
+- Two extra node kinds for cluster diagrams: `control` (control plane) and `object` (API objects such as Deployments or PVCs).
+
+| Section | Topics |
+| --- | --- |
+| Foundations | Why Kubernetes & desired state · Cluster architecture · Objects, kubectl, namespaces & labels |
+| Workloads | Pods · Pod lifecycle & probes · Requests, limits & QoS · Deployments · Storage · StatefulSets · DaemonSets, Jobs & CronJobs |
+| Networking | Services · DNS & kube-proxy · Ingress & Gateway API · CNI & NetworkPolicies · Service mesh |
+| Config & Security | ConfigMaps & Secrets · RBAC & ServiceAccounts · Pod security & admission |
+| Scheduling & Scaling | Scheduling · Autoscaling · PDBs, drains & upgrades |
+| Operations & Delivery | Observability · Troubleshooting · Helm & Kustomize · GitOps · Operators · EKS |
+| Reference | Cheat sheet · Labs, interview prep & 8-week plan |
+
+## Sharing links (LinkedIn, Slack, X)
+
+Link previews don't run JavaScript, so `npm run build` writes a static HTML file for every shareable page (the home page, which is the System Design overview, the Kubernetes overview, every topic and every diagram tab) with its own title, description and Open Graph / Twitter tags. The site's name, tagline and logo live in `src/site.ts`; page titles and descriptions come from `src/share/pages.ts`.
+
+- **Preview images** live in `public/og/` (1200×630). After adding or renaming a topic, run `npm run og` and commit the new images; until then the page falls back to its section's image. Text renders with the system's Inter font if installed.
+- **Absolute URLs** use `SITE_URL`, else Vercel's production domain (`VERCEL_PROJECT_PRODUCTION_URL`), else `https://yggdrasil-books.vercel.app`. If you rename the Vercel project or add a domain, set `SITE_URL` in the Vercel project settings.
+- Check a link before posting with [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/); it also refreshes LinkedIn's cached preview.
+
 ## Running the app
 
 Requires Node.js 20+.
@@ -51,13 +85,13 @@ npm run preview    # serve the production build
 
 ## Using the app
 
-- Pick a topic in the sidebar, or search by keyword (e.g. `cache`, `kafka`, `idempotency`).
-- Switch between **Split**, **Document** and **Diagram** views in the top bar.
+- The home page is an overview of every topic. Pick one there or in the sidebar, or search by keyword (e.g. `cache`, `kafka`, `idempotency`). Each doc ends with **Previous / Next** links that follow the topic list.
+- Switch between **Split**, **Document** and **Diagram** views in the top bar. In Split view, drag the divider to resize the panes (double-click resets it). In Document view on a wide screen, "On this page" stays beside the text and highlights the section you're reading.
 - Each topic has several **diagram tabs** (e.g. *Architecture*, *Redirect flow*, *Key generation & data model*). Links inside a doc (marked ⧉) and the "Diagrams" row under "On this page" open the matching tab.
 - Link straight to a tab with `/topics/<topic>/<tab>`, e.g. `/topics/url-shortener/redirect-flow?view=diagram`. Old `#/<topic>/<tab>` links still redirect.
 - The diagram is a full Excalidraw canvas: drag boxes (arrows stay attached), add notes, restyle anything.
   - Edits are **saved in your browser** (localStorage) per diagram tab. **Reset** restores the original.
-  - Export with **PNG** or **.excalidraw**. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
+  - Use **Export** to save a **PNG image** or an **.excalidraw** file. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
 - Toggle light/dark mode with the button in the top-right corner.
 
 ## Project structure
@@ -68,8 +102,10 @@ src/
   diagrams/
     dsl.ts                  Diagram-as-code helpers: Diagram (grid layout) and Sequence (sequence diagrams)
     <topic>.ts              The diagram tabs for one topic
+  tracks/                   The two libraries (System Design, Kubernetes): URLs, sidebar, legend, theme
   topics/
     curated.ts              Curated topic metadata (+ doc + diagram tabs)
+    kubernetes.ts           Kubernetes topic metadata
     catalog.ts              TopicCatalog: lookup, search, grouping, sidebar sections
     paths.ts                Topic URLs and legacy #/slug parsing
     index.ts                useTopics(): the one place new topic sources plug in
@@ -95,7 +131,9 @@ scripts/
 
 `npm test` runs the unit tests (Vitest) for storage, routing paths, the topic catalog, saved
 diagram edits, and integrity checks on every curated topic (unique slugs and tabs, doc links that
-point at real tabs). CI runs them before each deploy.
+point at real tabs). Kubernetes diagrams are also checked for layout mistakes (`src/diagrams/layout-lint.ts`):
+boxes that overlap, boxes that straddle a zone border, and arrows that pass through a box they don't
+connect. CI runs them before each deploy.
 
 ## Adding a topic
 
