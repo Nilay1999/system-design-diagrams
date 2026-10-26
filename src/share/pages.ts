@@ -11,7 +11,7 @@ export { SITE };
  */
 
 /** Production URL, used for absolute links in previews. Override with SITE_URL at build time. */
-export const DEFAULT_SITE_URL = "https://system-design-diagrams.vercel.app";
+export const DEFAULT_SITE_URL = "https://yggdrasil-books.vercel.app";
 
 export interface SharePage {
   /** URL path, e.g. `/kubernetes/pods`. */

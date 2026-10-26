@@ -18,7 +18,7 @@ Guidance for Claude Code sessions working in this repo. The README covers the us
 | System Design | `/topics/<slug>/<tab?>` | 24 designs, docs in `docs/*.md`, diagrams in `src/diagrams/*.ts` |
 | Kubernetes | `/kubernetes` (overview), `/kubernetes/<slug>/<tab?>` | 29 topics, docs in `docs/kubernetes/*.md`, diagrams in `src/diagrams/kubernetes/*.ts` |
 
-Live site: https://system-design-diagrams.vercel.app (deployed by `.github/workflows/deploy.yml` on push to `main`).
+Live site: https://yggdrasil-books.vercel.app (deployed by `.github/workflows/deploy.yml` on push to `main`).
 
 ## Commands
 
@@ -72,7 +72,7 @@ Work is on branch `feat/kubernetes-track`. Done: the Kubernetes track (29 topics
 Open items:
 
 - **Preview images.** `public/og/` cards still use the old navy and purple; they could be redrawn in the Nordic colours (`scripts/build-og-images.mjs`, then `npm run og`).
-- **Domain.** The site is still at `system-design-diagrams.vercel.app`; the owner may rename the Vercel project or add a domain, then set `SITE_URL`. After deploying, check links with LinkedIn Post Inspector, and confirm Vercel serves `dist/kubernetes/index.html` at `/kubernetes`.
+- **Domain.** Moving from `system-design-diagrams.vercel.app` to `yggdrasil-books.vercel.app` (code, README and `DEFAULT_SITE_URL` updated 2026-10-26). The owner adds the domain in Vercel (Settings → Domains), renames the project to `yggdrasil`, and sets `SITE_URL=https://yggdrasil-books.vercel.app`. After deploying, check links with LinkedIn Post Inspector, and confirm Vercel serves `dist/kubernetes/index.html` at `/kubernetes`.
 - **Bundle size.** All docs load eagerly, so the main JS grew from ~830 KB to ~1.3 MB. An option is to lazy-load the Kubernetes track's catalog.
 - **Icon placeholders.** Diagram icons appeared as placeholder squares in an early check, in both tracks. It's unconfirmed whether this is just loading time.
 - The original Kubernetes source guides live only on the owner's machine; their content is already in `docs/kubernetes/`.

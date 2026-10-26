@@ -2,7 +2,7 @@
 
 <img src="public/yggdrasil.svg" alt="" width="72" align="right" />
 
-**The tree of engineering knowledge.** Live: https://system-design-diagrams.vercel.app/
+**The tree of engineering knowledge.** Live: https://yggdrasil-books.vercel.app/
 
 In Norse myth, Yggdrasil is the world tree whose branches hold the nine worlds. Here each branch is a section, and every topic is an in-depth write-up beside editable [Excalidraw](https://excalidraw.com) diagrams, in one React + Vite + TypeScript app:
 
@@ -45,7 +45,7 @@ The rest of this README starts with the System Design section.
 
 ## Kubernetes section
 
-A second, separate section lives at [`/kubernetes`](https://system-design-diagrams.vercel.app/kubernetes): 29 Kubernetes topics, from *Why Kubernetes* to EKS and interview prep, each a plain-language doc beside 2–4 diagram tabs. One made-up food-delivery app, **FoodDash**, runs through every example.
+A second, separate section lives at [`/kubernetes`](https://yggdrasil-books.vercel.app/kubernetes): 29 Kubernetes topics, from *Why Kubernetes* to EKS and interview prep, each a plain-language doc beside 2–4 diagram tabs. One made-up food-delivery app, **FoodDash**, runs through every example.
 
 - Its own sidebar, overview page (a numbered learning path, like the System Design home page) and diagram legend. Switch libraries with the toggle at the top of the sidebar.
 - Docs are in [`docs/kubernetes/`](docs/kubernetes/); diagrams in [`src/diagrams/kubernetes/`](src/diagrams/kubernetes/); topics are registered in `src/topics/kubernetes.ts`.
@@ -67,7 +67,7 @@ A second, separate section lives at [`/kubernetes`](https://system-design-diagra
 Link previews don't run JavaScript, so `npm run build` writes a static HTML file for every shareable page (the home page, which is the System Design overview, the Kubernetes overview, every topic and every diagram tab) with its own title, description and Open Graph / Twitter tags. The site's name, tagline and logo live in `src/site.ts`; page titles and descriptions come from `src/share/pages.ts`.
 
 - **Preview images** live in `public/og/` (1200×630). After adding or renaming a topic, run `npm run og` and commit the new images; until then the page falls back to its section's image. Text renders with the system's Inter font if installed.
-- **Absolute URLs** use `SITE_URL`, else Vercel's production domain (`VERCEL_PROJECT_PRODUCTION_URL`), else `https://system-design-diagrams.vercel.app`. If you rename the Vercel project or add a domain, set `SITE_URL` in the Vercel project settings.
+- **Absolute URLs** use `SITE_URL`, else Vercel's production domain (`VERCEL_PROJECT_PRODUCTION_URL`), else `https://yggdrasil-books.vercel.app`. If you rename the Vercel project or add a domain, set `SITE_URL` in the Vercel project settings.
 - Check a link before posting with [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/); it also refreshes LinkedIn's cached preview.
 
 ## Running the app
