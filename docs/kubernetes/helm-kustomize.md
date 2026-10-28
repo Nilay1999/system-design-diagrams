@@ -121,7 +121,7 @@ Many teams use **both**: Helm for third-party tools, Kustomize (or one simple sh
 > - Always run `helm template` or `helm diff` before upgrading production, to see exactly what will change.
 > - Pin third-party chart versions, and read their changelogs before bumping them.
 
-## Interview questions
+## Check your understanding
 
 **Helm vs Kustomize?** Helm is a templating and packaging tool with releases and rollbacks, good for distributing software. Kustomize patches plain YAML with overlays and is built into kubectl. Many teams use Helm for third-party charts and Kustomize or a simple chart for their own, delivered through Argo CD.
 

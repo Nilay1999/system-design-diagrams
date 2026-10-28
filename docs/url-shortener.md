@@ -360,7 +360,7 @@ If Kafka is unavailable, the buffer fills and the oldest events are dropped. Ana
 - **CDN caching vs. analytics accuracy.** Caching redirects at the edge makes viral links nearly free to serve, but you then have to count clicks from CDN logs, which arrive with delay.
 - **SQL vs. NoSQL.** At 3 TB and 200 writes/s, sharded Postgres works. A managed key-value store removes the sharding work and scales further. Both are defensible; pick the one your team can operate.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How would you let owners change the destination of a link?** Treat edits as rare writes that invalidate the Redis key and purge the CDN. Lower the CDN TTL for editable links and never use `301` for them, since browsers cache `301` forever.
 - **How do you stop someone from creating a billion links?** Per-account quotas, rate limits, CAPTCHA for anonymous creation, and anomaly detection on creation rates.

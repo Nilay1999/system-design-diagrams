@@ -161,7 +161,7 @@ The same rule applies to API contracts and Kafka message schemas: always stay ba
 > - Kubernetes does **not** roll back automatically when a rollout fails. Your CI/CD pipeline or Argo Rollouts must run the undo.
 > - `kubectl rollout undo` changes the cluster, not Git. With GitOps, roll back by reverting the commit instead.
 
-## Interview questions
+## Check your understanding
 
 **How does a rolling update work?** The controller creates a new ReplicaSet for the new template and scales it up while scaling the old one down, within `maxSurge` and `maxUnavailable`. Pods only count once readiness passes for `minReadySeconds`.
 

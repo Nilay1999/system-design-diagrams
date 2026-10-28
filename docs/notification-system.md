@@ -232,7 +232,7 @@ Store notifications per user (`user_id, created_at DESC`) with read/unread state
 - **Strict no-duplicates vs no-drops:** you can't have both perfectly around a crash; decide per channel (push: prefer resend; SMS: prefer checking first).
 - **You can guarantee handing off to a provider, not that the user sees it:** phones are off, emails go to spam. Design product flows accordingly (e.g. OTP resend buttons).
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you avoid waking users at 3 a.m.?** Store time zones, apply quiet hours in the scheduler, and send campaigns at local times.
 - **How would you let users see notifications they missed?** The in-app inbox is the durable record; push is a best-effort nudge.

@@ -243,7 +243,7 @@ Many modern editors use CRDTs with a server anyway — for auth, persistence and
 - **One op in flight per client vs pipelining:** one in flight keeps client-side transformation simple; pipelining lowers latency on slow links but complicates the algorithm.
 - **Where sessions live:** one region per document is simple; multi-region editing needs cross-region ordering (or a CRDT).
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **Why not just lock paragraphs?** Locks make collaboration feel slow and break down with offline edits; OT/CRDT let everyone type anywhere.
 - **Why not last-writer-wins per character?** Positions shift with every edit, so "the same character" isn't well defined without transformation or unique IDs.

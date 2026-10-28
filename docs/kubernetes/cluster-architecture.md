@@ -26,7 +26,7 @@ That one rule, "write it down at the front desk and let everyone watch", is why 
 
 ## Who's who
 
-| Component | Restaurant role | What it really does | Interview detail |
+| Component | Restaurant role | What it really does | Key detail |
 | --- | --- | --- | --- |
 | **kube-apiserver** | Front desk | The only entry point. `kubectl`, dashboards, CI and every other component talk to it. It authenticates, authorises, runs admission checks, then saves the object | Stateless and horizontally scalable behind a load balancer |
 | **etcd** | The order book | A small, very reliable key-value store holding every Deployment, Pod and Secret | Raft consensus; needs a quorum of (n/2)+1, so run 3 or 5 members |
@@ -93,7 +93,7 @@ How a dead node is handled: the node controller marks it `NotReady` after it mis
 > - etcd uses a voting system (Raft). With 3 members, 2 must agree; with 5, 3 must agree. Always run an **odd** number.
 > - Back up etcd (`etcdctl snapshot save`) before upgrades. It's a CKA exam task too.
 
-## Interview questions
+## Check your understanding
 
 **Walk me through `kubectl apply` to a running pod.** The 9 steps above: authn, authz, admission, etcd, Deployment controller, ReplicaSet controller, scheduler binding, kubelet with CRI/CNI/CSI, probes, then endpoints and kube-proxy.
 

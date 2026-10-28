@@ -81,7 +81,7 @@ Think of a thermostat. You set 24°C. You don't switch the AC on and off yoursel
 
 ## Map what you already know
 
-If you've built backend systems, most of Kubernetes' internals are ideas you already use. These comparisons make for strong interview answers because they show understanding rather than memorisation.
+If you've built backend systems, most of Kubernetes' internals are ideas you already use. These comparisons help you understand it rather than memorise it.
 
 | You already know | Kubernetes equivalent | Why it matters |
 | --- | --- | --- |
@@ -98,22 +98,22 @@ If you've built backend systems, most of Kubernetes' internals are ideas you alr
 
 ## How to study each topic
 
-Every topic in this guide follows the same pattern, so you always know where to look: the idea in one line, a **real-life analogy**, **the problem it solves**, **how it works**, a **FoodDash example** with the YAML you'd write, and a **watch out** list of common mistakes and interview traps.
+Every topic in this guide follows the same pattern, so you always know where to look: the idea in one line, a **real-life analogy**, **the problem it solves**, **how it works**, a **FoodDash example** with the YAML you'd write, and a **watch out** list of common mistakes and traps.
 
 For every topic, aim to be able to:
 
 1. **Draw it.** Each topic's diagram tabs are the drawings to practise.
 2. **Write its YAML from memory.**
-3. **Break it on purpose and fix it with `kubectl`.** Interviewers test all three.
+3. **Break it on purpose and fix it with `kubectl`.**
 
 ## Watch out
 
 > [!WARNING]
 > - Kubernetes is not a replacement for Docker images. You still build images; Kubernetes runs them.
-> - Kubernetes is not always the right answer. For a small team with a few services, ECS or a PaaS can be the better call. Saying this trade-off out loud in an interview shows maturity.
+> - Kubernetes is not always the right answer. For a small team with a few services, ECS or a PaaS can be the better call. Knowing when not to use it matters as much as knowing how.
 > - "K8s" is just short for Kubernetes: K, then 8 letters, then s.
 
-## Interview questions
+## Check your understanding
 
 **Why Kubernetes over plain Docker or ECS?** It gives declarative desired state with self-healing, built-in service discovery and load balancing, rolling deploys and rollbacks, autoscaling, and a huge extension ecosystem (CRDs, operators) that is portable across clouds. The cost is operational complexity; for a small team with a few services, ECS or a PaaS can be the better call.
 

@@ -58,7 +58,7 @@ One colour theme, Nordic (deep teal top bar, sea-green accent, gold), the same i
 
 ## Adding a Kubernetes topic
 
-1. Write `docs/kubernetes/<slug>.md`: `# Title`, a `>` one-line summary, `## The idea in one minute` (a table), a `> [!TIP]` real-life analogy, the mechanics, a FoodDash example with YAML, `## Watch out` as a `> [!WARNING]` list, and `## Interview questions`. Use the FoodDash services (`orders-api`, `payments-api`, `restaurant-api`, `delivery-tracker`, `notification-worker`, `report-job`) for examples.
+1. Write `docs/kubernetes/<slug>.md`: `# Title`, a `>` one-line summary, `## The idea in one minute` (a table), a `> [!TIP]` real-life analogy, the mechanics, a FoodDash example with YAML, `## Watch out` as a `> [!WARNING]` list, and `## Check your understanding`. Use the FoodDash services (`orders-api`, `payments-api`, `restaurant-api`, `delivery-tracker`, `notification-worker`, `report-job`) for examples.
 2. Write `src/diagrams/kubernetes/<slug>.ts` exporting 2–4 `DiagramSpec`s. **Every tab must be linked from the doc** with `[text](#diagram/<id>)`; the tests enforce this.
 3. Register it in `src/topics/kubernetes.ts` (title, category, summary, tags).
 4. Run `npm test` (layout lint included), then `npm run og` and commit the new image.

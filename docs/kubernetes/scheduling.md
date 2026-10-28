@@ -127,7 +127,7 @@ FoodDash: on a busy Friday, `payments-api` should bump the nightly `report-job`,
 > - The scheduler only places pods once. It doesn't rebalance later. If nodes become uneven, the **descheduler** can evict pods so they get placed again.
 > - Prefer **soft** rules (`preferred…`, `ScheduleAnyway`) unless a hard rule is truly required.
 
-## Interview questions
+## Check your understanding
 
 **A pod is stuck in Pending. What do you check?** `kubectl describe pod` events: insufficient resources, taints without tolerations, unsatisfiable affinity, an unbound PVC (often a zone mismatch). Then the node autoscaler's logs.
 

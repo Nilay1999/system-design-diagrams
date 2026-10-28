@@ -231,7 +231,7 @@ Live changes the ingest side: the broadcaster pushes RTMP/SRT to an ingest serve
 - **Store every rendition vs just-in-time packaging:** storing is simple and fast to serve; packaging on the fly saves storage for rare formats but costs CPU at request time.
 - **Encode everything vs encode on demand:** eager encoding makes every video instantly playable at all qualities; lazy encoding saves compute on the long tail.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you make a new upload playable quickly?** Encode and publish low resolutions first; add higher ones later.
 - **How would you add live streaming?** Real-time transcode at ingest, rolling playlists, short segments, low-latency HLS/DASH.

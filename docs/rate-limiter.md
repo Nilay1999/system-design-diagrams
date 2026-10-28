@@ -240,7 +240,7 @@ For very high volumes, gateways can count locally and push increments to Redis e
 - **Rate limiting vs load shedding.** Rate limiting is about fairness between clients ("you used your quota"). Load shedding protects the server whoever is calling ("we're at 95 % CPU, drop low-priority traffic"). You want both.
 - **Token bucket vs sliding window.** Token bucket is better for per-second limits where short bursts are fine. Sliding window matches how people read "1,000 per day" and avoids surprising bursts.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How would you rate-limit a client across 10 regions exactly?** You can't do it exactly without a cross-region consensus round trip per request. Explain the per-region budget approach and its error bound.
 - **How do you handle a request that costs more than others?** Give it a `cost` (e.g. 10 tokens); the script already supports this.

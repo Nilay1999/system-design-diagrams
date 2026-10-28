@@ -115,7 +115,7 @@ See [Supply chain](#diagram/supply-chain).
 - Sign images (Cosign) and verify signatures at admission, so only images your CI built can run.
 - Detect odd runtime behaviour with Falco, and keep API server audit logs on.
 
-## Security checklist to quote in interviews
+## Security checklist
 
 - [ ] Least-privilege RBAC; no `cluster-admin` for apps or CI
 - [ ] One ServiceAccount per workload; token automount off where unused
@@ -133,7 +133,7 @@ See [Supply chain](#diagram/supply-chain).
 > - Many public images (nginx, older databases) expect root. Use their non-root variants (e.g. `nginxinc/nginx-unprivileged`).
 > - Security is layered: RBAC + pod hardening + NetworkPolicies + secret management. One layer alone isn't enough.
 
-## Interview questions
+## Check your understanding
 
 **What does a restricted pod look like?** Runs as non-root, `allowPrivilegeEscalation: false`, all capabilities dropped, `RuntimeDefault` seccomp, no host namespaces or privileged mode; ideally a read-only root filesystem too.
 

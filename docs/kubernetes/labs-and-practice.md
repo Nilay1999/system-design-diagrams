@@ -1,6 +1,6 @@
-# Labs, Interview Prep & 8-Week Plan
+# Labs, Practice & 8-Week Plan
 
-> Backend interviews test Kubernetes at three depths: definitions ("what is a Service?"), mechanisms ("what happens when…?") and judgement ("how would you design or debug…?"). Aim every answer at the second and third, and anchor it in something you've built.
+> Know Kubernetes at three depths: definitions ("what is a Service?"), mechanisms ("what happens when…?") and judgement ("how would you design or debug…?"). Aim for the second and third, and anchor what you learn in something you've built.
 
 ## The idea in one minute
 
@@ -8,7 +8,7 @@
 | --- | --- |
 | Learn each topic | Be able to **draw it**, **write its YAML from memory**, and **break it and fix it** with kubectl |
 | Practise | 11 hands-on labs on a local `kind` cluster, each with a "break it" exercise |
-| Prove it | A capstone project on GitHub that you can walk through in interviews |
+| Prove it | A capstone project that puts every topic together |
 | Certify | CKAD first for backend roles; CKA later for platform/SRE roles |
 | Timeline | 8 weeks at 10–12 hours a week ([8-week plan](#diagram/study-plan)) |
 
@@ -93,7 +93,7 @@ Answer every scenario in the same five steps: requirements, architecture, Kubern
 | Cluster upgrade with no downtime | Check deprecated APIs, control plane first, then node pools by surge or blue/green, PDBs respected |
 
 > [!IMPORTANT]
-> Be honest about the line between lab and production experience. "I built this in my capstone and here's how I tested failure" beats a vague production claim every time.
+> A lab is not production. Building the capstone and testing how it fails teaches a lot, but real traffic, real data and real on-call bring problems a lab never shows.
 
 ## 8-week plan and certification
 
@@ -106,7 +106,7 @@ Answer every scenario in the same five steps: requirements, architecture, Kubern
 | 5 | Troubleshooting + Helm; start the capstone | Fix 10 "break it" scenarios using only kubectl |
 | 6 | Gateway API, KEDA, Argo CD in the capstone | Capstone deploys from Git with one command |
 | 7 | Observability, failure tests; first killer.sh simulator | Simulator score noted; weak domains listed |
-| 8 | Timed drills, mock interviews | Sit CKAD; publish the capstone repo |
+| 8 | Timed drills, review weak spots | Sit CKAD; publish the capstone repo |
 
 |  | CKAD | CKA |
 | --- | --- | --- |

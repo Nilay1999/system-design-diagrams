@@ -109,7 +109,7 @@ You'd add more rules like "allow `orders-api` from the `fooddash` namespace to r
 > - Test policies: `kubectl exec` into an allowed and a denied pod and run `nc -zv payments-postgres 5432`.
 > - Namespaces are not a network boundary on their own. Without policies, every namespace can reach every other.
 
-## Interview questions
+## Check your understanding
 
 **By default, can a pod in namespace A reach a pod in namespace B?** Yes. Pod networking is flat; only NetworkPolicies (enforced by the CNI) restrict it.
 

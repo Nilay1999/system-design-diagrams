@@ -63,7 +63,7 @@ Google **GKE** (with Autopilot mode, where Google manages nodes too) and Azure *
 > - **Version support:** EKS versions get standard support for a limited time, then cost extra in extended support. Plan an upgrade every few months.
 > - **Spot instances** can cut node costs a lot for stateless services, but can be reclaimed with 2 minutes' notice. Use them with PDBs, multiple replicas, and Karpenter's interruption handling.
 
-## Interview questions
+## Check your understanding
 
 **How do pods get AWS permissions on EKS?** EKS Pod Identity (or IRSA): a ServiceAccount is associated with an IAM role, and the SDK receives short-lived credentials automatically. Never put access keys in Secrets.
 

@@ -65,7 +65,7 @@ function promotion() {
       0.85,
       { width: 560, tone: "good" },
     )
-    .panel("Argo CD vs Flux", ["Both CNCF graduated. Argo CD: polished UI, common in job ads. Flux: lighter, no required UI. Pair with Argo Rollouts or Flagger for canaries."], 1.85, 0.85, {
+    .panel("Argo CD vs Flux", ["Both CNCF graduated. Argo CD: polished UI, very widely used. Flux: lighter, no required UI. Pair with Argo Rollouts or Flagger for canaries."], 1.85, 0.85, {
       width: 380,
       tone: "info",
     })

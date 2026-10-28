@@ -211,7 +211,7 @@ A viral ad sends all its clicks to one Kafka partition and one Flink task. Fixes
 - **Pre-aggregation vs raw queries:** pre-aggregated rows are fast and cheap but can't answer questions about new dimensions; keep raw data for ad-hoc analysis.
 - **Lambda vs Kappa:** two code paths vs expensive replays.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **An advertiser disputes yesterday's bill. What do you do?** Recompute from the immutable raw archive with the recorded job version and fraud model; the result must be reproducible.
 - **How would you add impressions and click-through rate?** Same pipeline for impression events; join clicks to impressions by `impression_id` (stream join with a time bound, or in batch).

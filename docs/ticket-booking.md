@@ -243,7 +243,7 @@ Not all events have numbered seats. For general admission (e.g. 10,000 standing 
 - **Fairness vs throughput:** a waiting room adds waiting time but prevents meltdowns and bot advantage.
 - **Best-seat selection by the system vs user choice:** auto-assigning the best available seats reduces contention dramatically (no one fights over the same seat), at the cost of user choice.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you let a group of 6 sit together?** Search for contiguous available seats in a row (precomputed "gaps" per row), then hold them all atomically.
 - **How would you implement "best available" seats?** Score seats by view quality; the hold call picks the best contiguous block and holds it in one transaction.

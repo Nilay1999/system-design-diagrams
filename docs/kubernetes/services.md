@@ -90,7 +90,7 @@ kubectl port-forward svc/payments-api 8080:80      # reach it from your laptop
 > - `sessionAffinity: ClientIP` exists for sticky sessions, but storing sessions in Redis is the better design.
 > - Keep the Service and Deployment in the same Helm chart, sharing one label value, so they can't drift apart.
 
-## Interview questions
+## Check your understanding
 
 **How does a Service find pods?** Through a label selector. The EndpointSlice controller tracks Ready pods matching it; kube-proxy on every node programs rules that DNAT the ClusterIP to one of those pod IPs; CoreDNS maps the name to the ClusterIP.
 

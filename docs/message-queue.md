@@ -252,7 +252,7 @@ Alert on lag measured **in time** ("billing is 5 minutes behind") rather than me
 - **Kafka vs a managed queue (SQS):** SQS needs no operations and handles per-message retries and delays natively, but has no replay, no multiple consumer groups, and weaker ordering. Choose Kafka for event streams, SQS for simple job queues.
 - **Pull vs push:** pull lets consumers control their pace and batch efficiently; push (RabbitMQ) gives lower latency for small volumes but needs flow control to avoid overwhelming consumers.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you guarantee order for a user's events?** Key by `user_id`; idempotent producer to prevent reordering on retries; never change the partition count for that topic.
 - **A consumer takes 2 seconds per message and lag grows. What do you do?** Add partitions and consumers (if order allows), process in parallel inside a consumer with per-key ordering, batch downstream writes, or move slow work to another queue.

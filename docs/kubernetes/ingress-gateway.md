@@ -83,7 +83,7 @@ Popular implementations: Envoy Gateway, Istio, Cilium, NGINX Gateway Fabric, Tra
 
 ## Which should you learn?
 
-Both. Many existing clusters run Ingress, so you'll meet it at work. For new setups, Gateway API is the recommended direction. The popular community `ingress-nginx` controller has been retired, which is pushing many teams to migrate, so knowing both is a real advantage in interviews.
+Both. Many existing clusters run Ingress, so you'll meet it at work. For new setups, Gateway API is the recommended direction. The popular community `ingress-nginx` controller has been retired, which is pushing many teams to migrate, so knowing both is a real advantage.
 
 ## Watch out
 
@@ -93,7 +93,7 @@ Both. Many existing clusters run Ingress, so you'll meet it at work. For new set
 > - The Gateway is a single entry point: run it with several replicas and a PodDisruptionBudget.
 > - On kind or bare metal, `type: LoadBalancer` gets no external IP unless something provides one (cloud-provider-kind, MetalLB).
 
-## Interview questions
+## Check your understanding
 
 **Ingress vs Gateway API?** Ingress is a single object with basic host/path rules and vendor annotations for everything else. Gateway API separates infrastructure (GatewayClass, Gateway) from routing (HTTPRoute), supports header matching and weighted splits natively, and lets app teams own their routes.
 

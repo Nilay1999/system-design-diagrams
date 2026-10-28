@@ -63,7 +63,7 @@ The classic design puts an **Envoy sidecar** in every pod. The newer Istio **amb
 Often **not at first**. A mesh adds moving parts, CPU and memory per pod, and a new thing to debug at 3 AM. Good signs you need one: many services in several languages, a compliance requirement for encryption in transit, or recurring incidents from missing timeouts and retries. With 5 services, good client libraries and NetworkPolicies are usually enough.
 
 > [!IMPORTANT]
-> Saying this trade-off out loud is a strong interview answer: a mesh is a tool for a scale of problem, not a default.
+> Keep this trade-off in mind: a mesh is a tool for a scale of problem, not a default.
 
 ## Watch out
 
@@ -72,7 +72,7 @@ Often **not at first**. A mesh adds moving parts, CPU and memory per pod, and a 
 > - Retrying non-idempotent calls (like `POST /charge`) can double-charge customers. Only retry safe operations, or use idempotency keys.
 > - Sidecars must be ready before the app and stop after it; native sidecars fixed most of these startup and shutdown races.
 
-## Interview questions
+## Check your understanding
 
 **What does a service mesh give you that Kubernetes doesn't?** mTLS with workload identity, L7 authorization, per-request load balancing, retries/timeouts/circuit breaking, traffic splitting and uniform golden metrics, all outside the application code.
 

@@ -85,7 +85,7 @@ spec:
 > - If a NetworkPolicy blocks egress to port 53, **every** DNS lookup fails, and errors look like "unknown host" everywhere.
 > - CoreDNS is a single point of pain: give it enough replicas and consider NodeLocal DNSCache on large clusters.
 
-## Interview questions
+## Check your understanding
 
 **How does service discovery work in Kubernetes?** CoreDNS maps Service names to ClusterIPs; the EndpointSlice controller tracks Ready pods; kube-proxy programs every node so connections to the ClusterIP are DNATed to a Ready pod.
 

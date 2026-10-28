@@ -162,7 +162,7 @@ metadata:
 > - Namespaces are **not** a security wall by default. Pods in different namespaces can talk freely until you add NetworkPolicies.
 > - Use the recommended label keys: `app.kubernetes.io/name`, `app.kubernetes.io/version`, `app.kubernetes.io/part-of: fooddash`.
 
-## Interview questions
+## Check your understanding
 
 **What's the difference between `kubectl create` and `kubectl apply`?** `create` is imperative and fails if the object exists. `apply` is declarative and idempotent: it creates or updates the object to match the file, changing only what differs.
 

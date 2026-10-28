@@ -226,7 +226,7 @@ The server never merges binary files automatically; it can't know how. For speci
 - **Strong vs eventual consistency:** metadata per namespace must be strongly consistent (a file must never "go back"); notifications and search indexes can be eventually consistent.
 - **Cross-user dedup:** big storage savings vs a privacy leak.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How does a device that was offline for a month catch up?** Page through the journal from its cursor; if the journal was trimmed, do a full listing and reconcile using chunk hashes.
 - **How do you move a folder with 100,000 files?** With ID-based parents it's one metadata update plus one journal entry; clients apply the move locally without downloading anything.

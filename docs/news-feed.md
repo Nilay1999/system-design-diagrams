@@ -210,7 +210,7 @@ Pushing to users who never log in is wasted work. Track `last_active_at`; skip f
 - **Chronological vs ranked:** ranking increases engagement but costs compute, adds latency, and needs a fallback.
 - **IDs vs full objects in timelines:** IDs mean an extra hydration step but keep edits, deletes, and privacy correct.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you make sure I see my own post immediately?** The client inserts it locally, and the feed service always merges the viewer's own recent posts.
 - **How do you handle a user following 5,000 accounts?** Push covers most of them; limit the number of celebrities merged per request, and cache the merged result.

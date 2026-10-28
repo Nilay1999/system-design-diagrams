@@ -11,14 +11,14 @@ In Norse myth, Yggdrasil is the world tree whose branches hold the nine worlds. 
 
 The rest of this README starts with the System Design section.
 
-- **Docs** are plain Markdown in [`docs/`](docs/), so you can read them on GitHub without running anything. Each one covers requirements, capacity math, API, data model, architecture, step-by-step request flows, deep dives, failure modes, observability, trade-offs and interview follow-ups.
+- **Docs** are plain Markdown in [`docs/`](docs/), so you can read them on GitHub without running anything. Each one covers requirements, capacity math, API, data model, architecture, step-by-step request flows, deep dives, failure modes, observability, trade-offs and follow-up questions.
 - **Diagrams** are defined as code in [`src/diagrams/`](src/diagrams/) with a small DSL, then rendered as Excalidraw scenes you can pan, zoom, edit and export. Every topic has 4–5 diagram tabs: a detailed architecture, sequence diagrams for the main request flows, and deep dives (data models, algorithms, state machines).
 
 ## Topics
 
 | Topic | Category | Key ideas |
 | --- | --- | --- |
-| [Building Blocks & Interview Framework](docs/fundamentals.md) | Foundations | load balancing, caching, sharding, replication, CAP |
+| [Building Blocks & Design Framework](docs/fundamentals.md) | Foundations | load balancing, caching, sharding, replication, CAP |
 | [Networking Fundamentals](docs/networking.md) | Foundations | DNS, TCP/UDP, TLS 1.3, HTTP/1.1–3, WebSockets/SSE, NAT, VPCs |
 | [Core Concepts: Data & Distributed Systems](docs/core-concepts.md) | Foundations | B-tree vs LSM, isolation levels, Raft, 2PC vs saga, Bloom filters |
 | [URL Shortener](docs/url-shortener.md) | Infrastructure | base62, key generation, read-heavy caching |
@@ -45,7 +45,7 @@ The rest of this README starts with the System Design section.
 
 ## Kubernetes section
 
-A second, separate section lives at [`/kubernetes`](https://yggdrasil-books.vercel.app/kubernetes): 29 Kubernetes topics, from *Why Kubernetes* to EKS and interview prep, each a plain-language doc beside 2–4 diagram tabs. One made-up food-delivery app, **FoodDash**, runs through every example.
+A second, separate section lives at [`/kubernetes`](https://yggdrasil-books.vercel.app/kubernetes): 29 Kubernetes topics, from *Why Kubernetes* to EKS and hands-on labs, each a plain-language doc beside 2–4 diagram tabs. One made-up food-delivery app, **FoodDash**, runs through every example.
 
 - Its own sidebar, overview page (a numbered learning path, like the System Design home page) and diagram legend. Switch libraries with the toggle at the top of the sidebar.
 - Docs are in [`docs/kubernetes/`](docs/kubernetes/); diagrams in [`src/diagrams/kubernetes/`](src/diagrams/kubernetes/); topics are registered in `src/topics/kubernetes.ts`.
@@ -60,7 +60,7 @@ A second, separate section lives at [`/kubernetes`](https://yggdrasil-books.verc
 | Config & Security | ConfigMaps & Secrets · RBAC & ServiceAccounts · Pod security & admission |
 | Scheduling & Scaling | Scheduling · Autoscaling · PDBs, drains & upgrades |
 | Operations & Delivery | Observability · Troubleshooting · Helm & Kustomize · GitOps · Operators · EKS |
-| Reference | Cheat sheet · Labs, interview prep & 8-week plan |
+| Reference | Cheat sheet · Labs, practice & 8-week plan |
 
 ## Sharing links (LinkedIn, Slack, X)
 

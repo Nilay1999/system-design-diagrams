@@ -213,7 +213,7 @@ See [Distributed crawl](#diagram/distributed).
 - **Bloom filter false positives:** some new URLs are never crawled; tune the filter size against memory.
 - **Freshness vs coverage:** a fixed bandwidth budget is split between recrawling known pages and discovering new ones.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How would you crawl only one site very quickly?** You can't, politely — the politeness limit caps it. Ask the site for a sitemap or a data feed instead.
 - **How do you detect that a page is important before you've crawled it?** Inbound link counts and the importance of linking pages, domain reputation, sitemap presence, depth from the home page.

@@ -76,7 +76,7 @@ Ship events to your log system (with an event exporter) if you want history.
 > - High-cardinality labels in metrics (like `userId` or `orderId`) can overload Prometheus. Put those in logs and traces, not metric labels.
 > - Logs and metrics cost money at scale. Set retention periods and drop debug logs in production.
 
-## Interview questions
+## Check your understanding
 
 **How would you find why one order failed at 8:42 PM?** Search logs by `orderId` to get the `traceId`, open the trace to find the failing or slow hop, then check that service's metrics and the pod's events around that time.
 

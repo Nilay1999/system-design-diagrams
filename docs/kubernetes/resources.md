@@ -116,7 +116,7 @@ Both run at admission time, before the pod is stored: see [LimitRange & Resource
 > - Tight CPU limits on a Java service cause latency spikes every few minutes. Check `container_cpu_cfs_throttled_periods_total` before blaming GC.
 > - Use the VPA in recommendation mode or Prometheus history to set requests from real data instead of guesses.
 
-## Interview questions
+## Check your understanding
 
 **Requests vs limits, and what happens when exceeded?** Requests drive scheduling and the QoS class; limits are enforced by cgroups. CPU over its limit is throttled; memory over its limit is OOMKilled.
 

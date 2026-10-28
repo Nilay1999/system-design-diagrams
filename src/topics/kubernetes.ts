@@ -29,7 +29,7 @@ import gitops from "../diagrams/kubernetes/gitops";
 import operators from "../diagrams/kubernetes/operators";
 import eks from "../diagrams/kubernetes/eks";
 import cheatSheet from "../diagrams/kubernetes/cheat-sheet";
-import interviewPrep from "../diagrams/kubernetes/interview-prep";
+import labsAndPractice from "../diagrams/kubernetes/labs-and-practice";
 
 // Docs live in docs/kubernetes/ so they are readable on GitHub without running the app.
 const docs = import.meta.glob<string>("../../docs/kubernetes/*.md", { query: "?raw", import: "default", eager: true });
@@ -281,12 +281,12 @@ const META: TopicMeta[] = [
     diagrams: cheatSheet,
   },
   {
-    slug: "interview-prep",
-    title: "Labs, Interview Prep & 8-Week Plan",
+    slug: "labs-and-practice",
+    title: "Labs, Practice & 8-Week Plan",
     category: "Reference",
     summary: "kind labs with break-it exercises, a capstone project, model answers, scenario questions and a CKAD plan.",
-    tags: ["interview", "CKAD", "labs", "capstone", "kind"],
-    diagrams: interviewPrep,
+    tags: ["practice", "CKAD", "labs", "capstone", "kind"],
+    diagrams: labsAndPractice,
   },
 ];
 

@@ -165,7 +165,7 @@ spec:
       emptyDir: {}                     # shared scratch folder for both containers
 ```
 
-## Two more patterns (good for interviews)
+## Two more patterns
 
 See [Multi-container patterns](#diagram/patterns).
 
@@ -189,7 +189,7 @@ Pods the kubelet runs directly from files on the node (`/etc/kubernetes/manifest
 > - Init containers re-run if the whole Pod restarts, so make them **idempotent** (running migrations twice must be safe; Flyway handles this).
 > - Resource requests for sidecars count toward the Pod. A heavy mesh sidecar on 200 pods adds up to real money.
 
-## Interview questions
+## Check your understanding
 
 **Pod vs container?** A container is one process environment. A Pod is a group of containers that share network and storage and are scheduled as one unit on one node.
 

@@ -298,7 +298,7 @@ Checkout spans order, inventory and payment. The payment service doesn't call th
 - **Build vs buy:** PSPs handle card networks, 3-D Secure and much of PCI; you still own idempotency, the state machine, the ledger, payouts and reconciliation.
 - **Authorise-then-capture vs immediate capture:** authorise at checkout and capture at shipping avoids refunds for items that can't ship, but authorisations expire (typically 7 days).
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **Why not just use a `balance` column?** Updating balances in place loses history and makes errors unrecoverable; a ledger records every movement and lets you recompute balances.
 - **How do you handle currency conversion?** Record both amounts and the FX rate on the transaction; FX gains/losses go to their own ledger account.

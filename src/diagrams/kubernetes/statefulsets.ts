@@ -102,7 +102,7 @@ function operatorBoundary() {
       width: 300,
       tone: "info",
     })
-    .panel("Often the senior answer", ["Keep stateless apps in Kubernetes; let AWS run the database.", "“It depends, and here's the trade-off” wins interviews."], 2.8, 0.75, {
+    .panel("Often the best choice", ["Keep stateless apps in Kubernetes; let AWS run the database.", "“It depends, and here's the trade-off” is usually the right answer."], 2.8, 0.75, {
       width: 300,
       tone: "warn",
     })

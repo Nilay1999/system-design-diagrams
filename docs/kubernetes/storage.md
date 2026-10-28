@@ -99,7 +99,7 @@ An EBS disk lives in **one availability zone**. With the default `Immediate` bin
 > - In the cloud, prefer managed databases (RDS, Aurora) over running databases on PVCs, unless you have strong reasons and an Operator.
 > - Deleting a pod doesn't delete its PVC, and a PVC in use is protected by a finalizer until the pod is gone.
 
-## Interview questions
+## Check your understanding
 
 **PV vs PVC?** A PVC is a namespaced request for storage written by the developer; a PV is the cluster-wide object representing the actual disk. They bind 1:1. With a StorageClass, PVs are created on demand.
 

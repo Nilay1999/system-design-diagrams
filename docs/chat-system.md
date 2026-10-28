@@ -239,7 +239,7 @@ With the Signal protocol, the server only relays ciphertext:
 - **Server-side history** (Messenger, Slack) vs **device-only** (early WhatsApp): server history enables multi-device, search and new-device sync; device-only minimises storage and data exposure.
 - **Snowflake IDs vs a per-conversation sequencer:** no coordination vs strict order.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you show "delivered" for a group?** Track per-member delivered/read cursors; show ✓✓ when all (or show per-member info on request).
 - **How do you delete a message for everyone?** A tombstone system message that clients apply; the server replaces the body. Can't guarantee removal from devices that already have it.

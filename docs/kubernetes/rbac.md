@@ -109,7 +109,7 @@ ServiceAccounts are also the bridge to cloud permissions: on EKS, you link a Ser
 > - Never give CI pipelines `cluster-admin`. Give them only what they deploy (or use GitOps so CI needs no cluster access at all).
 > - One ServiceAccount per workload, never a shared `default` with extra permissions.
 
-## Interview questions
+## Check your understanding
 
 **Role vs ClusterRole?** A Role is namespaced; a ClusterRole is cluster-wide or a reusable template. A RoleBinding can grant a ClusterRole within one namespace.
 

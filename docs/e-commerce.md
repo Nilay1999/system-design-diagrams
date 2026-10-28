@@ -216,7 +216,7 @@ Retries are normal: users double-click, apps retry on timeouts, Kafka redelivers
 - **Synchronous vs queued checkout:** synchronous gives the best normal experience; queued survives flash sales.
 - **Orchestration vs choreography:** an orchestrator keeps the saga visible in one place; pure event choreography is more decoupled but harder to follow and debug.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you handle a cart with items from several sellers or warehouses?** Split into shipments (sub-orders) after payment; reserve per warehouse.
 - **How do you implement "notify me when back in stock"?** Subscribe users per SKU; an inventory event fans out notifications in batches, rate-limited.

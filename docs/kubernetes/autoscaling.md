@@ -109,7 +109,7 @@ Follow it on [8:30 PM rush](#diagram/dinner-rush).
 > - Set `maxReplicas` sensibly. A bug that burns CPU in a loop will happily scale you to 100 pods and a large bill.
 > - No CPU requests → the HPA shows `<unknown>` targets and never scales.
 
-## Interview questions
+## Check your understanding
 
 **How does HPA work, and why might it not scale?** It computes `ceil(replicas × current / target)` every 15 seconds. Common reasons it doesn't scale: no resource requests, metrics-server missing, already at `maxReplicas`, or scaling on CPU when the bottleneck is I/O or a queue.
 

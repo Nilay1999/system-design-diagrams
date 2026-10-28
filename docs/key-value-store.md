@@ -250,7 +250,7 @@ Tombstones are removed by compaction only after `gc_grace_seconds` (e.g. 10 days
 - **Smart client vs proxy coordinator.** Smart clients save a hop but must track ring changes; a coordinator hop is simpler for clients.
 - **LSM vs B-tree.** Write-optimised vs read-optimised; see the storage engine section.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **Why not `hash(key) mod N`?** Adding one node would move almost every key. Consistent hashing moves ~1/N.
 - **What does W + R > N actually guarantee?** Overlap between the write set and read set, when both are drawn from the same N nodes. It does not give linearizability (concurrent writes, sloppy quorum, read-repair races).

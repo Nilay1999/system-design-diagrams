@@ -114,7 +114,7 @@ How real companies protect secrets, in order of maturity ([Securing Secrets](#di
 > - Environment variables can leak into logs, crash dumps and `kubectl describe`. Mounted files are slightly safer for secrets.
 > - Never put real secrets in a Helm `values.yaml` committed to Git.
 
-## Interview questions
+## Check your understanding
 
 **How do you manage secrets securely?** Explain that base64 is not encryption, then the maturity ladder: least-privilege RBAC, encryption at rest with KMS, External Secrets Operator with AWS Secrets Manager, and workload identity instead of static keys.
 

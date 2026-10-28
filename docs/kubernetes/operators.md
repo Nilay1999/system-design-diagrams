@@ -65,7 +65,7 @@ You can build Operators with **Kubebuilder** or **Operator SDK** in Go (or frame
 > - Deleting a CRD deletes **every** object of that type. Be very careful in production.
 > - **Finalizers** let a controller run cleanup before an object disappears (e.g. delete the S3 backups). If the controller is gone, objects with finalizers get stuck in `Terminating`.
 
-## Interview questions
+## Check your understanding
 
 **What is an Operator?** A custom controller plus CRDs that encode operational knowledge (provision, failover, backup, upgrade) for an application, applying the same reconciliation loop to your own resources. Examples: Strimzi, CloudNativePG, Prometheus Operator, cert-manager.
 

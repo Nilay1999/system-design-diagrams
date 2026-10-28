@@ -62,7 +62,7 @@ Cache-Control: public, max-age=300
     { "text": "system design", "type": "global" },
     { "text": "systemctl", "type": "global" },
     { "text": "sysco earnings", "type": "trending" },
-    { "text": "system design interview", "type": "personal" }
+    { "text": "system design basics", "type": "personal" }
   ]
 }
 ```
@@ -209,7 +209,7 @@ If the pipeline fails, the servers keep serving the last good snapshot — stale
 - **Personalisation vs caching:** personal suggestions defeat shared caches; keep them as a separate, small merge.
 - **Precomputed top-k:** makes reads trivially fast but updates expensive — the reason updates are offline.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **Why not use a search engine like Elasticsearch with prefix queries?** It works at small scale, but top-k by popularity for short prefixes means scanning huge posting lists per keystroke; precomputation wins at scale.
 - **How would you support "mid-word" matching (typing "design" suggests "system design")?** Index each query under every word start, not just the query start (more memory), or use an n-gram index.

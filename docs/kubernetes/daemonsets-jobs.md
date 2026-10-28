@@ -110,7 +110,7 @@ kubectl get cronjobs,jobs,pods -n fooddash
 > - For multi-step pipelines (step B after step A, fan-out, retries per step), use Argo Workflows or Airflow rather than chaining CronJobs.
 > - A sidecar in a Job used to keep it running forever. Native sidecars (init containers with `restartPolicy: Always`) fixed this.
 
-## Interview questions
+## Check your understanding
 
 **Why can't you use a Deployment for a migration?** A Deployment restarts a container that exits, even with code 0, because it expects it to run forever. A Job treats exit 0 as done.
 

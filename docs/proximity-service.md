@@ -107,7 +107,7 @@ Keeping a few small ranking fields (category, rating) in the index lets the serv
 | S2 (Google) / H3 (Uber) | Hierarchical cells on the sphere (Hilbert curve squares / hexagons) | Accurate near poles; good covering of circles and polygons | More complex libraries |
 | PostGIS / Elasticsearch geo | R-trees / BKD-trees built in | Least custom code; rich queries | Another cluster to run; may be slower than in-memory lookups |
 
-Any of these is a good interview answer if you explain the trade-offs. This design uses **geohash** for simplicity and discusses the quadtree as the density-adaptive alternative.
+Any of these is a good choice if you can explain the trade-offs. This design uses **geohash** for simplicity and discusses the quadtree as the density-adaptive alternative.
 
 ## High-level architecture
 
@@ -223,7 +223,7 @@ The index is small, so every region holds a complete copy. Users are routed to t
 - **Cell precision:** smaller cells mean fewer false candidates but more cells to look up for a large radius.
 - **Geohash vs H3/S2:** geohash is simple and works in any key-value store; H3's hexagons have uniform neighbours (better for analytics and ride-sharing), S2 handles the sphere more accurately.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you support "search along my route"?** Cover the route polyline with cells (S2/H3 region covering), query those cells, and rank by detour distance.
 - **How do you search by polygon (a neighbourhood boundary)?** Cover the polygon with cells, then check exact point-in-polygon for candidates.

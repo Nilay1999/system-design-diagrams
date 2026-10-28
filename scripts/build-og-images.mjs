@@ -126,7 +126,7 @@ write(
 );
 
 const TRACK_CARDS = {
-  "system-design": { title: "System design, drawn and explained", summary: "Requirements, capacity math, architecture, request flows and failure modes for classic interview designs, each beside editable diagrams." },
+  "system-design": { title: "System design, drawn and explained", summary: "Requirements, capacity math, architecture, request flows and failure modes for classic large-scale systems, each beside editable diagrams." },
   kubernetes: { title: "Kubernetes, explained with diagrams", summary: "From desired state to EKS: every concept in plain language, with the YAML you'd write and diagrams you can edit." },
 };
 

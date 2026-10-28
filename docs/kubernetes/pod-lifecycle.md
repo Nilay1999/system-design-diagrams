@@ -103,7 +103,7 @@ For Spring Boot, set `server.shutdown=graceful`. For Node.js, listen for `SIGTER
 > - Don't set a huge `initialDelaySeconds` on liveness to cover slow starts; use a **startupProbe** instead.
 > - `terminationGracePeriodSeconds` must be longer than `preStop` sleep plus your app's drain time, or SIGKILL arrives mid-drain.
 
-## Interview questions
+## Check your understanding
 
 **Readiness vs liveness vs startup probes?** Readiness gates traffic and never restarts; liveness restarts the container; startup protects slow boots by delaying the other two. Never make liveness depend on a database, or a DB blip restarts your whole fleet.
 

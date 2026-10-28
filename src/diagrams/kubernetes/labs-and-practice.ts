@@ -10,7 +10,7 @@ function studyPlan() {
     ["Troubleshooting + Helm; start the capstone", "Fix 10 'break it' scenarios using only kubectl"],
     ["Gateway API, KEDA, Argo CD in the capstone", "Capstone deploys from Git with one command"],
     ["Observability, failure tests; first killer.sh", "Simulator score noted, weak domains listed"],
-    ["Timed drills, mock interviews", "Sit CKAD; publish the capstone repo"],
+    ["Timed drills, review weak spots", "Sit CKAD; publish the capstone repo"],
   ];
   weeks.forEach(([read, check], i) => {
     const col = (i % 4) * 1.2;
@@ -28,7 +28,7 @@ function studyPlan() {
 }
 
 function capstone() {
-  return new Diagram("Capstone: your portfolio project", "A small event-driven platform deployed the way a production team would, so you can walk through it in interviews")
+  return new Diagram("Capstone: an end-to-end project", "A small event-driven platform deployed the way a production team would")
     .zone("kind or EKS cluster", ["gw", "orders", "pg", "kafka", "inv", "redis", "argo", "obs"], "#326ce5")
     .node("git", "GitHub: code + Helm chart", 0, 2.2, "client", { detail: "Actions: build, Trivy scan, push", icon: "git-branch" })
     .node("gw", "Gateway API", 1.4, 0, "edge", { detail: "HTTPRoute, 90/10 canary" })
@@ -56,7 +56,7 @@ function capstone() {
 }
 
 function answerShape() {
-  return new Diagram("How to answer a scenario question", "Interviewers test three depths: definitions, mechanisms and judgement. Aim for the last two", { icons: false })
+  return new Diagram("How to reason through a scenario", "Think at three depths: definitions, mechanisms and judgement. Aim for the last two", { icons: false })
     .node("req", "1. Requirements", 0, 0, "client", { detail: "traffic, availability target, data" })
     .node("arch", "2. Architecture", 1.15, 0, "object", { detail: "draw it: the diagram tabs are your practice" })
     .node("prim", "3. Kubernetes primitives", 2.3, 0, "control", { detail: "which objects, and why" })
@@ -79,7 +79,7 @@ function answerShape() {
       0.85,
       { width: 560, tone: "info" },
     )
-    .panel("Be honest", ["Separate lab experience from production experience. Depth on a real capstone beats vague production claims."], 1.85, 0.85, {
+    .panel("Lab vs production", ["A lab is not production. Test failures in the capstone, but expect real traffic to surprise you."], 1.85, 0.85, {
       width: 380,
       tone: "warn",
     })

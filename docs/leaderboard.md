@@ -200,7 +200,7 @@ See [Count-Min Sketch](#diagram/sketch).
 - **Window granularity:** finer buckets give smoother sliding windows but more state and more merges.
 - **Write-through vs event-driven updates:** updating Redis in the request is simpler and faster to show; consuming score events from Kafka decouples the systems at the cost of a small delay.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you reset a season?** Start writing to a new key (`lb:season43`) at the boundary; keep the old key read-only for history, then archive it.
 - **How would you show "you moved up 3 places"?** Store the previous rank with the score submission and compare after `ZADD`.

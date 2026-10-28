@@ -1,6 +1,6 @@
 # Troubleshooting Playbook
 
-> Almost every Kubernetes problem is found with four commands, in this order: `get` → `describe` → `logs` → `exec`. Practise this loop until it is muscle memory; live-debugging interview rounds test exactly this.
+> Almost every Kubernetes problem is found with four commands, in this order: `get` → `describe` → `logs` → `exec`. Practise this loop until it is muscle memory.
 
 ## The idea in one minute
 
@@ -110,9 +110,9 @@ A node `NotReady` usually means the kubelet stopped, the node ran out of disk (o
 > [!WARNING]
 > - Read the **events** first; they explain most problems in plain English.
 > - Fix the cause in Git, not just in the cluster, or the next deploy brings the bug back.
-> - After an incident, write a short blameless postmortem. Interviewers love hearing "here's an outage I debugged and what we changed."
+> - After an incident, write a short blameless postmortem. Sharing "here's an outage we debugged and what we changed" helps the whole team learn.
 
-## Interview questions
+## Check your understanding
 
 **A pod is in CrashLoopBackOff. What do you do?** `logs --previous`, the exit code and last state in `describe`, recent config changes, missing Secrets, dependency reachability, and whether liveness is killing a slow start.
 

@@ -54,7 +54,7 @@ type TopicMeta = Omit<Topic, "doc" | "source" | "track" | "category" | "diagrams
 const META: TopicMeta[] = [
   {
     slug: "fundamentals",
-    title: "Building Blocks & Interview Framework",
+    title: "Building Blocks & Design Framework",
     category: "Foundations",
     summary: "The recurring components of scalable systems and a repeatable way to approach any design.",
     tags: ["load balancing", "caching", "sharding", "replication", "CAP"],

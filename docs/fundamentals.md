@@ -1,10 +1,10 @@
-# Building Blocks & Interview Framework
+# Building Blocks & Design Framework
 
 > Almost every large system is a recombination of the same dozen components. Learn them once, then learn *when* each one earns its place.
 
 ## How to approach a design
 
-A repeatable loop works for interviews and real design reviews alike. The time split below is for a 45-minute interview; in a real design review, the same steps become sections of the design document.
+A repeatable loop works for any design discussion. The time split below is for a 45-minute design session; in a written design review, the same steps become sections of the design document.
 
 | Step | Time | What you produce | Questions to ask |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ A repeatable loop works for interviews and real design reviews alike. The time s
 ### Rules of thumb
 
 - **Design for the requirements you wrote down.** If a component doesn't serve a requirement, remove it. Every box on the diagram should have a reason you can say out loud.
-- **Say the trade-off out loud.** "I'm choosing X, which costs Y, because Z matters more here." Interviewers score reasoning, not the final picture.
+- **Say the trade-off out loud.** "I'm choosing X, which costs Y, because Z matters more here." Reviewers care about the reasoning more than the final picture.
 - **Start simple, then scale.** A single server and database that works beats a sharded mesh that doesn't. Show the simple version first, then evolve it with the numbers from your estimate.
 - **Follow the data.** For every piece of data, know who writes it, who reads it, how often, and how fresh it must be. Most design decisions fall out of those four answers.
 - **Separate the hot path from everything else.** The request the user is waiting on should touch as few components as possible. Push everything else (emails, analytics, indexing) to queues.
@@ -245,9 +245,9 @@ See the [Scaling journey](#diagram/scaling-journey) diagram. Each step solves a 
 | 4 | Sharded DB, queues + workers | Writes outgrow one primary; slow work blocks requests |
 | 5 | Multiple regions | Global latency, disaster recovery, data residency |
 
-Don't jump to stage 4 in an interview unless the numbers from your estimate require it. Explaining *why* you need each step is worth more than drawing every box.
+Don't jump to stage 4 unless the numbers from your estimate require it. Explaining *why* you need each step is worth more than drawing every box.
 
-## Common interview follow-ups
+## Common follow-up questions
 
 - **How does the design change at 10× and 100× traffic?** Identify the first component to hit its limit (usually the database's write path or a hot key) and how you'd relieve it.
 - **What happens when component X fails? When a whole region fails?** Walk the request path and say what the user sees.

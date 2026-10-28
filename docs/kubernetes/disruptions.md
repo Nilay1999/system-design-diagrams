@@ -71,7 +71,7 @@ Big companies often go further with **blue/green clusters**: build a brand-new c
 > - PDBs don't spread pods. If all 3 replicas sit on one node, a drain must still move them one by one, and a crash takes all three. Combine PDBs with topology spread.
 > - Back up etcd (or rely on your provider's backups) before upgrading a self-managed control plane.
 
-## Interview questions
+## Check your understanding
 
 **How do you upgrade a cluster with zero downtime?** Check deprecated APIs first, upgrade the control plane one minor version at a time, then add-ons, then roll node groups by surging new nodes and draining old ones with PDBs respected. Or use blue/green clusters.
 

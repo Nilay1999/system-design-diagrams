@@ -273,7 +273,7 @@ A single team submitting a million jobs must not delay everyone else. Give each 
 - **Pull vs push to workers:** pull gives natural backpressure and simple scaling; push (HTTP callbacks directly from the scheduler) is simpler for users but needs rate limiting per target.
 - **Build vs buy:** Kubernetes CronJobs, Airflow, Temporal and cloud schedulers cover most needs. Build your own when you need millions of tenant-defined jobs with strict timing.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you guarantee a job doesn't run twice at the same time?** Concurrency policy `forbid` plus a per-job lock (conditional update on a `running_run_id` column) — while accepting that retries after a crash can still overlap if the old worker is only paused, so targets should still be idempotent.
 - **How do you support "run every 10 seconds" for a million jobs?** That's 100k runs/s — batch them: group jobs with the same schedule into one run that fans out, or use a streaming system instead of a scheduler.

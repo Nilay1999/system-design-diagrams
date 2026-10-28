@@ -4,7 +4,7 @@
 
 ## How to use this page
 
-The case-study topics use phrases like "LSM tree", "write skew", "fencing token", "Raft", "saga" and "HyperLogLog" in passing. This page explains each one well enough for you to defend it in an interview. It assumes Building Blocks (what the components are) and Networking Fundamentals (what an arrow costs).
+The case-study topics use phrases like "LSM tree", "write skew", "fencing token", "Raft", "saga" and "HyperLogLog" in passing. This page explains each one well enough for you to explain and defend it in a design discussion. It assumes Building Blocks (what the components are) and Networking Fundamentals (what an arrow costs).
 
 ## Storage engines
 
@@ -300,7 +300,7 @@ API design habits:
 - **Least privilege:** scoped IAM roles per service, private subnets, short-lived credentials.
 - **Abuse:** rate limits, input validation, protection against SSRF in URL fetchers (block internal IP ranges, as the Web Crawler topic does), and audit logs for sensitive actions.
 
-## Common interview follow-ups
+## Common follow-up questions
 
 - **B-tree or LSM for this workload?** State the read/write ratio and the access pattern. Write-heavy and append-only → LSM. Read-heavy with ranges and transactions → B-tree.
 - **What isolation level do you need, and what anomaly worries you?** Name it (lost update on a counter, write skew on seat booking). Then fix it with an atomic update, `SELECT FOR UPDATE`, a unique constraint, or serializable isolation with retries.

@@ -216,7 +216,7 @@ Redis approximates LRU by sampling a few keys (default 5) and evicting the oldes
 - **Local vs distributed cache:** a local cache is ~1,000× faster but duplicates memory in every server and is hard to invalidate. Use it only for small, hot, staleness-tolerant data.
 - **Cache vs faster database:** sometimes a read replica, a better index, or a materialised view removes the need for a cache and its consistency problems.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How do you invalidate a list that contains an updated item (e.g. "top 10 products")?** Cache the list as IDs only and fetch items separately, so updating an item doesn't touch the list; or tag cache entries with dependencies and delete by tag.
 - **How would you cache across regions?** Each region has its own cache; invalidation events are replicated to every region (via the CDC stream), accepting a short window of cross-region staleness.

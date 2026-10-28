@@ -234,7 +234,7 @@ WHERE trip_id = 't-42' AND status = 'ARRIVED';
 - **Greedy vs batched matching:** latency vs global efficiency.
 - **In-memory index vs database:** speed vs durability — acceptable because positions are replaced every few seconds.
 
-## Interview follow-up questions
+## Follow-up questions
 
 - **How would you support pooled rides (shared trips)?** Matching must consider detours for existing passengers: candidate generation along the current route, and an insertion cost for adding a new pickup/drop-off.
 - **How do you handle airports (queues of drivers)?** A FIFO queue per airport geofence instead of pure distance ranking.

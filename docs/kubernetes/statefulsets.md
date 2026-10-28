@@ -91,7 +91,7 @@ A StatefulSet gives identity and storage. It knows nothing about PostgreSQL or K
 That database-specific knowledge lives in **Operators**: CloudNativePG for PostgreSQL, Strimzi for Kafka, and others (see *CRDs, Controllers & Operators*). In many real companies the answer is even simpler: use a managed service (Amazon RDS, Amazon MSK) and keep only stateless apps in Kubernetes.
 
 > [!IMPORTANT]
-> Saying "it depends, and here's the trade-off" (operator vs managed service vs plain StatefulSet) is the senior answer in interviews.
+> Saying "it depends, and here's the trade-off" (operator vs managed service vs plain StatefulSet) is usually the right answer.
 
 ## Watch out
 
@@ -101,7 +101,7 @@ That database-specific knowledge lives in **Operators**: CloudNativePG for Postg
 > - `podManagementPolicy: Parallel` starts all pods at once when order doesn't matter (faster for Elasticsearch data nodes).
 > - The headless Service must exist and match `serviceName`, or the per-pod DNS names never appear.
 
-## Interview questions
+## Check your understanding
 
 **Deployment vs StatefulSet vs DaemonSet?** Deployment: interchangeable replicas. StatefulSet: stable name, DNS and per-pod storage, with ordered operations. DaemonSet: one pod per node for node-level agents.
 

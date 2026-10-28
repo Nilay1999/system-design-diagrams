@@ -324,7 +324,7 @@ That's why the big levers for user-facing latency are:
 | `ss -s` / `ss -tan state time-wait` | How many connections, and in which states? |
 | `tcpdump` / Wireshark | What's actually on the wire (retransmissions, resets, window sizes)? |
 
-## Common interview follow-ups
+## Common follow-up questions
 
 - **What happens when you type a URL and press Enter?** DNS (caches → recursive → root → TLD → authoritative) → TCP handshake → TLS (SNI, certificate check) → HTTP request through the CDN/LB → app → response → browser parses and fetches sub-resources over the same HTTP/2 connection.
 - **L4 or L7 load balancer for WebSockets or gRPC?** L4 works for long-lived WebSockets (L7 also supports `Upgrade`). gRPC needs L7 or client-side balancing, because HTTP/2 multiplexes many requests onto one connection.

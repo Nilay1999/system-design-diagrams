@@ -60,7 +60,7 @@ Follow a deploy, a drift and a rollback on [Sync, drift, rollback](#diagram/sync
 
 ## Argo CD vs Flux
 
-Both are CNCF graduated projects and do the same core job. **Argo CD** has a polished web UI and is very popular in interviews and job ads. **Flux** is lighter and more "Kubernetes-native", with no required UI. Pair either with **Argo Rollouts** or **Flagger** for automated canaries.
+Both are CNCF graduated projects and do the same core job. **Argo CD** has a polished web UI and is very widely used. **Flux** is lighter and more "Kubernetes-native", with no required UI. Pair either with **Argo Rollouts** or **Flagger** for automated canaries.
 
 ## Watch out
 
@@ -69,7 +69,7 @@ Both are CNCF graduated projects and do the same core job. **Argo CD** has a pol
 > - With `selfHeal: true`, emergency `kubectl` fixes get reverted within minutes. That's the point; make the fix in Git.
 > - Keep app code and deployment config in separate repos (or folders with separate pipelines), so a tag bump doesn't trigger a full rebuild loop.
 
-## Interview questions
+## Check your understanding
 
 **What is GitOps?** Git is the source of truth for desired state; an in-cluster agent (Argo CD, Flux) pulls and reconciles continuously, detects drift, and makes rollbacks a `git revert`. It's the reconciliation loop again, one level up.
 
