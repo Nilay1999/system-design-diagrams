@@ -1,5 +1,5 @@
 import { pageTitle, SITE } from "../site";
-import { BUILD_LABEL, buildPath, topicPath, type Topic, type TrackId } from "../topics";
+import { BUILD_LABEL, SIM_LABEL, buildPath, simPath, topicPath, type Topic, type TrackId } from "../topics";
 import type { Track } from "../tracks/types";
 
 export { SITE };
@@ -55,6 +55,14 @@ export function sharePages(tracks: readonly Track[]): SharePage[] {
       pages.push({ ...base, path: topicPath(topic), title: pageTitle(topic.title, track.name) });
       for (const tab of topic.diagrams.slice(1)) {
         pages.push({ ...base, path: topicPath(topic, tab.id), title: pageTitle(`${tab.name} — ${topic.title}`, track.name) });
+      }
+      if (topic.simulation) {
+        pages.push({
+          ...base,
+          path: simPath(topic),
+          title: pageTitle(`${SIM_LABEL}: ${topic.title}`, track.name),
+          description: `${topic.summary} Run the design: change the traffic, stop a part and watch where the load goes.`,
+        });
       }
       if (topic.evolution) {
         pages.push({

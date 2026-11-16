@@ -3,6 +3,7 @@ import type { BinaryFiles } from "@excalidraw/excalidraw/types";
 
 import type { DiagramSpec } from "../diagrams/dsl";
 import type { Evolution } from "../evolutions/types";
+import type { Simulation } from "../simulations/types";
 
 /** A diagram tab drawn directly in Excalidraw (community content), rather than built from the DSL. */
 export interface SceneSpec {
@@ -35,4 +36,6 @@ export interface Topic {
   doc: string;
   /** The same design as a step-by-step build, where the reader makes the decisions. Optional. */
   evolution?: Evolution;
+  /** The finished design as a running model the reader can load, resize and break. Optional. */
+  simulation?: Simulation;
 }

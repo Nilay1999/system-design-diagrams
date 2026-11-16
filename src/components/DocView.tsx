@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 
 import { Link } from "react-router";
 
-import { BUILD_LABEL, buildPath, type Topic } from "../topics";
+import { BUILD_LABEL, SIM_LABEL, buildPath, simPath, type Topic } from "../topics";
 import { useActiveHeading } from "../hooks/useActiveHeading";
 import { highlight } from "../lib/highlight";
 import { remarkCallouts } from "../lib/remarkCallouts";
@@ -101,13 +101,23 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
           </span>
         ))}
       </div>
-      {topic.evolution && (
-        <Link className="build-banner" to={buildPath(topic)}>
-          <strong>{BUILD_LABEL}</strong>
-          <span>
-            Start from one server and grow this design in {topic.evolution.steps.length} steps. You make each decision, and the diagram grows with you.
-          </span>
-        </Link>
+      {(topic.evolution || topic.simulation) && (
+        <div className="try-row">
+          {topic.simulation && (
+            <Link className="build-banner" to={simPath(topic)}>
+              <strong>{SIM_LABEL}</strong>
+              <span>Run this design. Change the traffic, resize the parts or stop one, and watch where the load goes.</span>
+            </Link>
+          )}
+          {topic.evolution && (
+            <Link className="build-banner" to={buildPath(topic)}>
+              <strong>{BUILD_LABEL}</strong>
+              <span>
+                Start from one server and grow this design in {topic.evolution.steps.length} steps. You make each decision, and the diagram grows with you.
+              </span>
+            </Link>
+          )}
+        </div>
       )}
       {toc.length > 0 && (
         <nav className="toc" aria-label="On this page">

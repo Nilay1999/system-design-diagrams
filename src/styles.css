@@ -1440,6 +1440,455 @@ button {
   }
 }
 
+/* ---------- Live simulator (pages/simulate) ---------- */
+
+/* Status colours: the first three are for text (4.5:1 on the page background), the --sim-*-mark ones for bars, borders and dots. */
+.view-sim {
+  --sim-ok: #1f6f30;
+  --sim-busy: #8a6100;
+  --sim-bad: #c92a2a;
+  --sim-ok-mark: #2f9e44;
+  --sim-busy-mark: #f08c00;
+  --sim-bad-mark: #e03131;
+  --sim-bad-bg: #fff5f5;
+  --sim-busy-bg: #fff9db;
+  --sim-good-bg: #ebfbee;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+}
+
+:root[data-theme="dark"] .view-sim {
+  --sim-ok: #8ce99a;
+  --sim-busy: #ffe066;
+  --sim-bad: #ffa8a8;
+  --sim-ok-mark: #51cf66;
+  --sim-busy-mark: #fcc419;
+  --sim-bad-mark: #ff6b6b;
+  --sim-bad-bg: #3a1618;
+  --sim-busy-bg: #3d3200;
+  --sim-good-bg: #12301c;
+}
+
+.sim-pane {
+  overflow-y: auto;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+}
+
+.sim-panel {
+  padding: 20px 20px 48px;
+}
+
+.sim-panel h2,
+.sim-remarks h2 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sim-panel section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.sim-scenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sim-scenarios button,
+.sim-switches button,
+.sim-pause {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.sim-scenarios button:hover,
+.sim-switches button:hover {
+  border-color: var(--accent);
+}
+
+.sim-scenarios button.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+:root[data-theme="dark"] .sim-scenarios button.on {
+  color: #08121a;
+}
+
+.sim-notice {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--accent-soft);
+  font-size: 14px;
+}
+
+.sim-control {
+  display: block;
+  margin-top: 12px;
+}
+
+.sim-control-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sim-control output {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sim-control input {
+  display: block;
+  width: 100%;
+  margin: 4px 0 2px;
+  accent-color: var(--accent);
+}
+
+.sim-help,
+.sim-caveat {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sim-switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sim-switches button.down {
+  border-color: var(--sim-bad-mark);
+  background: var(--sim-bad-bg);
+  color: var(--sim-bad);
+  font-weight: 600;
+}
+
+.sim-caveat {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Readings, then the diagram, then the explanation. */
+.sim-stage {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.sim-readings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--border);
+}
+
+.sim-readings div {
+  padding: 8px 12px;
+  background: var(--bg-subtle);
+}
+
+.sim-readings dt {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sim-readings dd {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-reading-busy dd {
+  color: var(--sim-busy);
+}
+
+.sim-reading-bad dd {
+  color: var(--sim-bad);
+}
+
+.sim-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+}
+
+.sim-diagram {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+}
+
+.sim-pause {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+
+.sim-remarks {
+  flex-shrink: 0;
+  max-height: 34%;
+  overflow-y: auto;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.sim-remarks ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.sim-remarks li {
+  padding: 6px 10px;
+  border-left: 4px solid var(--border);
+  border-radius: 0 6px 6px 0;
+  background: var(--bg);
+}
+
+.sim-remark-bad {
+  border-left-color: var(--sim-bad-mark) !important;
+  background: var(--sim-bad-bg) !important;
+}
+
+.sim-remark-warn {
+  border-left-color: var(--sim-busy-mark) !important;
+  background: var(--sim-busy-bg) !important;
+}
+
+.sim-remark-good {
+  border-left-color: var(--sim-ok-mark) !important;
+  background: var(--sim-good-bg) !important;
+}
+
+/* The diagram itself (SVG). */
+.sim-box {
+  fill: var(--bg);
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.sim-title {
+  fill: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sim-value {
+  fill: var(--text);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-note {
+  fill: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.sim-bar-track {
+  fill: var(--bg-muted);
+}
+
+.sim-bar {
+  fill: var(--sim-ok-mark);
+  transition: width 0.25s linear;
+}
+
+.sim-busy .sim-box {
+  stroke: var(--sim-busy-mark);
+}
+
+.sim-busy .sim-bar {
+  fill: var(--sim-busy-mark);
+}
+
+.sim-bad .sim-box {
+  stroke: var(--sim-bad-mark);
+  stroke-width: 3;
+  fill: var(--sim-bad-bg);
+}
+
+.sim-bad .sim-bar {
+  fill: var(--sim-bad-mark);
+}
+
+.sim-bad .sim-value {
+  fill: var(--sim-bad);
+  font-weight: 700;
+}
+
+.sim-down .sim-box {
+  stroke: var(--sim-bad-mark);
+  stroke-dasharray: 6 5;
+  fill: var(--bg-muted);
+}
+
+.sim-down .sim-value {
+  fill: var(--sim-bad);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sim-down .sim-kind,
+.sim-idle .sim-kind {
+  opacity: 0.35;
+}
+
+.sim-stoppable {
+  cursor: pointer;
+}
+
+.sim-stoppable:focus-visible {
+  outline: none;
+}
+
+.sim-stoppable:hover .sim-box,
+.sim-stoppable:focus-visible .sim-box {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.sim-switch circle {
+  fill: var(--bg-subtle);
+  stroke: var(--border);
+}
+
+.sim-switch path {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.sim-down .sim-switch circle {
+  fill: var(--sim-bad-mark);
+  stroke: var(--sim-bad-mark);
+}
+
+.sim-down .sim-switch path {
+  stroke: #fff;
+}
+
+.sim-wire {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.sim-edge-async .sim-wire {
+  stroke-dasharray: 7 6;
+}
+
+.sim-flow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+  animation: sim-flow linear infinite;
+}
+
+.sim-arrowhead {
+  fill: var(--text-muted);
+}
+
+.sim-edge-bad .sim-wire,
+.sim-edge-bad .sim-flow {
+  stroke: var(--sim-bad-mark);
+}
+
+.sim-edge-bad .sim-arrowhead {
+  fill: var(--sim-bad-mark);
+}
+
+.sim-edge-plate {
+  fill: var(--bg);
+}
+
+.sim-edge-text {
+  fill: var(--text-muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-edge-bad .sim-edge-text {
+  fill: var(--sim-bad);
+  font-weight: 700;
+}
+
+@keyframes sim-flow {
+  to {
+    stroke-dashoffset: calc(-1 * var(--gap));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-flow {
+    animation: none;
+  }
+
+  .sim-bar {
+    transition: none;
+  }
+}
+
+/* Two links side by side at the top of a write-up. */
+.try-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.try-row .build-banner {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1100px) {
+  .content.view-sim {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  .sim-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
 /* ---------- Theme ----------
  * The site uses one colour theme, Nordic (a northern night: deep teal bar, sea-green accent, gold),
  * with light and dark values set on :root above. These rules read its extra variables:

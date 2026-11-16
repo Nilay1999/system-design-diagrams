@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, type CSSProperties } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router";
 
-import { BUILD_LABEL, buildPath, isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics";
+import { BUILD_LABEL, SIM_LABEL, buildPath, isNonDefaultView, simPath, topicPath, useTopics, type Topic } from "../../topics";
 import { AppShell } from "../../layout/AppShell";
 import { DocView } from "../../components/DocView";
 import { Splitter } from "../../components/Splitter";
@@ -70,6 +70,11 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
           {topic.evolution && (
             <Link className="topbar-link primary" to={buildPath(topic)} title={BUILD_LABEL}>
               Build it<span className="wide-only"> step by step</span>
+            </Link>
+          )}
+          {topic.simulation && (
+            <Link className="topbar-link primary" to={simPath(topic)} title={SIM_LABEL}>
+              Simulate
             </Link>
           )}
           <Tabs className="segmented" label="View" items={VIEW_MODE_TABS} value={mode} onChange={setMode} />

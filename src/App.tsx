@@ -1,9 +1,10 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 
-import { BUILD_SEGMENT, parseLegacyHash, topicPath, useTopics } from "./topics";
+import { BUILD_SEGMENT, SIM_SEGMENT, parseLegacyHash, topicPath, useTopics } from "./topics";
 import { KUBERNETES, SYSTEM_DESIGN, TrackRoute } from "./tracks";
 import { BuildPage } from "./pages/evolve/BuildPage";
 import { OverviewPage } from "./pages/overview/OverviewPage";
+import { SimulatePage } from "./pages/simulate/SimulatePage";
 import { TopicPage } from "./pages/topic/TopicPage";
 
 /** `/` → the System Design overview. Also upgrades the old `#/<slug>/<view>` links to real routes. */
@@ -22,11 +23,13 @@ export default function App() {
       <Route element={<TrackRoute track={SYSTEM_DESIGN} />}>
         <Route path="/" element={<Home />} />
         <Route path={`/topics/:slug/${BUILD_SEGMENT}`} element={<BuildPage />} />
+        <Route path={`/topics/:slug/${SIM_SEGMENT}`} element={<SimulatePage />} />
         <Route path="/topics/:slug/:view?" element={<TopicPage />} />
       </Route>
       <Route path="/kubernetes" element={<TrackRoute track={KUBERNETES} />}>
         <Route index element={<OverviewPage />} />
         <Route path={`:slug/${BUILD_SEGMENT}`} element={<BuildPage />} />
+        <Route path={`:slug/${SIM_SEGMENT}`} element={<SimulatePage />} />
         <Route path=":slug/:view?" element={<TopicPage />} />
       </Route>
       <Route path="/k8s/*" element={<Navigate to="/kubernetes" replace />} />

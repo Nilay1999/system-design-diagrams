@@ -93,6 +93,7 @@ npm run preview    # serve the production build
   - Edits are **saved in your browser** (localStorage) per diagram tab. **Reset** restores the original.
   - Use **Export** to save a **PNG image** or an **.excalidraw** file. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
 - Some topics also have a **step-by-step build** (the gold "Build it" button in the top bar, currently on the URL Shortener). It starts from one server and one database. Each step describes a problem, you pick a fix from three options, and the diagram grows. Your progress is saved in your browser. See [Adding a step-by-step build](#adding-a-step-by-step-build).
+- Some topics also have a **live simulator** (the "Simulate" button in the top bar, currently on the URL Shortener). It shows the finished design running: dots flow along the arrows, each box shows its load, and headline numbers (success rate, slowest 1 %, cost) update a few times a second. Move the sliders to change traffic and resize parts, click a box to stop it, or pick a ready-made experiment such as "Redis crashes at peak". A panel under the diagram explains in plain words what is happening and why. See [Adding a live simulator](#adding-a-live-simulator).
 - Toggle light/dark mode with the button in the top-right corner.
 
 ## Project structure
@@ -107,6 +108,10 @@ src/
     types.ts                Evolution: the steps, decisions and growing diagram of a step-by-step build
     progress.ts             Where a reader is in a build, what the diagram should show, saved progress
     <topic>.ts              The step-by-step build for one topic
+  simulations/
+    types.ts                Simulation: nodes, edges, sliders, experiments and a step() model
+    format.ts, geometry.ts  Number formatting, queueing helper, where boxes and arrows are drawn
+    <topic>.ts              The live simulator for one topic
   tracks/                   The two libraries (System Design, Kubernetes): URLs, sidebar, legend, theme
   topics/
     curated.ts              Curated topic metadata (+ doc + diagram tabs)
@@ -123,6 +128,7 @@ src/
   layout/AppShell.tsx       Top bar, sidebar drawer and main area shared by pages
   pages/topic/              Topic page and its view-mode (split / doc / diagram) hook
   pages/evolve/             Step-by-step build page (/topics/<slug>/build)
+  pages/simulate/           Live simulator page (/topics/<slug>/simulate): runner hook and SVG diagram
   theme/                    ThemeProvider + useTheme
   providers/                Router, TanStack Query and theme providers
   hooks/                    usePreference, useDebouncedCallback
@@ -200,6 +206,21 @@ A build tells the same design as the write-up, but as a series of problems the r
    - `diagram(level, markAdded)`: one function that draws the design after each step. Give every node a fixed grid position so the picture grows in place, and use `stagedParts(level, markAdded)` to say when each part appears: `p.from(3)` is true from step 3 on, and `...p.added(3)` tags the part as NEW on the step that adds it.
 2. Register it on the topic in `src/topics/curated.ts` with `evolution: <yourEvolution>`. The button, banner, route and link preview appear on their own.
 3. Run `npm test`. The tests check that every step has one best choice, that the best choice is not always in the same position, and that the diagram at every step passes the layout lint.
+
+## Adding a live simulator
+
+A simulator is a small model of the finished design that the reader can load, resize and break. The URL Shortener (`src/simulations/url-shortener.ts`) is the example to copy.
+
+1. Create `src/simulations/<slug>.ts` that exports a `Simulation` (see `src/simulations/types.ts`):
+   - `nodes` and `edges`: the boxes (with grid positions, as in the diagram code) and arrows. Mark parts the reader may stop with `stoppable: true`.
+   - `controls`: the sliders, e.g. traffic, number of servers, cache size.
+   - `step(previous, inputs, dt)`: the model. From the slider values and the list of stopped parts, work out how much traffic each part carries, and return a state for every node and edge, the headline `readings`, and `remarks`: plain sentences that say what is happening and why. Keep values that change over time (a queue length, how full a cache is) in `memory`. It must be a pure function.
+   - `scenarios`: ready-made experiments. Each sets some sliders and stopped parts and says what to look for.
+   - `caveat`: one sentence on what the model leaves out.
+2. Register it on the topic in `src/topics/curated.ts` with `simulation: <yourSimulation>`.
+3. Run `npm test`. The shared tests check the layout, that every experiment produces a complete state with no broken numbers, and that the model is pure. Add a test file beside the model for the lessons it is meant to teach (see `url-shortener.test.ts`).
+
+The numbers are simple formulas, not measurements. Say so in `caveat`.
 
 ## Tech
 

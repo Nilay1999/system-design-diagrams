@@ -24,6 +24,13 @@ export const BUILD_LABEL = "Build it step by step";
 /** URL of a topic's step-by-step build. Only meaningful for topics that have an `evolution`. */
 export const buildPath = (topic: Topic) => `${TRACK_BASE[topic.track]}/${topic.slug}/${BUILD_SEGMENT}`;
 
+/** URL segment and name of a topic's live simulator, e.g. `/topics/url-shortener/simulate`. Same rule as `BUILD_SEGMENT`. */
+export const SIM_SEGMENT = "simulate";
+export const SIM_LABEL = "Live simulator";
+
+/** URL of a topic's live simulator. Only meaningful for topics that have a `simulation`. */
+export const simPath = (topic: Topic) => `${TRACK_BASE[topic.track]}/${topic.slug}/${SIM_SEGMENT}`;
+
 /** Whether `view` names a tab of `topic` that belongs in the URL (any tab but the default). */
 export const isNonDefaultView = (topic: Topic, view: string) =>
   topic.diagrams.some((d, i) => i > 0 && d.id === view);
