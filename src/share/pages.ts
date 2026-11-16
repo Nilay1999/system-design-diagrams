@@ -1,5 +1,5 @@
 import { pageTitle, SITE } from "../site";
-import { topicPath, type Topic, type TrackId } from "../topics";
+import { BUILD_LABEL, buildPath, topicPath, type Topic, type TrackId } from "../topics";
 import type { Track } from "../tracks/types";
 
 export { SITE };
@@ -55,6 +55,14 @@ export function sharePages(tracks: readonly Track[]): SharePage[] {
       pages.push({ ...base, path: topicPath(topic), title: pageTitle(topic.title, track.name) });
       for (const tab of topic.diagrams.slice(1)) {
         pages.push({ ...base, path: topicPath(topic, tab.id), title: pageTitle(`${tab.name} — ${topic.title}`, track.name) });
+      }
+      if (topic.evolution) {
+        pages.push({
+          ...base,
+          path: buildPath(topic),
+          title: pageTitle(`${BUILD_LABEL}: ${topic.title}`, track.name),
+          description: `${topic.summary} Grow the design in ${topic.evolution.steps.length} steps and make each decision yourself.`,
+        });
       }
     }
   }

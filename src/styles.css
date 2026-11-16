@@ -1068,6 +1068,378 @@ button {
   filter: invert(93%) hue-rotate(180deg);
 }
 
+/* ---------- Step-by-step build (pages/evolve) ---------- */
+
+/* Steps and decisions on the left, the growing diagram on the right. */
+.content.view-build {
+  grid-template-columns: minmax(340px, 460px) minmax(0, 1fr);
+}
+
+.build-pane {
+  overflow-y: auto;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+}
+
+.build {
+  padding: 20px 24px 64px;
+}
+
+.build-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.build-steps ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.build-steps ol button {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.build-steps ol button.done {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.build-steps ol button.current {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+:root[data-theme="dark"] .build-steps ol button.current {
+  color: #08121a;
+}
+
+.build-steps ol button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.build-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.build-step h2 {
+  margin: 4px 0 10px;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.build-step h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.build-step > h3 {
+  margin-top: 22px;
+}
+
+.build-intro {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+}
+
+.build-text p,
+.build-text ul {
+  margin: 0 0 10px;
+}
+
+.build-text ul {
+  padding-left: 20px;
+}
+
+.build-text > :last-child {
+  margin-bottom: 0;
+}
+
+.build-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.build-metrics div {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+}
+
+.build-metrics dt {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.build-metrics dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.build-decision {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.build-hint {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.choices {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.choices li {
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.choices li:hover {
+  border-color: var(--accent);
+}
+
+/* Once a choice is made, each option is coloured by how it compares with the design's own choice. */
+.choice-best {
+  --verdict: #1f6f30;
+  --verdict-bg: #ebfbee;
+}
+
+.choice-ok {
+  --verdict: #8a6100;
+  --verdict-bg: #fff3bf;
+}
+
+.choice-poor {
+  --verdict: #c92a2a;
+  --verdict-bg: #fff5f5;
+}
+
+:root[data-theme="dark"] .choice-best {
+  --verdict: #8ce99a;
+  --verdict-bg: #12301c;
+}
+
+:root[data-theme="dark"] .choice-ok {
+  --verdict: #ffe066;
+  --verdict-bg: #3d3200;
+}
+
+:root[data-theme="dark"] .choice-poor {
+  --verdict: #ffa8a8;
+  --verdict-bg: #3a1618;
+}
+
+.choices li[class^="choice-"],
+.choices li[class^="choice-"]:hover {
+  border-color: var(--border);
+  border-left-color: var(--verdict);
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.choice-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.verdict,
+.choice-yours {
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.verdict {
+  background: var(--verdict-bg);
+  color: var(--verdict);
+  font-weight: 700;
+}
+
+.choice-yours {
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.choice-feedback {
+  padding: 0 12px 12px;
+  font-size: 14px;
+}
+
+.build-result {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+  scroll-margin: 12px;
+}
+
+.build-cost {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.build-cost strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.build-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.build-recap {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.build-recap li span {
+  display: block;
+}
+
+.recap-problem {
+  font-weight: 700;
+}
+
+.recap-fix {
+  font-size: 14px;
+}
+
+.recap-yours {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stage-caption {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Links into the build: a button in the top bar and a banner at the top of the write-up. */
+.topbar-link {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--topbar-line, var(--border));
+  border-radius: var(--radius);
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.topbar-link.primary {
+  border-color: #f2c14e;
+  background: #f2c14e;
+  color: #13222a;
+}
+
+.build-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.build-banner strong {
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.build-banner strong::after {
+  content: " →";
+}
+
+@media (max-width: 1100px) {
+  .content.view-build {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .build-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .wide-only {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .build {
+    padding: 16px 16px 48px;
+  }
+}
+
 /* ---------- Theme ----------
  * The site uses one colour theme, Nordic (a northern night: deep teal bar, sea-green accent, gold),
  * with light and dark values set on :root above. These rules read its extra variables:

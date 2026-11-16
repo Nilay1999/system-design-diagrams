@@ -3,7 +3,7 @@ import { Link, Navigate } from "react-router";
 
 import { AppShell } from "../../layout/AppShell";
 import { pageTitle } from "../../site";
-import { groupByCategory, topicPath, useTopics } from "../../topics";
+import { BUILD_LABEL, buildPath, groupByCategory, topicPath, useTopics } from "../../topics";
 import { useTrack } from "../../tracks";
 
 /** A track's landing page: what the track is, then every topic as a numbered learning path. */
@@ -20,6 +20,7 @@ export function OverviewPage() {
   const order = new Map(catalog.topics.map((t, i) => [t, i + 1]));
   const first = catalog.first;
   const last = catalog.topics[catalog.topics.length - 1];
+  const buildable = catalog.topics.find((t) => t.evolution);
 
   return (
     <AppShell
@@ -46,6 +47,11 @@ export function OverviewPage() {
               <Link className="button" to={topicPath(last)}>
                 {last.title}
               </Link>
+              {buildable && (
+                <Link className="button" to={buildPath(buildable)}>
+                  {BUILD_LABEL}: {buildable.title} →
+                </Link>
+              )}
             </div>
           </div>
         </section>
@@ -75,7 +81,9 @@ export function OverviewPage() {
                       </span>
                     ))}
                   </div>
-                  <span className="card-meta">{t.diagrams.length} diagrams</span>
+                  <span className="card-meta">
+                    {t.diagrams.length} diagrams{t.evolution && " · step-by-step build"}
+                  </span>
                 </Link>
               ))}
             </div>

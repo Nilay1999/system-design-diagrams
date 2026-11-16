@@ -19,6 +19,7 @@ describe("sharePages", () => {
     expect(paths.has("/kubernetes/pods/patterns")).toBe(true);
     expect(paths.has("/topics/rate-limiter")).toBe(true);
     expect(paths.has("/topics/rate-limiter/check-flow")).toBe(true);
+    expect(paths.has("/topics/url-shortener/build")).toBe(true);
   });
 
   it("names pages after the topic and its section", () => {

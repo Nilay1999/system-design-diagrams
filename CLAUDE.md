@@ -42,6 +42,7 @@ Run `npx tsc -b && npm test && npm run build` before calling any change done.
 - `src/topics/`: `Topic` (has `track`), `curated.ts` (System Design list), `kubernetes.ts` (Kubernetes list, sidebar order = list order), `paths.ts` (`TRACK_BASE`, `topicPath`).
 - `src/diagrams/dsl.ts`: diagram-as-code. `Diagram` (grid: col × 330px, row × 170px; nodes 210px wide) and `Sequence`. Node kinds include Kubernetes-specific `control` (control plane) and `object` (API objects). `K8S_LEGEND` relabels the kinds for the Kubernetes track. Icons are inferred from text (`icon-rules.ts`) or set with `{ icon: "name" }` (names in `icons.generated.ts`).
 - `src/diagrams/layout-lint.ts`: reports overlapping boxes, boxes crossing a zone border, and arrows passing through a box they don't connect. `src/topics/kubernetes.test.ts` runs it on every Kubernetes tab. Fix a failing arrow with `{ via: [[col, row]] }` waypoints or by moving nodes. It does not check edge-label placement.
+- `src/evolutions/`: the **step-by-step build** ("evolve the design"). A topic may have an `evolution`: ordered `steps`, each with a problem, a decision (choices with a verdict `best` / `ok` / `poor` and feedback), a result and a trade-off, plus one `diagram(level, markAdded)` function that draws the design after each step. `progress.ts` holds the pure logic (which diagram to show, score, saved progress in localStorage under `sdd:evolve:<track>:<slug>`). The page is `src/pages/evolve/BuildPage.tsx` at `/topics/<slug>/build` (`BUILD_SEGMENT` and `BUILD_LABEL` in `src/topics/paths.ts`); its canvas is the read-only `src/components/diagram/StageCanvas.tsx`. In the DSL, `{ added: true }` on a node or edge draws it thick with a "NEW" tag. Only the URL Shortener has a build so far; the README explains how to add one.
 - `src/components/DocView.tsx`: Markdown rendering. Supports `[text](#diagram/<tab-id>)` links, GitHub-style callouts via `src/lib/remarkCallouts.ts` (`> [!TIP]`, `[!NOTE]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`), and light YAML/bash highlighting (`src/lib/highlight.ts`).
 - `src/components/diagram/editStore.ts`: user edits saved in localStorage. Keys are prefixed by track (`kubernetes:<slug>`), so slugs can repeat across tracks safely. System Design keys are unchanged from before tracks existed; don't change them.
 
@@ -68,6 +69,8 @@ System Design topics follow the same pattern with `docs/`, `src/diagrams/` and `
 ## Status (as of 2026-10-25)
 
 Work is on branch `feat/kubernetes-track`. Done: the Kubernetes track (29 topics, ~98 diagrams), the Yggdrasil name and logo, per-page share HTML and preview images, and the Nordic theme (the other palettes and the theme dropdown were removed on 2026-10-26).
+
+Step-by-step build (added 2026-11-16 on branch `feat/interactive-web`): built for the URL Shortener only, as a first version for the owner to try. Not yet looked at in a browser by anyone; the label "Build it step by step" and the `/build` URL are placeholders until the owner confirms the name.
 
 Open items:
 

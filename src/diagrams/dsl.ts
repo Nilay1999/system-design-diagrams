@@ -389,6 +389,8 @@ interface NodeOpts {
   highlight?: boolean;
   /** Icon above the title; `false` for none. Defaults to one inferred from the text (see icon-rules.ts). */
   icon?: IconName | false;
+  /** Mark as added in this step of a step-by-step design: a thick border and a "NEW" tag. */
+  added?: boolean;
 }
 
 interface EdgeOpts {
@@ -401,6 +403,8 @@ interface EdgeOpts {
   color?: string;
   /** Waypoints in grid units (the centre of cell col,row), to route around other boxes. */
   via?: [number, number][];
+  /** Mark as added in this step of a step-by-step design: a thick line. */
+  added?: boolean;
 }
 
 interface TableOpts {
@@ -413,6 +417,10 @@ interface TableOpts {
 
 const NODE_W = 210;
 const NODE_H = 80;
+
+/** The "NEW" tag on nodes added in the current step of a step-by-step design. */
+const NEW_TAG = { width: 48, height: 26, bg: "#1e1e1e", fg: "#ffffff" } as const;
+const ADDED_STROKE = 4;
 
 export class Diagram {
   private zones: Skeleton[] = [];
@@ -499,12 +507,12 @@ export class Diagram {
       strokeColor: opts.highlight ? "#e03131" : style.strokeColor,
       strokeStyle: style.strokeStyle ?? "solid",
       fillStyle: "solid",
-      strokeWidth: opts.highlight ? 3 : 2,
+      strokeWidth: opts.added ? ADDED_STROKE : opts.highlight ? 3 : 2,
       roughness: 0,
       roundness: ellipse ? null : ({ type: 3 } as const),
     } as const;
 
-    if (!detailLines.length && !icon) {
+    if (!detailLines.length && !icon && !opts.added) {
       this.shapes.push({ ...base, label: { text: titleLines.join("\n"), fontFamily: DIAGRAM_FONT.id, fontSize: 16, strokeColor: TEXT } });
       return this;
     }
@@ -519,6 +527,26 @@ export class Diagram {
     this.shapes.push(textBox(tx, textTop, innerW, titleH, titleLines.join("\n"), { fontSize: 16, color: TEXT, groupIds: [g] }));
     if (detailLines.length) {
       this.shapes.push(textBox(tx, textTop + titleH, innerW, detailH, detailLines.join("\n"), { fontSize: 13, color: MUTED, groupIds: [g] }));
+    }
+    if (opts.added) {
+      // The tag straddles the top border: at the right corner of a rectangle, on the curve of an ellipse.
+      const tagX = ellipse ? x + width * 0.62 : x + width - NEW_TAG.width - 8;
+      const tagY = (ellipse ? y + height * 0.06 : y) - NEW_TAG.height / 2;
+      this.shapes.push({
+        type: "rectangle",
+        x: tagX,
+        y: tagY,
+        width: NEW_TAG.width,
+        height: NEW_TAG.height,
+        backgroundColor: NEW_TAG.bg,
+        strokeColor: NEW_TAG.bg,
+        fillStyle: "solid",
+        strokeWidth: 1,
+        roughness: 0,
+        roundness: { type: 3 },
+        groupIds: [g],
+        label: { text: "NEW", fontFamily: DIAGRAM_FONT.id, fontSize: 11, strokeColor: NEW_TAG.fg },
+      });
     }
     return this;
   }
@@ -608,7 +636,7 @@ export class Diagram {
       end: { id: to },
       strokeColor: opts.color ?? (opts.async ? "#e8590c" : "#495057"),
       strokeStyle: opts.async ? "dashed" : "solid",
-      strokeWidth: 2,
+      strokeWidth: opts.added ? ADDED_STROKE : 2,
       roughness: 0,
       startArrowhead: opts.both ? "arrow" : null,
       endArrowhead: opts.none ? null : "arrow",

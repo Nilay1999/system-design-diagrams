@@ -26,6 +26,8 @@ import ticketBooking from "../diagrams/ticket-booking";
 import eCommerce from "../diagrams/e-commerce";
 import paymentSystem from "../diagrams/payment-system";
 
+import urlShortenerEvolution from "../evolutions/url-shortener";
+
 // Docs live at the repo root so they are readable on GitHub without running the app.
 const docs = import.meta.glob<string>("../../docs/*.md", { query: "?raw", import: "default", eager: true });
 
@@ -83,6 +85,7 @@ const META: TopicMeta[] = [
     summary: "Generate short aliases for long URLs and redirect billions of reads with low latency.",
     tags: ["base62", "key generation", "read-heavy", "caching"],
     diagrams: urlShortener,
+    evolution: urlShortenerEvolution,
   },
   {
     slug: "rate-limiter",

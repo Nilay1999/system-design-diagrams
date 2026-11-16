@@ -2,6 +2,7 @@ import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { BinaryFiles } from "@excalidraw/excalidraw/types";
 
 import type { DiagramSpec } from "../diagrams/dsl";
+import type { Evolution } from "../evolutions/types";
 
 /** A diagram tab drawn directly in Excalidraw (community content), rather than built from the DSL. */
 export interface SceneSpec {
@@ -32,4 +33,6 @@ export interface Topic {
   diagrams: DiagramTab[];
   /** Markdown source. */
   doc: string;
+  /** The same design as a step-by-step build, where the reader makes the decisions. Optional. */
+  evolution?: Evolution;
 }

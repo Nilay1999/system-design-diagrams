@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { topic } from "../test/fixtures";
-import { isNonDefaultView, parseLegacyHash, topicPath } from "./paths";
+import { buildPath, isNonDefaultView, parseLegacyHash, topicPath } from "./paths";
+
+describe("buildPath", () => {
+  it("is a fixed segment under the topic, in each track", () => {
+    expect(buildPath(topic())).toBe("/topics/url-shortener/build");
+    expect(buildPath(topic({ track: "kubernetes", slug: "pods" }))).toBe("/kubernetes/pods/build");
+  });
+});
 
 describe("topicPath", () => {
   const t = topic();

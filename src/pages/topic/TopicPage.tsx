@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, type CSSProperties } from "react";
-import { Navigate, useLocation, useNavigate, useParams } from "react-router";
+import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router";
 
-import { isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics";
+import { BUILD_LABEL, buildPath, isNonDefaultView, topicPath, useTopics, type Topic } from "../../topics";
 import { AppShell } from "../../layout/AppShell";
 import { DocView } from "../../components/DocView";
 import { Splitter } from "../../components/Splitter";
@@ -65,7 +65,16 @@ function TopicLayout({ topic, diagramId }: { topic: Topic; diagramId?: string })
           <p>{topic.summary}</p>
         </div>
       }
-      actions={<Tabs className="segmented" label="View" items={VIEW_MODE_TABS} value={mode} onChange={setMode} />}
+      actions={
+        <>
+          {topic.evolution && (
+            <Link className="topbar-link primary" to={buildPath(topic)} title={BUILD_LABEL}>
+              Build it<span className="wide-only"> step by step</span>
+            </Link>
+          )}
+          <Tabs className="segmented" label="View" items={VIEW_MODE_TABS} value={mode} onChange={setMode} />
+        </>
+      }
     >
       {mode !== "diagram" && (
         <div className="doc-pane">

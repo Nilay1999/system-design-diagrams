@@ -92,6 +92,7 @@ npm run preview    # serve the production build
 - The diagram is a full Excalidraw canvas: drag boxes (arrows stay attached), add notes, restyle anything.
   - Edits are **saved in your browser** (localStorage) per diagram tab. **Reset** restores the original.
   - Use **Export** to save a **PNG image** or an **.excalidraw** file. The `.excalidraw` file opens on [excalidraw.com](https://excalidraw.com).
+- Some topics also have a **step-by-step build** (the gold "Build it" button in the top bar, currently on the URL Shortener). It starts from one server and one database. Each step describes a problem, you pick a fix from three options, and the diagram grows. Your progress is saved in your browser. See [Adding a step-by-step build](#adding-a-step-by-step-build).
 - Toggle light/dark mode with the button in the top-right corner.
 
 ## Project structure
@@ -102,6 +103,10 @@ src/
   diagrams/
     dsl.ts                  Diagram-as-code helpers: Diagram (grid layout) and Sequence (sequence diagrams)
     <topic>.ts              The diagram tabs for one topic
+  evolutions/
+    types.ts                Evolution: the steps, decisions and growing diagram of a step-by-step build
+    progress.ts             Where a reader is in a build, what the diagram should show, saved progress
+    <topic>.ts              The step-by-step build for one topic
   tracks/                   The two libraries (System Design, Kubernetes): URLs, sidebar, legend, theme
   topics/
     curated.ts              Curated topic metadata (+ doc + diagram tabs)
@@ -117,6 +122,7 @@ src/
     Tabs.tsx                Reusable tab list (view switcher, diagram tabs)
   layout/AppShell.tsx       Top bar, sidebar drawer and main area shared by pages
   pages/topic/              Topic page and its view-mode (split / doc / diagram) hook
+  pages/evolve/             Step-by-step build page (/topics/<slug>/build)
   theme/                    ThemeProvider + useTheme
   providers/                Router, TanStack Query and theme providers
   hooks/                    usePreference, useDebouncedCallback
@@ -184,6 +190,16 @@ connect. CI runs them before each deploy.
 3. Register it in `src/topics/curated.ts`.
 
 If you change a diagram's source, browsers that saved edits of the old version start from the new version, because saved edits are tied to a hash of the diagram source.
+
+## Adding a step-by-step build
+
+A build tells the same design as the write-up, but as a series of problems the reader solves. The URL Shortener (`src/evolutions/url-shortener.ts`) is the example to copy.
+
+1. Create `src/evolutions/<slug>.ts` that exports an `Evolution` (see `src/evolutions/types.ts`):
+   - `steps`: the first step is the simplest design that works and has no decision. Every later step has a `situation` (what is going wrong), optional `metrics`, a `decision` with two or three `choices`, a `result` (what the design does now) and a `tradeoff` (what the fix costs). Exactly one choice per step has `verdict: "best"`; the others are `"ok"` or `"poor"`, each with `feedback` that explains why.
+   - `diagram(level, markAdded)`: one function that draws the design after each step. Give every node a fixed grid position so the picture grows in place, and use `stagedParts(level, markAdded)` to say when each part appears: `p.from(3)` is true from step 3 on, and `...p.added(3)` tags the part as NEW on the step that adds it.
+2. Register it on the topic in `src/topics/curated.ts` with `evolution: <yourEvolution>`. The button, banner, route and link preview appear on their own.
+3. Run `npm test`. The tests check that every step has one best choice, that the best choice is not always in the same position, and that the diagram at every step passes the layout lint.
 
 ## Tech
 

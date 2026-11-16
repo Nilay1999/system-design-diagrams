@@ -1,7 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 
-import { parseLegacyHash, topicPath, useTopics } from "./topics";
+import { BUILD_SEGMENT, parseLegacyHash, topicPath, useTopics } from "./topics";
 import { KUBERNETES, SYSTEM_DESIGN, TrackRoute } from "./tracks";
+import { BuildPage } from "./pages/evolve/BuildPage";
 import { OverviewPage } from "./pages/overview/OverviewPage";
 import { TopicPage } from "./pages/topic/TopicPage";
 
@@ -20,10 +21,12 @@ export default function App() {
     <Routes>
       <Route element={<TrackRoute track={SYSTEM_DESIGN} />}>
         <Route path="/" element={<Home />} />
+        <Route path={`/topics/:slug/${BUILD_SEGMENT}`} element={<BuildPage />} />
         <Route path="/topics/:slug/:view?" element={<TopicPage />} />
       </Route>
       <Route path="/kubernetes" element={<TrackRoute track={KUBERNETES} />}>
         <Route index element={<OverviewPage />} />
+        <Route path={`:slug/${BUILD_SEGMENT}`} element={<BuildPage />} />
         <Route path=":slug/:view?" element={<TopicPage />} />
       </Route>
       <Route path="/k8s/*" element={<Navigate to="/kubernetes" replace />} />

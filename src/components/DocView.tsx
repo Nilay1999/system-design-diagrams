@@ -2,7 +2,9 @@ import { Children, isValidElement, useMemo, useRef, type ReactNode } from "react
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import type { Topic } from "../topics";
+import { Link } from "react-router";
+
+import { BUILD_LABEL, buildPath, type Topic } from "../topics";
 import { useActiveHeading } from "../hooks/useActiveHeading";
 import { highlight } from "../lib/highlight";
 import { remarkCallouts } from "../lib/remarkCallouts";
@@ -99,6 +101,14 @@ export function DocView({ topic, activeDiagram, onOpenDiagram }: Props) {
           </span>
         ))}
       </div>
+      {topic.evolution && (
+        <Link className="build-banner" to={buildPath(topic)}>
+          <strong>{BUILD_LABEL}</strong>
+          <span>
+            Start from one server and grow this design in {topic.evolution.steps.length} steps. You make each decision, and the diagram grows with you.
+          </span>
+        </Link>
+      )}
       {toc.length > 0 && (
         <nav className="toc" aria-label="On this page">
           <strong>On this page</strong>
